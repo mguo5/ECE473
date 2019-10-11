@@ -15,10 +15,10 @@
 #include <util/delay.h>
 
 //holds data to be sent to the segments. logic zero turns segment on
-uint8_t segment_data[5] 
+int8_t segment_data[5]; 
 
 //decimal to 7-segment LED display encodings, logic "0" turns on segment
-uint8_t dec_to_7seg[12] 
+uint8_t dec_to_7seg[12]; 
 
 
 //******************************************************************************
@@ -31,7 +31,7 @@ uint8_t dec_to_7seg[12]
 //external loop delay times 12. 
 //
 uint8_t chk_buttons(uint8_t button) {
-	static unint16_t state = 0;
+	static uint16_t state = 0;
 	state = (state << 1) | (!bit_is_clear(PINA, button)) | 0xE000;
 	if(state == 0xF000) return 1;
 	return 0;
@@ -45,10 +45,10 @@ uint8_t chk_buttons(uint8_t button) {
 //BCD segment code in the array segment_data for display.                       
 //array is loaded at exit as:  |digit3|digit2|colon|digit1|digit0|
 void segsum(uint16_t sum) {
-	uint8_t ones = -1;
-	uint8_t tens = -1;
-	uint8_t hundreds = -1;
-	uint8_t thousands = -1;
+	int8_t ones = -1;
+	int8_t tens = -1;
+	int8_t hundreds = -1;
+	int8_t thousands = -1;
   //determine how many digits there are
 	if(sum < 10 && sum > 0){
 		ones = sum;
@@ -75,16 +75,16 @@ void segsum(uint16_t sum) {
   //break up decimal sum into 4 digit-segments
   //blank out leading zero digits 
   //now move data to right place for misplaced colon position
-	segment_data[0] = thousands;
-	segment_data[1] = hundreds;
+	segment_data[0] = ones;
+	segment_data[1] = tens;
 	segment_data[2] = -1;
-	segment_data[3] = tens;
-	segment_data[4] = ones;
+	segment_data[3] = hundreds;
+	segment_data[4] = thousands;
 }//segment_sum
 //***********************************************************************************
 
 
-uint8_t seven_seg_encoding(uint8_t num){
+uint8_t seven_seg_encoding(int8_t num){
 
 	uint8_t output = 0xFF;
 	switch(num){
@@ -132,7 +132,7 @@ uint8_t seven_seg_encoding(uint8_t num){
 }
 
 //***********************************************************************************
-uint8_t main()
+int main()
 {
 //set port bits 4-7 B as outputs
 DDRB = 0xF0;
@@ -164,8 +164,9 @@ while(1){
   //bound a counter (0-4) to keep track of digit to display 
   //make PORTA an output
 	DDRA = 0xFF;
+	asm volatile ("nop");
   //send 7 segment code to LED segments
-	for(int i_seg = 0; i_seg < 5, i_seg++){
+	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		PORTB = (i_seg << 4);
 		PORTA = encoding;		
