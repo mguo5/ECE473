@@ -1,5 +1,4 @@
-// lab2_skel.c 
-// R. Traylor
+
 // 9.12.08
 
 //  HARDWARE SETUP:
@@ -32,7 +31,7 @@ uint8_t dec_to_7seg[12];
 //
 uint8_t chk_buttons(uint8_t button) {
 	static uint16_t state = 0;
-	state = (state << 1) | (!bit_is_clear(PINA, button)) | 0xE000;
+	state = (state << 1) | (bit_is_clear(PINA, button)) | 0xE000;
 	if(state == 0xF000) return 1;
 	return 0;
 
@@ -50,7 +49,7 @@ void segsum(uint16_t sum) {
 	int8_t hundreds = -1;
 	int8_t thousands = -1;
   //determine how many digits there are
-	if(sum < 10 && sum > 0){
+	if(sum < 10){
 		ones = sum;
 	
 	}
@@ -89,41 +88,53 @@ uint8_t seven_seg_encoding(int8_t num){
 	uint8_t output = 0xFF;
 	switch(num){
 		
-		case -1: output = 0b11111111;
-				 break;
+		case -1: 
+			output = 0b11111111;
+			break;
 
-		case 0: output = 0b11000000;
-				break;
+		case 0:
+			output = 0b11000000;
+			break;
 
-		case 1: output = 0b11111001;
-				break;
+		case 1: 
+			output = 0b11111001;
+			break;
 
-		case 2: output = 0b10100100;
-				break;
+		case 2: 
+			output = 0b10100100;
+			break;
 
-		case 3: output = 0b10110000;
-				break;
+		case 3: 
+			output = 0b10110000;
+			break;
 
-		case 4: output = 0b10011001;
-				break;
+		case 4: 
+			output = 0b10011001;
+			break;
 
-		case 5: output = 0b10010010;
-				break;
+		case 5: 
+			output = 0b10010010;
+			break;
 
-		case 6: output = 0b10000010;
-				break;
+		case 6: 
+			output = 0b10000010;
+			break;
 
-		case 7: output = 0b11111000;
-				break;
+		case 7: 
+			output = 0b11111000;
+			break;
 
-		case 8: output = 0b10000000;
-				break;
+		case 8: 
+			output = 0b10000000;
+			break;
 
-		case 9: output = 0b10011000;
-				break;
+		case 9: 
+			output = 0b10011000;
+			break;
 
-		default: output = 0b11111111;
-	
+		default: 
+			output = 0b11111111;
+			break;	
 	
 	}
 
@@ -145,16 +156,17 @@ while(1){
 	DDRA = 0x00;
 	PORTA = 0xFF;	
   //enable tristate buffer for pushbutton switches
-    PORTB = (7 << 4);
+    PORTB = 0x70;
   //now check each button and increment the count as needed
 	for(int i_buttons = 0; i_buttons < 8; i_buttons++){
 		if(chk_buttons(i_buttons)){
-			count += pow(2, i_buttons);
+			count += (1 << i_buttons);
+			//count++;
 		}
 	
 	}
   //disable tristate buffer for pushbutton switches
-    PORTB = 0x00;
+    PORTB = 0x60;
   //bound the count to 0 - 1023
     while(count > 1023){
 		count -= 1024;
@@ -169,7 +181,8 @@ while(1){
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		PORTB = (i_seg << 4);
-		PORTA = encoding;		
+		PORTA = encoding;
+		_delay_ms(2);		
 	
 	}
   //send PORTB the digit to display
