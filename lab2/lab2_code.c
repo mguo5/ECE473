@@ -1,11 +1,36 @@
-
-// 9.12.08
+/*****************************************************************************
+* Author: Matthew Guo
+* Class: ECE 473
+* Date Due: 10/15/2019
+* Lab Number: Lab 2
+* School: Oregon State University
+* Description: This is Lab 2 for ECE 473. A seven segment display is used to
+*              display a count number. This is done by parsing the count number
+*              from the ones place, tens place, hundreds place, and thousands place.
+*              There cannot be any leading 0s. A push button board with 8 buttons
+*              is used to increase the count, thereby increasing the number displayed
+*              on the LED board. The first button increases the number by 1, the second
+*              button increases the count by 2, the third button increases the count by 4,
+*              and so on.
+*****************************************************************************/
 
 //  HARDWARE SETUP:
 //  PORTA is connected to the segments of the LED display. and to the pushbuttons.
 //  PORTA.0 corresponds to segment a, PORTA.1 corresponds to segement b, etc.
 //  PORTB bits 4-6 go to a,b,c inputs of the 74HC138.
 //  PORTB bit 7 goes to the PWM transistor base.
+
+
+//  WIRING SETUP:
+//  Button Board:
+//      - COM_EN is tied to SEG7 on the LED Board to enable/disable tristate buffer
+//      - COM_LVL is tied to GND
+//      - SW_COM is left floating
+//      - J1 - J8 is connected to A-G and DP
+//  LED Board:
+//      - Y7 is connected to the COM_EN
+//      - PORTA is connected to the 7 segments
+//      - PORTB bits 4-6 is used to control the digit select
 
 #define F_CPU 16000000 // cpu speed in hertz 
 #define TRUE 1
