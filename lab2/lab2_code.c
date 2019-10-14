@@ -208,7 +208,7 @@ while(1){
 	DDRA = 0x00;
 	PORTA = 0xFF;	
   //enable tristate buffer for pushbutton switches
-    PORTB = 0x70;
+    PORTB = 0x00;
   //now check each button and increment the count as needed
 	//use a for loop to increment through each button to check
 	for(uint8_t i_buttons = 0; i_buttons < 8; i_buttons++){
@@ -218,7 +218,7 @@ while(1){
 	
 	}
   //disable tristate buffer for pushbutton switches
-    PORTB = 0x60;
+    PORTB = 0x70;
   //bound the count to 0 - 1023
 	//uses while loop to check if count is greater than 1024, and subtract 1024 to it, making 1024 -> 0
     while(count > 1023){
@@ -240,5 +240,6 @@ while(1){
 		_delay_ms(2);					//add in tiny delay, but not large enough for flicker
 	
 	}
+
   }//while
 }//main
