@@ -138,6 +138,49 @@ void segsum(uint16_t sum) {
 	segment_data[3] = hundreds;
 	segment_data[4] = thousands;
 }//segment_sum
+
+
+void segsum_hex(uint16_t sum) {
+	//initialize variables to be used in this function to -1, which makes LEDs go off
+	int8_t ones = -1;
+	int8_t tens = -1;
+	int8_t hundreds = -1;
+	int8_t thousands = -1;
+
+	if(sum <= 0x000F){
+		ones = sum;
+	
+	}
+	//check to see if the total sum count less than 100 but at or greater than 10 for parsing
+	else if(sum <= 0x00FF && sum > 0x00F){
+		ones = sum % 16;
+		sum /= 16;
+		tens = sum;
+	
+	}
+	//check to see if the total sum count is less than 100 but at or greater than 100 for parsing
+	else if(sum <= 0x0FFF && sum > 0x00FF){
+		ones = sum % 16;
+		sum /= 16;
+		tens = sum % 16;
+		sum /= 16;
+		hundreds = sum;
+
+	}
+	//check to see if the total sum count is less than 1024 but at or greater than 1000 for parsing
+
+	//place the variables into the segment_data[] array to be displayed
+	segment_data[0] = ones;
+	segment_data[1] = tens;
+	segment_data[2] = -1;
+	segment_data[3] = hundreds;
+	segment_data[4] = thousands;
+
+	//place the variables into the segment_data[] array to be displayed
+	
+	
+}//segment_sum
+
 //***********************************************************************************
 									//seven_seg_encoding
 //This function is used to implement the binary encodings for the seven segment
@@ -224,7 +267,7 @@ uint8_t seven_seg_encoding(int8_t num){
 
 		case 13:
 			//displays D on the seven segment display
-			output = 0b00100001;
+			output = 0b10100001;
 			break;
 
 		case 14:
@@ -304,6 +347,7 @@ ISR(TIMER0_OVF_vect){
 
 	if(chk_buttons(2)){
 		hex_toggle ^= 0x01;
+		bar_disp ^= 0x04;
 	}
 
   //disable tristate buffer for pushbutton switches
@@ -356,7 +400,13 @@ while(1){
 	  count = 1023;
   }
   //break up the disp_value to 4, BCD digits in the array: call (segsum)
-    segsum(count);
+	if(!hex_toggle){
+		segsum(count);
+	}
+	else{
+		segsum_hex(count);
+	}
+	
   //make PORTA an output
 	DDRA = 0xFF;
 	//uses "nop" to add a little delay
@@ -368,7 +418,7 @@ while(1){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
-		_delay_us(150);					//add in tiny delay, but not large enough for flicker
+		_delay_us(170);					//add in tiny delay, but not large enough for flicker
 	
 	}
 
