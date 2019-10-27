@@ -1,8 +1,8 @@
 /*****************************************************************************
 * Author: Matthew Guo
 * Class: ECE 473
-* Date Due: 10/15/2019
-* Lab Number: Lab 2
+* Date Due: 10/29/2019
+* Lab Number: Lab 3
 * School: Oregon State University
 * Description: This is Lab 2 for ECE 473. A seven segment display is used to
 *              display a count number. This is done by parsing the count number
@@ -181,6 +181,37 @@ uint8_t seven_seg_encoding(int8_t num){
 			//displays 9 on the seven segment display
 			output = 0b10011000;
 			break;
+
+		case 10:
+			//displays A on the seven segment display
+			output = 0b10001000;
+			break;
+
+		case 11:
+			//displays B on the seven segment display
+			output = 0b10000011;
+			break;
+
+		case 12:
+			//displays C on the seven segment display
+			output = 0b11000110;
+			break;
+
+		case 13:
+			//displays D on the seven segment display
+			output = 0b00100001;
+			break;
+
+		case 14:
+			//displays E on the seven segment display
+			output = 0b10000110;
+			break;
+
+		case 15:
+			//displays F on the seven segment display
+			output = 0b10001110;
+			break;
+			
 
 		default: 
 			//defaults to 0xFF, so that nothing shows on seven seg display
