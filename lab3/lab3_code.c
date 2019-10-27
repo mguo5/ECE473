@@ -37,6 +37,7 @@
 #define FALSE 0
 #include <avr/io.h>
 #include <util/delay.h>
+#include <avr/interrupt.h>
 
 //holds data to be sent to the segments. logic zero turns segment on
 int8_t segment_data[5]; 
@@ -44,6 +45,30 @@ int8_t segment_data[5];
 //decimal to 7-segment LED display encodings, logic "0" turns on segment
 uint8_t dec_to_7seg[12]; 
 
+volatile int count = 0;
+
+volatile uint8_t bar_disp = 0;
+
+uint8_t encoder_left = 0;
+uint8_t encoder_right = 0;
+
+uint8_t bar_prev = 0;
+
+uint8_t hex_toggle = 0;
+
+
+void initialization(){
+	DDRB |= (0 << PB3) | (1 << PB2) | (1 << PB1) | (1 << PB0);
+	DDRE = 0xFF;
+	DDRD = 0xFF;
+
+	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);
+	SPSR = (1 << SPI2X);
+
+	TIMSK |= (1 << TOIE0);
+	TCCR0 |= (1 << CS00) | (1 << CS02);
+
+}
 
 //******************************************************************************
 //                            chk_buttons                                      
@@ -225,36 +250,111 @@ uint8_t seven_seg_encoding(int8_t num){
 }//seven_seg_encoding()
 //***********************************************************************************
 
-//***********************************************************************************
-int main()
-{
-//set port bits 4-7 B as outputs
-DDRB = 0xF0;
-uint16_t count = 0;
-uint8_t encoding = 0;
-while(1){
-  //insert loop delay for debounce
-	_delay_ms(2);
-  //make PORTA an input port with pullups
+
+void encoder_process(uint8_t encoder){
+
+	uint8_t encoder_left_prev = encoder_left;
+	uint8_t encoder_right_prev = encoder_right;
+
+	encoder_left = encoder & 0x03;
+	encoder_right = (encoder & (0x03 << 2)) >> 2;
+
+	//count = 128;
+
+	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
+		if(bar_disp != 0x03)
+		count += (1 << bar_disp);
+	}
+	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
+		if(bar_disp != 0x03)
+		count -= (1 << bar_disp);
+	}
+
+	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
+		if(bar_disp != 0x03)
+		count += (1 << bar_disp);
+	}
+	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
+		if(bar_disp != 0x03)
+		count -= (1 << bar_disp);
+	}
+
+}
+
+ISR(TIMER0_OVF_vect){
+ //make PORTA an input port with pullups
 	DDRA = 0x00;
 	PORTA = 0xFF;	
   //enable tristate buffer for pushbutton switches
     PORTB = 0x70;
   //now check each button and increment the count as needed
 	//use a for loop to increment through each button to check
-	for(uint8_t i_buttons = 0; i_buttons < 8; i_buttons++){
+
+	bar_prev = bar_disp;
+
+	for(uint8_t i_buttons = 0; i_buttons < 2; i_buttons++){
 		if(chk_buttons(i_buttons)){
-			count += (1 << (i_buttons));		//makes S1 add 1, S2 add 2, S3 add 4, etc, using binary shift
+			bar_disp ^= (1 << (i_buttons));		//makes S1 add 1, S2 add 2, S3 add 4, etc, using binary shift
+			if(bar_disp == bar_prev){
+				bar_disp = 0;
+			}
 		}
 	
 	}
+
+	if(chk_buttons(2)){
+		hex_toggle ^= 0x01;
+	}
+
   //disable tristate buffer for pushbutton switches
     PORTB = 0x60;
+
+	PORTD = (0 << PD2);
+	PORTE = (1 << PE6);
+
+	asm volatile ("nop");
+	asm volatile ("nop");
+
+	SPDR = bar_disp;
+	while(bit_is_clear(SPSR, SPIF)){}
+
+	PORTB |= 0x01;
+	PORTB |= 0x00;
+
+	uint8_t encoder = SPDR;
+
+	encoder_process(encoder);
+
+	PORTD = (1 << PD2);
+	PORTE = (0 << PE6);
+
+
+}
+
+
+//***********************************************************************************
+int main()
+{
+//set port bits 4-7 B as outputs
+DDRB = 0xF0;
+
+uint8_t encoding = 0;
+
+initialization();
+
+sei();
+
+while(1){
+  //insert loop delay for debounce
+	//_delay_ms(2);
+ 
   //bound the count to 0 - 1023
-	//uses while loop to check if count is greater than 1024, and subtract 1024 to it, making 1024 -> 0
-    while(count > 1023){
-		count -= 1023;
-	}
+  if(count > 1023){
+	  count = 1;
+  }
+  else if(count < 0){
+	  count = 1023;
+  }
   //break up the disp_value to 4, BCD digits in the array: call (segsum)
     segsum(count);
   //make PORTA an output
@@ -268,7 +368,7 @@ while(1){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
-		_delay_ms(2);					//add in tiny delay, but not large enough for flicker
+		_delay_us(150);					//add in tiny delay, but not large enough for flicker
 	
 	}
 
