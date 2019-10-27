@@ -19,15 +19,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING
   7 .debug_abbrev 00000968  00000000  00000000  000013a9  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000045f  00000000  00000000  00001d11  2**0
+  8 .debug_line   00000460  00000000  00000000  00001d11  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000ec  00000000  00000000  00002170  2**2
+  9 .debug_frame  000000ec  00000000  00000000  00002174  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0000049c  00000000  00000000  0000225c  2**0
+ 10 .debug_str    0000049c  00000000  00000000  00002260  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    0000060e  00000000  00000000  000026f8  2**0
+ 11 .debug_loc    0000060e  00000000  00000000  000026fc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000030  00000000  00000000  00002d06  2**0
+ 12 .debug_ranges 00000030  00000000  00000000  00002d0a  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -112,33 +112,35 @@ Disassembly of section .text:
   ca:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 000000ce <initialization>:
-
-uint8_t hex_toggle = 0;
-
-
+ * initialize Timer Counter 0 for overflow interrupt, and to initialize the SPI
+ * bus for the encoders and bar graph display.
+************************************************************************/
 void initialization(){
+	//initialize port b pins 3 as input, pins 2, 1, and 0 for output (SS, MOSI, SCLK)
 	DDRB |= (0 << PB3) | (1 << PB2) | (1 << PB1) | (1 << PB0);
   ce:	87 b3       	in	r24, 0x17	; 23
   d0:	87 60       	ori	r24, 0x07	; 7
   d2:	87 bb       	out	0x17, r24	; 23
-	DDRE = 0xFF;
+	DDRE = 0xFF;	//initialize port E as output
   d4:	8f ef       	ldi	r24, 0xFF	; 255
   d6:	82 b9       	out	0x02, r24	; 2
-	DDRD = 0xFF;
+	DDRD = 0xFF;	//initialize port D as output
   d8:	81 bb       	out	0x11, r24	; 17
 
-	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);
+
+	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);	//master mode, clk low, and leading edge
   da:	80 e5       	ldi	r24, 0x50	; 80
   dc:	8d b9       	out	0x0d, r24	; 13
-	SPSR = (1 << SPI2X);
+	SPSR = (1 << SPI2X);		//double speed operation
   de:	81 e0       	ldi	r24, 0x01	; 1
   e0:	8e b9       	out	0x0e, r24	; 14
 
-	TIMSK |= (1 << TOIE0);
+
+	TIMSK |= (1 << TOIE0);		//enable TC interrupt
   e2:	87 b7       	in	r24, 0x37	; 55
   e4:	81 60       	ori	r24, 0x01	; 1
   e6:	87 bf       	out	0x37, r24	; 55
-	TCCR0 |= (1 << CS00) | (1 << CS02);
+	TCCR0 |= (1 << CS00) | (1 << CS02);		//128 prescale on normal mode
   e8:	83 b7       	in	r24, 0x33	; 51
   ea:	85 60       	ori	r24, 0x05	; 5
   ec:	83 bf       	out	0x33, r24	; 51
@@ -469,11 +471,11 @@ void segsum(uint16_t sum) {
  284:	be cf       	rjmp	.-132    	; 0x202 <segsum+0xce>
 
 00000286 <segsum_hex>:
-	int8_t ones = -1;
 	int8_t tens = -1;
 	int8_t hundreds = -1;
 	int8_t thousands = -1;
 
+	//check to see if the total sum count less than 0x000F for parsing
 	if(sum <= 0x000F){
  286:	80 31       	cpi	r24, 0x10	; 16
  288:	91 05       	cpc	r25, r1
@@ -481,8 +483,8 @@ void segsum(uint16_t sum) {
 		ones = sum;
 	
 	}
-	//check to see if the total sum count less than 100 but at or greater than 10 for parsing
-	else if(sum <= 0x00FF && sum > 0x00F){
+	//check to see if the total sum count less than 0x00FF but at or greater than 0x000F for parsing
+	else if(sum <= 0x00FF && sum > 0x000F){
  28c:	9c 01       	movw	r18, r24
  28e:	20 51       	subi	r18, 0x10	; 16
  290:	31 09       	sbc	r19, r1
@@ -493,7 +495,7 @@ void segsum(uint16_t sum) {
 		tens = sum;
 	
 	}
-	//check to see if the total sum count is less than 100 but at or greater than 100 for parsing
+	//check to see if the total sum count less than 0x0FFF but at or greater than 0x00FF for parsing
 	else if(sum <= 0x0FFF && sum > 0x00FF){
  298:	9c 01       	movw	r18, r24
  29a:	3a 95       	dec	r19
@@ -514,9 +516,9 @@ void segsum(uint16_t sum) {
  2b2:	23 27       	eor	r18, r19
  2b4:	82 2f       	mov	r24, r18
  2b6:	8f 70       	andi	r24, 0x0F	; 15
+		hundreds = sum;
 
 	}
-	//check to see if the total sum count is less than 1024 but at or greater than 1000 for parsing
 
 	//place the variables into the segment_data[] array to be displayed
 	segment_data[0] = ones;
@@ -534,8 +536,8 @@ void segsum(uint16_t sum) {
 		ones = sum;
 	
 	}
-	//check to see if the total sum count less than 100 but at or greater than 10 for parsing
-	else if(sum <= 0x00FF && sum > 0x00F){
+	//check to see if the total sum count less than 0x00FF but at or greater than 0x000F for parsing
+	else if(sum <= 0x00FF && sum > 0x000F){
 		ones = sum % 16;
  2d0:	48 2f       	mov	r20, r24
  2d2:	4f 70       	andi	r20, 0x0F	; 15
@@ -557,6 +559,7 @@ void segsum_hex(uint16_t sum) {
  2e2:	ea cf       	rjmp	.-44     	; 0x2b8 <segsum_hex+0x32>
 	int8_t thousands = -1;
 
+	//check to see if the total sum count less than 0x000F for parsing
 	if(sum <= 0x000F){
 		ones = sum;
  2e4:	48 2f       	mov	r20, r24
@@ -567,7 +570,7 @@ void segsum_hex(uint16_t sum) {
 	int8_t tens = -1;
 	int8_t hundreds = -1;
  2e6:	9f ef       	ldi	r25, 0xFF	; 255
-
+ *********************************************************************/
 
 void segsum_hex(uint16_t sum) {
 	//initialize variables to be used in this function to -1, which makes LEDs go off
@@ -577,15 +580,15 @@ void segsum_hex(uint16_t sum) {
  2ea:	e6 cf       	rjmp	.-52     	; 0x2b8 <segsum_hex+0x32>
 	int8_t hundreds = -1;
  2ec:	9f ef       	ldi	r25, 0xFF	; 255
-
+ *********************************************************************/
 
 void segsum_hex(uint16_t sum) {
 	//initialize variables to be used in this function to -1, which makes LEDs go off
 	int8_t ones = -1;
 	int8_t tens = -1;
  2ee:	8f ef       	ldi	r24, 0xFF	; 255
-}//segment_sum
-
+ * requirements of lab 3 project.
+ *********************************************************************/
 
 void segsum_hex(uint16_t sum) {
 	//initialize variables to be used in this function to -1, which makes LEDs go off
@@ -618,16 +621,17 @@ uint8_t seven_seg_encoding(int8_t num){
  306:	08 95       	ret
 
 00000308 <encoder_process>:
-//***********************************************************************************
-
+***********************************************************************************/
 
 void encoder_process(uint8_t encoder){
 
+	//initialize variables to store previous encoder state
 	uint8_t encoder_left_prev = encoder_left;
  308:	30 91 13 01 	lds	r19, 0x0113	; 0x800113 <encoder_left>
 	uint8_t encoder_right_prev = encoder_right;
  30c:	40 91 12 01 	lds	r20, 0x0112	; 0x800112 <encoder_right>
 
+	//obtain the left and right encoder values from the SPDR
 	encoder_left = encoder & 0x03;
  310:	28 2f       	mov	r18, r24
  312:	23 70       	andi	r18, 0x03	; 3
@@ -641,33 +645,37 @@ void encoder_process(uint8_t encoder){
  322:	87 95       	ror	r24
  324:	80 93 12 01 	sts	0x0112, r24	; 0x800112 <encoder_right>
 
-	//count = 128;
-
+	//check right encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
  328:	83 30       	cpi	r24, 0x03	; 3
  32a:	f9 f0       	breq	.+62     	; 0x36a <encoder_process+0x62>
-	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if(bar_disp != 0x03)
-		count -= (1 << bar_disp);
-	}
 
+	//check left encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
  32c:	23 30       	cpi	r18, 0x03	; 3
  32e:	09 f0       	breq	.+2      	; 0x332 <encoder_process+0x2a>
  330:	08 95       	ret
  332:	31 30       	cpi	r19, 0x01	; 1
  334:	b1 f1       	breq	.+108    	; 0x3a2 <encoder_process+0x9a>
-		if(bar_disp != 0x03)
-		count += (1 << bar_disp);
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
+		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
 	}
+	//if current state is 3 and its previous is 2, then we know
+	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
  336:	32 30       	cpi	r19, 0x02	; 2
  338:	d9 f7       	brne	.-10     	; 0x330 <encoder_process+0x28>
-		if(bar_disp != 0x03)
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
  33a:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <bar_disp>
  33e:	83 30       	cpi	r24, 0x03	; 3
  340:	b9 f3       	breq	.-18     	; 0x330 <encoder_process+0x28>
-		count -= (1 << bar_disp);
+		count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
  342:	40 91 14 01 	lds	r20, 0x0114	; 0x800114 <bar_disp>
  346:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <count>
  34a:	90 91 16 01 	lds	r25, 0x0116	; 0x800116 <count+0x1>
@@ -683,25 +691,27 @@ void encoder_process(uint8_t encoder){
  360:	90 93 16 01 	sts	0x0116, r25	; 0x800116 <count+0x1>
  364:	80 93 15 01 	sts	0x0115, r24	; 0x800115 <count>
  368:	08 95       	ret
-	encoder_left = encoder & 0x03;
-	encoder_right = (encoder & (0x03 << 2)) >> 2;
 
-	//count = 128;
-
+	//check right encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
  36a:	41 30       	cpi	r20, 0x01	; 1
  36c:	91 f1       	breq	.+100    	; 0x3d2 <encoder_process+0xca>
-		if(bar_disp != 0x03)
-		count += (1 << bar_disp);
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
+		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
 	}
+	//if current state is 3 and its previous is 2, then we know
+	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
  36e:	42 30       	cpi	r20, 0x02	; 2
  370:	e9 f6       	brne	.-70     	; 0x32c <encoder_process+0x24>
-		if(bar_disp != 0x03)
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
  372:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <bar_disp>
  376:	83 30       	cpi	r24, 0x03	; 3
  378:	c9 f2       	breq	.-78     	; 0x32c <encoder_process+0x24>
-		count -= (1 << bar_disp);
+		count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
  37a:	60 91 14 01 	lds	r22, 0x0114	; 0x800114 <bar_disp>
  37e:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <count>
  382:	90 91 16 01 	lds	r25, 0x0116	; 0x800116 <count+0x1>
@@ -717,14 +727,16 @@ void encoder_process(uint8_t encoder){
  398:	90 93 16 01 	sts	0x0116, r25	; 0x800116 <count+0x1>
  39c:	80 93 15 01 	sts	0x0115, r24	; 0x800115 <count>
  3a0:	c5 cf       	rjmp	.-118    	; 0x32c <encoder_process+0x24>
-	}
-
+	//check left encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
-		if(bar_disp != 0x03)
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
  3a2:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <bar_disp>
  3a6:	83 30       	cpi	r24, 0x03	; 3
  3a8:	19 f2       	breq	.-122    	; 0x330 <encoder_process+0x28>
-		count += (1 << bar_disp);
+		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
  3aa:	40 91 14 01 	lds	r20, 0x0114	; 0x800114 <bar_disp>
  3ae:	20 91 15 01 	lds	r18, 0x0115	; 0x800115 <count>
  3b2:	30 91 16 01 	lds	r19, 0x0116	; 0x800116 <count+0x1>
@@ -740,17 +752,17 @@ void encoder_process(uint8_t encoder){
  3c8:	90 93 16 01 	sts	0x0116, r25	; 0x800116 <count+0x1>
  3cc:	80 93 15 01 	sts	0x0115, r24	; 0x800115 <count>
  3d0:	08 95       	ret
-	encoder_right = (encoder & (0x03 << 2)) >> 2;
-
-	//count = 128;
-
+	//check right encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if(bar_disp != 0x03)
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
  3d2:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <bar_disp>
  3d6:	83 30       	cpi	r24, 0x03	; 3
  3d8:	09 f4       	brne	.+2      	; 0x3dc <encoder_process+0xd4>
  3da:	a8 cf       	rjmp	.-176    	; 0x32c <encoder_process+0x24>
-		count += (1 << bar_disp);
+		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
  3dc:	60 91 14 01 	lds	r22, 0x0114	; 0x800114 <bar_disp>
  3e0:	40 91 15 01 	lds	r20, 0x0115	; 0x800115 <count>
  3e4:	50 91 16 01 	lds	r21, 0x0116	; 0x800116 <count+0x1>
@@ -768,10 +780,10 @@ void encoder_process(uint8_t encoder){
  402:	94 cf       	rjmp	.-216    	; 0x32c <encoder_process+0x24>
 
 00000404 <__vector_16>:
-		count -= (1 << bar_disp);
-	}
-
-}
+ * via the SPI bus, and send the SPI to the bar graph display to show the
+ * current state.
+ * 
+ * *********************************************************************/
 
 ISR(TIMER0_OVF_vect){
  404:	1f 92       	push	r1
@@ -807,6 +819,7 @@ ISR(TIMER0_OVF_vect){
   //now check each button and increment the count as needed
 	//use a for loop to increment through each button to check
 
+	//store the previous bar graph encoding
 	bar_prev = bar_disp;
  436:	c0 91 14 01 	lds	r28, 0x0114	; 0x800114 <bar_disp>
  43a:	c0 93 11 01 	sts	0x0111, r28	; 0x800111 <bar_prev>
@@ -815,6 +828,7 @@ ISR(TIMER0_OVF_vect){
  442:	20 e0       	ldi	r18, 0x00	; 0
  444:	30 e0       	ldi	r19, 0x00	; 0
 
+	//use a for-loop to check the buttons being pressed
 	for(uint8_t i_buttons = 0; i_buttons < 2; i_buttons++){
 		if(chk_buttons(i_buttons)){
 			bar_disp ^= (1 << (i_buttons));		//makes S1 add 1, S2 add 2, S3 add 4, etc, using binary shift
@@ -854,11 +868,11 @@ uint8_t chk_buttons(uint8_t button) {
  47a:	51 c0       	rjmp	.+162    	; 0x51e <__vector_16+0x11a>
  47c:	2f 5f       	subi	r18, 0xFF	; 255
  47e:	3f 4f       	sbci	r19, 0xFF	; 255
-  //now check each button and increment the count as needed
-	//use a for loop to increment through each button to check
 
+	//store the previous bar graph encoding
 	bar_prev = bar_disp;
 
+	//use a for-loop to check the buttons being pressed
 	for(uint8_t i_buttons = 0; i_buttons < 2; i_buttons++){
  480:	22 30       	cpi	r18, 0x02	; 2
  482:	31 05       	cpc	r19, r1
@@ -889,10 +903,10 @@ uint8_t chk_buttons(uint8_t button) {
  4ae:	41 15       	cp	r20, r1
  4b0:	50 4f       	sbci	r21, 0xF0	; 240
  4b2:	61 f4       	brne	.+24     	; 0x4cc <__vector_16+0xc8>
-		}
 	
 	}
 
+	//check to see S3 is pressed, and toggle the hex parsing if it is
 	if(chk_buttons(2)){
 		hex_toggle ^= 0x01;
  4b4:	90 91 10 01 	lds	r25, 0x0110	; 0x800110 <__data_end>
@@ -911,6 +925,8 @@ uint8_t chk_buttons(uint8_t button) {
  4cc:	80 e6       	ldi	r24, 0x60	; 96
  4ce:	88 bb       	out	0x18, r24	; 24
 
+	//set CLK_INH low and SH/nLD high to shift encoder values through
+	//its shift register
 	PORTD = (0 << PD2);
  4d0:	12 ba       	out	0x12, r1	; 18
 	PORTE = (1 << PE6);
@@ -925,22 +941,26 @@ uint8_t chk_buttons(uint8_t button) {
 	SPDR = bar_disp;
  4da:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <bar_disp>
  4de:	8f b9       	out	0x0f, r24	; 15
-	while(bit_is_clear(SPSR, SPIF)){}
+	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
  4e0:	77 9b       	sbis	0x0e, 7	; 14
  4e2:	fe cf       	rjmp	.-4      	; 0x4e0 <__vector_16+0xdc>
 
+	//pulse PB0 to send out bar_disp to bar graph
 	PORTB |= 0x01;
  4e4:	c0 9a       	sbi	0x18, 0	; 24
 	PORTB |= 0x00;
  4e6:	88 b3       	in	r24, 0x18	; 24
  4e8:	88 bb       	out	0x18, r24	; 24
 
+	//store the SPDR encoder value
 	uint8_t encoder = SPDR;
  4ea:	8f b1       	in	r24, 0x0f	; 15
 
+	//call function to process that encoder value
 	encoder_process(encoder);
  4ec:	0e 94 84 01 	call	0x308	; 0x308 <encoder_process>
 
+	//reset the CLK_INH and SH/nLD
 	PORTD = (1 << PD2);
  4f0:	84 e0       	ldi	r24, 0x04	; 4
  4f2:	82 bb       	out	0x12, r24	; 18
@@ -948,7 +968,7 @@ uint8_t chk_buttons(uint8_t button) {
  4f4:	13 b8       	out	0x03, r1	; 3
 
 
-}
+}//ISR
  4f6:	ff 91       	pop	r31
  4f8:	ef 91       	pop	r30
  4fa:	cf 91       	pop	r28
@@ -969,9 +989,9 @@ uint8_t chk_buttons(uint8_t button) {
  518:	0f 90       	pop	r0
  51a:	1f 90       	pop	r1
  51c:	18 95       	reti
-
 	bar_prev = bar_disp;
 
+	//use a for-loop to check the buttons being pressed
 	for(uint8_t i_buttons = 0; i_buttons < 2; i_buttons++){
 		if(chk_buttons(i_buttons)){
 			bar_disp ^= (1 << (i_buttons));		//makes S1 add 1, S2 add 2, S3 add 4, etc, using binary shift
@@ -984,7 +1004,8 @@ uint8_t chk_buttons(uint8_t button) {
  52c:	ea f7       	brpl	.-6      	; 0x528 <__vector_16+0x124>
  52e:	8a 27       	eor	r24, r26
  530:	80 93 14 01 	sts	0x0114, r24	; 0x800114 <bar_disp>
-			if(bar_disp == bar_prev){
+			
+			if(bar_disp == bar_prev){			//make sure that the button can be toggled
  534:	80 91 14 01 	lds	r24, 0x0114	; 0x800114 <bar_disp>
  538:	c8 13       	cpse	r28, r24
  53a:	a0 cf       	rjmp	.-192    	; 0x47c <__vector_16+0x78>
@@ -1001,41 +1022,43 @@ int main()
 DDRB = 0xF0;
  542:	80 ef       	ldi	r24, 0xF0	; 240
  544:	87 bb       	out	0x17, r24	; 23
-
-uint8_t hex_toggle = 0;
-
-
+ * initialize Timer Counter 0 for overflow interrupt, and to initialize the SPI
+ * bus for the encoders and bar graph display.
+************************************************************************/
 void initialization(){
+	//initialize port b pins 3 as input, pins 2, 1, and 0 for output (SS, MOSI, SCLK)
 	DDRB |= (0 << PB3) | (1 << PB2) | (1 << PB1) | (1 << PB0);
  546:	87 b3       	in	r24, 0x17	; 23
  548:	87 60       	ori	r24, 0x07	; 7
  54a:	87 bb       	out	0x17, r24	; 23
-	DDRE = 0xFF;
+	DDRE = 0xFF;	//initialize port E as output
  54c:	8f ef       	ldi	r24, 0xFF	; 255
  54e:	82 b9       	out	0x02, r24	; 2
-	DDRD = 0xFF;
+	DDRD = 0xFF;	//initialize port D as output
  550:	81 bb       	out	0x11, r24	; 17
 
-	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);
+
+	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);	//master mode, clk low, and leading edge
  552:	80 e5       	ldi	r24, 0x50	; 80
  554:	8d b9       	out	0x0d, r24	; 13
-	SPSR = (1 << SPI2X);
+	SPSR = (1 << SPI2X);		//double speed operation
  556:	81 e0       	ldi	r24, 0x01	; 1
  558:	8e b9       	out	0x0e, r24	; 14
 
-	TIMSK |= (1 << TOIE0);
+
+	TIMSK |= (1 << TOIE0);		//enable TC interrupt
  55a:	87 b7       	in	r24, 0x37	; 55
  55c:	81 60       	ori	r24, 0x01	; 1
  55e:	87 bf       	out	0x37, r24	; 55
-	TCCR0 |= (1 << CS00) | (1 << CS02);
+	TCCR0 |= (1 << CS00) | (1 << CS02);		//128 prescale on normal mode
  560:	83 b7       	in	r24, 0x33	; 51
  562:	85 60       	ori	r24, 0x05	; 5
  564:	83 bf       	out	0x33, r24	; 51
 
-uint8_t encoding = 0;
-
+//call function to initialize SPI and TC
 initialization();
 
+//enable global interrupts
 sei();
  566:	78 94       	sei
   //bound the count to 0 - 1023
@@ -1076,11 +1099,11 @@ while(1){
 	  count = 1;
  582:	d0 93 16 01 	sts	0x0116, r29	; 0x800116 <count+0x1>
  586:	c0 93 15 01 	sts	0x0115, r28	; 0x800115 <count>
-  }
   else if(count < 0){
 	  count = 1023;
   }
   //break up the disp_value to 4, BCD digits in the array: call (segsum)
+  //check hex_toggle value to either call 10s parse or hex parse
 	if(!hex_toggle){
  58a:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <__data_end>
  58e:	81 11       	cpse	r24, r1
@@ -1148,7 +1171,7 @@ while(1){
  5d6:	58 f3       	brcs	.-42     	; 0x5ae <main+0x6c>
  5d8:	2f ef       	ldi	r18, 0xFF	; 255
  5da:	ed cf       	rjmp	.-38     	; 0x5b6 <main+0x74>
-  //break up the disp_value to 4, BCD digits in the array: call (segsum)
+  //check hex_toggle value to either call 10s parse or hex parse
 	if(!hex_toggle){
 		segsum(count);
 	}

@@ -455,10 +455,10 @@ END GROUP
  .debug_abbrev  0x0000000000000000      0x718 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/crtatmega128.o
  .debug_abbrev  0x0000000000000718      0x250 lab3_code.o
 
-.debug_line     0x0000000000000000      0x45f
+.debug_line     0x0000000000000000      0x460
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x0000000000000000       0x1a /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/crtatmega128.o
- .debug_line    0x000000000000001a      0x445 lab3_code.o
+ .debug_line    0x000000000000001a      0x446 lab3_code.o
 
 .debug_frame    0x0000000000000000       0xec
  *(.debug_frame)

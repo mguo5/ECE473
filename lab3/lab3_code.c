@@ -56,19 +56,28 @@ uint8_t bar_prev = 0;
 
 uint8_t hex_toggle = 0;
 
-
+/************************************************************************
+ * Function: initialization
+ * Parameters: none
+ * Description: Call this function to initialize the Port B, Port D, and Port E,
+ * initialize Timer Counter 0 for overflow interrupt, and to initialize the SPI
+ * bus for the encoders and bar graph display.
+************************************************************************/
 void initialization(){
+	//initialize port b pins 3 as input, pins 2, 1, and 0 for output (SS, MOSI, SCLK)
 	DDRB |= (0 << PB3) | (1 << PB2) | (1 << PB1) | (1 << PB0);
-	DDRE = 0xFF;
-	DDRD = 0xFF;
+	DDRE = 0xFF;	//initialize port E as output
+	DDRD = 0xFF;	//initialize port D as output
 
-	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);
-	SPSR = (1 << SPI2X);
 
-	TIMSK |= (1 << TOIE0);
-	TCCR0 |= (1 << CS00) | (1 << CS02);
+	SPCR = (1 << MSTR) | (0 << CPOL) | (0 << CPHA) | (1 << SPE);	//master mode, clk low, and leading edge
+	SPSR = (1 << SPI2X);		//double speed operation
 
-}
+
+	TIMSK |= (1 << TOIE0);		//enable TC interrupt
+	TCCR0 |= (1 << CS00) | (1 << CS02);		//128 prescale on normal mode
+
+}//initialization
 
 //******************************************************************************
 //                            chk_buttons                                      
@@ -139,6 +148,13 @@ void segsum(uint16_t sum) {
 	segment_data[4] = thousands;
 }//segment_sum
 
+/**********************************************************************
+ * Function: segsum_hex
+ * Parameters: uint16_t count value
+ * Description: If the hex toggle is initiated, call this function to
+ * do hex parsing instead of decimal parsing. This is for the extra credit
+ * requirements of lab 3 project.
+ *********************************************************************/
 
 void segsum_hex(uint16_t sum) {
 	//initialize variables to be used in this function to -1, which makes LEDs go off
@@ -147,18 +163,19 @@ void segsum_hex(uint16_t sum) {
 	int8_t hundreds = -1;
 	int8_t thousands = -1;
 
+	//check to see if the total sum count less than 0x000F for parsing
 	if(sum <= 0x000F){
 		ones = sum;
 	
 	}
-	//check to see if the total sum count less than 100 but at or greater than 10 for parsing
-	else if(sum <= 0x00FF && sum > 0x00F){
+	//check to see if the total sum count less than 0x00FF but at or greater than 0x000F for parsing
+	else if(sum <= 0x00FF && sum > 0x000F){
 		ones = sum % 16;
 		sum /= 16;
 		tens = sum;
 	
 	}
-	//check to see if the total sum count is less than 100 but at or greater than 100 for parsing
+	//check to see if the total sum count less than 0x0FFF but at or greater than 0x00FF for parsing
 	else if(sum <= 0x0FFF && sum > 0x00FF){
 		ones = sum % 16;
 		sum /= 16;
@@ -167,7 +184,6 @@ void segsum_hex(uint16_t sum) {
 		hundreds = sum;
 
 	}
-	//check to see if the total sum count is less than 1024 but at or greater than 1000 for parsing
 
 	//place the variables into the segment_data[] array to be displayed
 	segment_data[0] = ones;
@@ -179,7 +195,7 @@ void segsum_hex(uint16_t sum) {
 	//place the variables into the segment_data[] array to be displayed
 	
 	
-}//segment_sum
+}//segsum_hex
 
 //***********************************************************************************
 									//seven_seg_encoding
@@ -294,35 +310,65 @@ uint8_t seven_seg_encoding(int8_t num){
 //***********************************************************************************
 
 
+/***********************************************************************************
+ * Function: encoder_process
+ * Parameter: uint8_t encoder value
+ * Function: process the encoder value to see if turned right or left, then increment
+ * or decrement as necessary based on the current bar graph state.
+***********************************************************************************/
+
 void encoder_process(uint8_t encoder){
 
+	//initialize variables to store previous encoder state
 	uint8_t encoder_left_prev = encoder_left;
 	uint8_t encoder_right_prev = encoder_right;
 
+	//obtain the left and right encoder values from the SPDR
 	encoder_left = encoder & 0x03;
 	encoder_right = (encoder & (0x03 << 2)) >> 2;
 
 	//count = 128;
 
+	//check right encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if(bar_disp != 0x03)
-		count += (1 << bar_disp);
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
+		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
 	}
+	//if current state is 3 and its previous is 2, then we know
+	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if(bar_disp != 0x03)
-		count -= (1 << bar_disp);
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
+		count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
 	}
 
+	//check left encoder:
+	//transistion is 3 -> 2 -> 0 -> 1 -> 3
+	//if current state is 3 and its previous is 1, then we know
+	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
-		if(bar_disp != 0x03)
-		count += (1 << bar_disp);
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
+		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
 	}
+	//if current state is 3 and its previous is 2, then we know
+	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
-		if(bar_disp != 0x03)
-		count -= (1 << bar_disp);
+		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
+		count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
 	}
 
-}
+}//encoder_process()
+
+/***********************************************************************
+ * Function: ISR for Timer Counter 0 Overflow
+ * Description: Triggers this ISR whenever the Timer Counter 0 Overflow
+ * occurs. This will then check the push buttons, read the encoder values
+ * via the SPI bus, and send the SPI to the bar graph display to show the
+ * current state.
+ * 
+ * *********************************************************************/
 
 ISR(TIMER0_OVF_vect){
  //make PORTA an input port with pullups
@@ -333,18 +379,22 @@ ISR(TIMER0_OVF_vect){
   //now check each button and increment the count as needed
 	//use a for loop to increment through each button to check
 
+	//store the previous bar graph encoding
 	bar_prev = bar_disp;
 
+	//use a for-loop to check the buttons being pressed
 	for(uint8_t i_buttons = 0; i_buttons < 2; i_buttons++){
 		if(chk_buttons(i_buttons)){
 			bar_disp ^= (1 << (i_buttons));		//makes S1 add 1, S2 add 2, S3 add 4, etc, using binary shift
-			if(bar_disp == bar_prev){
+			
+			if(bar_disp == bar_prev){			//make sure that the button can be toggled
 				bar_disp = 0;
 			}
 		}
 	
 	}
 
+	//check to see S3 is pressed, and toggle the hex parsing if it is
 	if(chk_buttons(2)){
 		hex_toggle ^= 0x01;
 		bar_disp ^= 0x04;
@@ -353,6 +403,8 @@ ISR(TIMER0_OVF_vect){
   //disable tristate buffer for pushbutton switches
     PORTB = 0x60;
 
+	//set CLK_INH low and SH/nLD high to shift encoder values through
+	//its shift register
 	PORTD = (0 << PD2);
 	PORTE = (1 << PE6);
 
@@ -360,20 +412,24 @@ ISR(TIMER0_OVF_vect){
 	asm volatile ("nop");
 
 	SPDR = bar_disp;
-	while(bit_is_clear(SPSR, SPIF)){}
+	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
+	//pulse PB0 to send out bar_disp to bar graph
 	PORTB |= 0x01;
 	PORTB |= 0x00;
 
+	//store the SPDR encoder value
 	uint8_t encoder = SPDR;
 
+	//call function to process that encoder value
 	encoder_process(encoder);
 
+	//reset the CLK_INH and SH/nLD
 	PORTD = (1 << PD2);
 	PORTE = (0 << PE6);
 
 
-}
+}//ISR
 
 
 //***********************************************************************************
@@ -382,10 +438,13 @@ int main()
 //set port bits 4-7 B as outputs
 DDRB = 0xF0;
 
+//initialize encoding value to be used
 uint8_t encoding = 0;
 
+//call function to initialize SPI and TC
 initialization();
 
+//enable global interrupts
 sei();
 
 while(1){
@@ -400,6 +459,7 @@ while(1){
 	  count = 1023;
   }
   //break up the disp_value to 4, BCD digits in the array: call (segsum)
+  //check hex_toggle value to either call 10s parse or hex parse
 	if(!hex_toggle){
 		segsum(count);
 	}
