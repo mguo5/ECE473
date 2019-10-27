@@ -4,14 +4,12 @@
 * Date Due: 10/29/2019
 * Lab Number: Lab 3
 * School: Oregon State University
-* Description: This is Lab 2 for ECE 473. A seven segment display is used to
-*              display a count number. This is done by parsing the count number
-*              from the ones place, tens place, hundreds place, and thousands place.
-*              There cannot be any leading 0s. A push button board with 8 buttons
-*              is used to increase the count, thereby increasing the number displayed
-*              on the LED board. The first button increases the number by 1, the second
-*              button increases the count by 2, the third button increases the count by 4,
-*              and so on.
+* Description: This is Lab 3 for ECE 473. A seven segment display is used to
+*              display a count number. The displayed number can be a decimal
+*				or a hex value. Encoders are read via the SPI bus to increment
+*				or decrement the count as necessary. Different modes (add 1, add 2,
+*				or add 4) are triggered by the push buttons. A bar graph display
+*				is used to indicate the mode of operation.
 *****************************************************************************/
 
 //  HARDWARE SETUP:
