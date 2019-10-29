@@ -164,19 +164,19 @@ void segsum_hex(uint16_t sum) {
 	int8_t thousands = -1;
 
 	//check to see if the total sum count less than 0x000F for parsing
-	if(sum <= 15){
+	if(sum <= 0x000F){
 		ones = sum;
 	
 	}
 	//check to see if the total sum count less than 0x00FF but at or greater than 0x000F for parsing
-	else if(sum <= 255 && sum > 15){
+	else if(sum <= 0x00FF && sum > 0x000F){
 		ones = sum % 16;
 		sum /= 16;
 		tens = sum;
 	
 	}
 	//check to see if the total sum count less than 0x0FFF but at or greater than 0x00FF for parsing
-	else if(sum > 255){
+	else if(sum <= 0x0FFF && sum > 0x00FF){
 		ones = sum % 16;
 		sum /= 16;
 		tens = sum % 16;
@@ -385,6 +385,10 @@ ISR(TIMER0_OVF_vect){
   //now check each button and increment the count as needed
 	//use a for loop to increment through each button to check
 
+	//asm volatile ("nop");
+
+	_delay_us(5);
+
 	//store the previous bar graph encoding
 	bar_prev = bar_disp;
 
@@ -406,6 +410,7 @@ ISR(TIMER0_OVF_vect){
 		bar_disp ^= 0x04;
 	}
 
+	//obtain count incrementer from bar_disp
 	hex_increment = (bar_disp & 0x03);
 
 
@@ -417,7 +422,6 @@ ISR(TIMER0_OVF_vect){
 	PORTD = (0 << PD2);
 	PORTE = (1 << PE6);
 
-	asm volatile ("nop");
 	asm volatile ("nop");
 
 	SPDR = bar_disp;
@@ -459,7 +463,7 @@ sei();
 while(1){
   //insert loop delay for debounce
 	//PORTB |= (6 << 4);
-	//_delay_ms(1);
+	//_delay_us(300);
  
   //bound the count to 0 - 1023
   if(count > 1023){
@@ -488,12 +492,14 @@ while(1){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
-		asm volatile ("nop");
+		//asm volatile ("nop");
 		_delay_us(80);					//add in tiny delay, but not large enough for flicker
 	
 	}
 
-	PORTB |= (6 << 4);
+	//anti-ghosting protocol
+	PORTB = (6 << 4);
+	PORTA = 0xFF;
 
   }//while
 }//main
