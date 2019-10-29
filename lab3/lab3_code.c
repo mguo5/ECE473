@@ -52,6 +52,8 @@ uint8_t encoder_right = 0;
 
 uint8_t bar_prev = 0;
 
+uint8_t hex_increment = 0;
+
 uint8_t hex_toggle = 0;
 
 /************************************************************************
@@ -162,19 +164,19 @@ void segsum_hex(uint16_t sum) {
 	int8_t thousands = -1;
 
 	//check to see if the total sum count less than 0x000F for parsing
-	if(sum <= 0x000F){
+	if(sum <= 15){
 		ones = sum;
 	
 	}
 	//check to see if the total sum count less than 0x00FF but at or greater than 0x000F for parsing
-	else if(sum <= 0x00FF && sum > 0x000F){
+	else if(sum <= 255 && sum > 15){
 		ones = sum % 16;
 		sum /= 16;
 		tens = sum;
 	
 	}
 	//check to see if the total sum count less than 0x0FFF but at or greater than 0x00FF for parsing
-	else if(sum <= 0x0FFF && sum > 0x00FF){
+	else if(sum > 255){
 		ones = sum % 16;
 		sum /= 16;
 		tens = sum % 16;
@@ -325,21 +327,23 @@ void encoder_process(uint8_t encoder){
 	encoder_left = encoder & 0x03;
 	encoder_right = (encoder & (0x03 << 2)) >> 2;
 
-	//count = 128;
-
 	//check right encoder:
 	//transistion is 3 -> 2 -> 0 -> 1 -> 3
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
-		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
+			count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
+			count += (1 << hex_increment);
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
-		count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
+			count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
+			count -= (1 << hex_increment);
 	}
 
 	//check left encoder:
@@ -347,14 +351,18 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
-		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
-		count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
+			count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
+			count += (1 << hex_increment);
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
-		if(bar_disp != 0x03)		//do nothing if both S1 and S2 are pressed
-		count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
+			count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
+		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
+			count -= (1 << hex_increment);
 	}
 
 }//encoder_process()
@@ -397,6 +405,9 @@ ISR(TIMER0_OVF_vect){
 		hex_toggle ^= 0x01;
 		bar_disp ^= 0x04;
 	}
+
+	hex_increment = (bar_disp & 0x03);
+
 
   //disable tristate buffer for pushbutton switches
     PORTB = 0x60;
@@ -447,7 +458,8 @@ sei();
 
 while(1){
   //insert loop delay for debounce
-	//_delay_ms(2);
+	//PORTB |= (6 << 4);
+	//_delay_ms(1);
  
   //bound the count to 0 - 1023
   if(count > 1023){
@@ -476,9 +488,12 @@ while(1){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
-		_delay_us(170);					//add in tiny delay, but not large enough for flicker
+		asm volatile ("nop");
+		_delay_us(80);					//add in tiny delay, but not large enough for flicker
 	
 	}
+
+	PORTB |= (6 << 4);
 
   }//while
 }//main
