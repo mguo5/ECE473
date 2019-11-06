@@ -3,31 +3,31 @@ lab3_code.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000010  00800100  00000792  00000826  2**0
+  0 .data         00000010  00800100  00000798  0000082c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000792  00000000  00000000  00000094  2**1
+  1 .text         00000798  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000029  00800110  00800110  00000836  2**0
+  2 .bss          00000029  00800110  00800110  0000083c  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000836  2**0
+  3 .comment      00000030  00000000  00000000  0000083c  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000868  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000086c  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000028  00000000  00000000  000008a4  2**0
+  5 .debug_aranges 00000028  00000000  00000000  000008a8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00000c95  00000000  00000000  000008cc  2**0
+  6 .debug_info   00000c95  00000000  00000000  000008d0  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 0000095d  00000000  00000000  00001561  2**0
+  7 .debug_abbrev 0000095d  00000000  00000000  00001565  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   0000053c  00000000  00000000  00001ebe  2**0
+  8 .debug_line   0000054e  00000000  00000000  00001ec2  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000000ec  00000000  00000000  000023fc  2**2
+  9 .debug_frame  000000ec  00000000  00000000  00002410  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000004aa  00000000  00000000  000024e8  2**0
+ 10 .debug_str    000004aa  00000000  00000000  000024fc  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    0000067c  00000000  00000000  00002992  2**0
+ 11 .debug_loc    0000067c  00000000  00000000  000029a6  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000048  00000000  00000000  0000300e  2**0
+ 12 .debug_ranges 00000050  00000000  00000000  00003022  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -81,7 +81,7 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	e2 e9       	ldi	r30, 0x92	; 146
+  9e:	e8 e9       	ldi	r30, 0x98	; 152
   a0:	f7 e0       	ldi	r31, 0x07	; 7
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
@@ -106,7 +106,7 @@ Disassembly of section .text:
   be:	b2 07       	cpc	r27, r18
   c0:	e1 f7       	brne	.-8      	; 0xba <.do_clear_bss_loop>
   c2:	0e 94 4e 03 	call	0x69c	; 0x69c <main>
-  c6:	0c 94 c7 03 	jmp	0x78e	; 0x78e <_exit>
+  c6:	0c 94 ca 03 	jmp	0x794	; 0x794 <_exit>
 
 000000ca <__bad_interrupt>:
   ca:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -259,7 +259,7 @@ void segsum(uint16_t sum) {
  170:	27 95       	ror	r18
  172:	a5 ec       	ldi	r26, 0xC5	; 197
  174:	b0 e2       	ldi	r27, 0x20	; 32
- 176:	0e 94 b8 03 	call	0x770	; 0x770 <__umulhisi3>
+ 176:	0e 94 bb 03 	call	0x776	; 0x776 <__umulhisi3>
  17a:	fc 01       	movw	r30, r24
  17c:	f2 95       	swap	r31
  17e:	e2 95       	swap	r30
@@ -282,7 +282,7 @@ void segsum(uint16_t sum) {
  1a0:	9f 01       	movw	r18, r30
  1a2:	ad ec       	ldi	r26, 0xCD	; 205
  1a4:	bc ec       	ldi	r27, 0xCC	; 204
- 1a6:	0e 94 b8 03 	call	0x770	; 0x770 <__umulhisi3>
+ 1a6:	0e 94 bb 03 	call	0x776	; 0x776 <__umulhisi3>
  1aa:	96 95       	lsr	r25
  1ac:	87 95       	ror	r24
  1ae:	96 95       	lsr	r25
@@ -304,7 +304,7 @@ void segsum(uint16_t sum) {
  1ca:	27 95       	ror	r18
  1cc:	ab e7       	ldi	r26, 0x7B	; 123
  1ce:	b4 e1       	ldi	r27, 0x14	; 20
- 1d0:	0e 94 b8 03 	call	0x770	; 0x770 <__umulhisi3>
+ 1d0:	0e 94 bb 03 	call	0x776	; 0x776 <__umulhisi3>
  1d4:	96 95       	lsr	r25
  1d6:	87 95       	ror	r24
  1d8:	e8 2f       	mov	r30, r24
@@ -320,7 +320,7 @@ void segsum(uint16_t sum) {
  1de:	9a 01       	movw	r18, r20
  1e0:	ad ec       	ldi	r26, 0xCD	; 205
  1e2:	bc ec       	ldi	r27, 0xCC	; 204
- 1e4:	0e 94 b8 03 	call	0x770	; 0x770 <__umulhisi3>
+ 1e4:	0e 94 bb 03 	call	0x776	; 0x776 <__umulhisi3>
  1e8:	96 95       	lsr	r25
  1ea:	87 95       	ror	r24
  1ec:	96 95       	lsr	r25
@@ -427,7 +427,7 @@ void segsum(uint16_t sum) {
  238:	27 95       	ror	r18
  23a:	ab e7       	ldi	r26, 0x7B	; 123
  23c:	b4 e1       	ldi	r27, 0x14	; 20
- 23e:	0e 94 b8 03 	call	0x770	; 0x770 <__umulhisi3>
+ 23e:	0e 94 bb 03 	call	0x776	; 0x776 <__umulhisi3>
  242:	fc 01       	movw	r30, r24
  244:	ec 01       	movw	r28, r24
  246:	d6 95       	lsr	r29
@@ -444,7 +444,7 @@ void segsum(uint16_t sum) {
  25c:	9e 01       	movw	r18, r28
  25e:	ad ec       	ldi	r26, 0xCD	; 205
  260:	bc ec       	ldi	r27, 0xCC	; 204
- 262:	0e 94 b8 03 	call	0x770	; 0x770 <__umulhisi3>
+ 262:	0e 94 bb 03 	call	0x776	; 0x776 <__umulhisi3>
  266:	96 95       	lsr	r25
  268:	87 95       	ror	r24
  26a:	96 95       	lsr	r25
@@ -1131,30 +1131,32 @@ uint8_t chk_buttons(uint8_t button) {
  628:	80 e6       	ldi	r24, 0x60	; 96
  62a:	88 bb       	out	0x18, r24	; 24
 
+	asm volatile ("nop");
+ 62c:	00 00       	nop
+
 	//set CLK_INH low and SH/nLD high to shift encoder values through
 	//its shift register
 	PORTD = (0 << PD2);
- 62c:	12 ba       	out	0x12, r1	; 18
+ 62e:	12 ba       	out	0x12, r1	; 18
 	PORTE = (1 << PE6);
- 62e:	80 e4       	ldi	r24, 0x40	; 64
- 630:	83 b9       	out	0x03, r24	; 3
+ 630:	80 e4       	ldi	r24, 0x40	; 64
+ 632:	83 b9       	out	0x03, r24	; 3
 
 	asm volatile ("nop");
- 632:	00 00       	nop
+ 634:	00 00       	nop
 
 	SPDR = bar_disp;
- 634:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <bar_disp>
- 638:	8f b9       	out	0x0f, r24	; 15
+ 636:	80 91 15 01 	lds	r24, 0x0115	; 0x800115 <bar_disp>
+ 63a:	8f b9       	out	0x0f, r24	; 15
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
- 63a:	77 9b       	sbis	0x0e, 7	; 14
- 63c:	fe cf       	rjmp	.-4      	; 0x63a <__vector_16+0xec>
+ 63c:	77 9b       	sbis	0x0e, 7	; 14
+ 63e:	fe cf       	rjmp	.-4      	; 0x63c <__vector_16+0xee>
 
 	//pulse PB0 to send out bar_disp to bar graph
 	PORTB |= 0x01;
- 63e:	c0 9a       	sbi	0x18, 0	; 24
-	PORTB |= 0x00;
- 640:	88 b3       	in	r24, 0x18	; 24
- 642:	88 bb       	out	0x18, r24	; 24
+ 640:	c0 9a       	sbi	0x18, 0	; 24
+	PORTB &= 0xFE;
+ 642:	c0 98       	cbi	0x18, 0	; 24
 
 	//store the SPDR encoder value
 	uint8_t encoder = SPDR;
@@ -1289,161 +1291,171 @@ sei();
 	DDRA = 0xFF;
  6ca:	ff 24       	eor	r15, r15
  6cc:	fa 94       	dec	r15
-		_delay_us(80);					//add in tiny delay, but not large enough for flicker
+	asm volatile ("nop");
+  //send 7 segment code to LED segments
+	//calls seven_seg_encoding function to grab seven seg encoding, then displays it
+	//based on the parsed number of the overall count
+	for(int i_seg = 0; i_seg < 5; i_seg++){
+		encoding = seven_seg_encoding(segment_data[i_seg]);
+ 6ce:	dd 24       	eor	r13, r13
+ 6d0:	da 94       	dec	r13
 	
 	}
 
 	//anti-ghosting protocol
-	PORTB = (6 << 4);
- 6ce:	80 e6       	ldi	r24, 0x60	; 96
- 6d0:	e8 2e       	mov	r14, r24
+	PORTA = 0xFF;
+	PORTB = (5 << 4);
+ 6d2:	80 e5       	ldi	r24, 0x50	; 80
+ 6d4:	e8 2e       	mov	r14, r24
   //insert loop delay for debounce
 	//PORTB |= (6 << 4);
 	//_delay_us(300);
  
   //bound the count to 0 - 1023
   if(count > 1023){
- 6d2:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
- 6d6:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
- 6da:	81 15       	cp	r24, r1
- 6dc:	94 40       	sbci	r25, 0x04	; 4
- 6de:	8c f1       	brlt	.+98     	; 0x742 <main+0xa6>
+ 6d6:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
+ 6da:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
+ 6de:	81 15       	cp	r24, r1
+ 6e0:	94 40       	sbci	r25, 0x04	; 4
+ 6e2:	94 f1       	brlt	.+100    	; 0x748 <main+0xac>
 	  count = 1;
- 6e0:	d0 93 17 01 	sts	0x0117, r29	; 0x800117 <count+0x1>
- 6e4:	c0 93 16 01 	sts	0x0116, r28	; 0x800116 <count>
+ 6e4:	d0 93 17 01 	sts	0x0117, r29	; 0x800117 <count+0x1>
+ 6e8:	c0 93 16 01 	sts	0x0116, r28	; 0x800116 <count>
   else if(count < 0){
 	  count = 1023;
   }
   //break up the disp_value to 4, BCD digits in the array: call (segsum)
   //check hex_toggle value to either call 10s parse or hex parse
 	if(!hex_toggle){
- 6e8:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <__data_end>
- 6ec:	81 11       	cpse	r24, r1
- 6ee:	37 c0       	rjmp	.+110    	; 0x75e <main+0xc2>
+ 6ec:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <__data_end>
+ 6f0:	81 11       	cpse	r24, r1
+ 6f2:	38 c0       	rjmp	.+112    	; 0x764 <main+0xc8>
 		segsum(count);
- 6f0:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
- 6f4:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
- 6f8:	0e 94 9a 00 	call	0x134	; 0x134 <segsum>
+ 6f4:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
+ 6f8:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
+ 6fc:	0e 94 9a 00 	call	0x134	; 0x134 <segsum>
 	else{
 		segsum_hex(count);
 	}
 	
   //make PORTA an output
 	DDRA = 0xFF;
- 6fc:	fa ba       	out	0x1a, r15	; 26
+ 700:	fa ba       	out	0x1a, r15	; 26
 	//uses "nop" to add a little delay
 	asm volatile ("nop");
- 6fe:	00 00       	nop
- 700:	a4 e3       	ldi	r26, 0x34	; 52
- 702:	b1 e0       	ldi	r27, 0x01	; 1
- 704:	80 e0       	ldi	r24, 0x00	; 0
+ 702:	00 00       	nop
+ 704:	a4 e3       	ldi	r26, 0x34	; 52
+ 706:	b1 e0       	ldi	r27, 0x01	; 1
+ 708:	80 e0       	ldi	r24, 0x00	; 0
   //send 7 segment code to LED segments
 	//calls seven_seg_encoding function to grab seven seg encoding, then displays it
 	//based on the parsed number of the overall count
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
- 706:	ed 91       	ld	r30, X+
- 708:	e0 31       	cpi	r30, 0x10	; 16
- 70a:	80 f5       	brcc	.+96     	; 0x76c <main+0xd0>
- 70c:	f0 e0       	ldi	r31, 0x00	; 0
- 70e:	e0 50       	subi	r30, 0x00	; 0
- 710:	ff 4f       	sbci	r31, 0xFF	; 255
- 712:	20 81       	ld	r18, Z
+ 70a:	ed 91       	ld	r30, X+
+ 70c:	e0 31       	cpi	r30, 0x10	; 16
+ 70e:	88 f5       	brcc	.+98     	; 0x772 <main+0xd6>
+ 710:	f0 e0       	ldi	r31, 0x00	; 0
+ 712:	e0 50       	subi	r30, 0x00	; 0
+ 714:	ff 4f       	sbci	r31, 0xFF	; 255
+ 716:	20 81       	ld	r18, Z
+		PORTA = 0xFF;
+ 718:	fb ba       	out	0x1b, r15	; 27
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
- 714:	98 2f       	mov	r25, r24
- 716:	92 95       	swap	r25
- 718:	90 7f       	andi	r25, 0xF0	; 240
- 71a:	98 bb       	out	0x18, r25	; 24
+ 71a:	98 2f       	mov	r25, r24
+ 71c:	92 95       	swap	r25
+ 71e:	90 7f       	andi	r25, 0xF0	; 240
+ 720:	98 bb       	out	0x18, r25	; 24
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
- 71c:	2b bb       	out	0x1b, r18	; 27
- 71e:	ef e3       	ldi	r30, 0x3F	; 63
- 720:	f1 e0       	ldi	r31, 0x01	; 1
- 722:	31 97       	sbiw	r30, 0x01	; 1
- 724:	f1 f7       	brne	.-4      	; 0x722 <main+0x86>
- 726:	00 c0       	rjmp	.+0      	; 0x728 <main+0x8c>
- 728:	00 00       	nop
- 72a:	8f 5f       	subi	r24, 0xFF	; 255
+ 722:	2b bb       	out	0x1b, r18	; 27
+ 724:	ef e3       	ldi	r30, 0x3F	; 63
+ 726:	f1 e0       	ldi	r31, 0x01	; 1
+ 728:	31 97       	sbiw	r30, 0x01	; 1
+ 72a:	f1 f7       	brne	.-4      	; 0x728 <main+0x8c>
+ 72c:	00 c0       	rjmp	.+0      	; 0x72e <main+0x92>
+ 72e:	00 00       	nop
+ 730:	8f 5f       	subi	r24, 0xFF	; 255
 	//uses "nop" to add a little delay
 	asm volatile ("nop");
   //send 7 segment code to LED segments
 	//calls seven_seg_encoding function to grab seven seg encoding, then displays it
 	//based on the parsed number of the overall count
 	for(int i_seg = 0; i_seg < 5; i_seg++){
- 72c:	85 30       	cpi	r24, 0x05	; 5
- 72e:	59 f7       	brne	.-42     	; 0x706 <main+0x6a>
+ 732:	85 30       	cpi	r24, 0x05	; 5
+ 734:	51 f7       	brne	.-44     	; 0x70a <main+0x6e>
 		_delay_us(80);					//add in tiny delay, but not large enough for flicker
 	
 	}
 
 	//anti-ghosting protocol
-	PORTB = (6 << 4);
- 730:	e8 ba       	out	0x18, r14	; 24
 	PORTA = 0xFF;
- 732:	fb ba       	out	0x1b, r15	; 27
+ 736:	db ba       	out	0x1b, r13	; 27
+	PORTB = (5 << 4);
+ 738:	e8 ba       	out	0x18, r14	; 24
   //insert loop delay for debounce
 	//PORTB |= (6 << 4);
 	//_delay_us(300);
  
   //bound the count to 0 - 1023
   if(count > 1023){
- 734:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
- 738:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
- 73c:	81 15       	cp	r24, r1
- 73e:	94 40       	sbci	r25, 0x04	; 4
- 740:	7c f6       	brge	.-98     	; 0x6e0 <main+0x44>
+ 73a:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
+ 73e:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
+ 742:	81 15       	cp	r24, r1
+ 744:	94 40       	sbci	r25, 0x04	; 4
+ 746:	74 f6       	brge	.-100    	; 0x6e4 <main+0x48>
 	  count = 1;
   }
   else if(count < 0){
- 742:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
- 746:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
- 74a:	97 ff       	sbrs	r25, 7
- 74c:	cd cf       	rjmp	.-102    	; 0x6e8 <main+0x4c>
+ 748:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
+ 74c:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
+ 750:	97 ff       	sbrs	r25, 7
+ 752:	cc cf       	rjmp	.-104    	; 0x6ec <main+0x50>
 	  count = 1023;
- 74e:	10 93 17 01 	sts	0x0117, r17	; 0x800117 <count+0x1>
- 752:	00 93 16 01 	sts	0x0116, r16	; 0x800116 <count>
+ 754:	10 93 17 01 	sts	0x0117, r17	; 0x800117 <count+0x1>
+ 758:	00 93 16 01 	sts	0x0116, r16	; 0x800116 <count>
   }
   //break up the disp_value to 4, BCD digits in the array: call (segsum)
   //check hex_toggle value to either call 10s parse or hex parse
 	if(!hex_toggle){
- 756:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <__data_end>
- 75a:	88 23       	and	r24, r24
- 75c:	49 f2       	breq	.-110    	; 0x6f0 <main+0x54>
+ 75c:	80 91 10 01 	lds	r24, 0x0110	; 0x800110 <__data_end>
+ 760:	88 23       	and	r24, r24
+ 762:	41 f2       	breq	.-112    	; 0x6f4 <main+0x58>
 		segsum(count);
 	}
 	else{
 		segsum_hex(count);
- 75e:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
- 762:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
- 766:	0e 94 43 01 	call	0x286	; 0x286 <segsum_hex>
- 76a:	c8 cf       	rjmp	.-112    	; 0x6fc <main+0x60>
+ 764:	80 91 16 01 	lds	r24, 0x0116	; 0x800116 <count>
+ 768:	90 91 17 01 	lds	r25, 0x0117	; 0x800117 <count+0x1>
+ 76c:	0e 94 43 01 	call	0x286	; 0x286 <segsum_hex>
+ 770:	c7 cf       	rjmp	.-114    	; 0x700 <main+0x64>
 	asm volatile ("nop");
   //send 7 segment code to LED segments
 	//calls seven_seg_encoding function to grab seven seg encoding, then displays it
 	//based on the parsed number of the overall count
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
- 76c:	2f ef       	ldi	r18, 0xFF	; 255
- 76e:	d2 cf       	rjmp	.-92     	; 0x714 <main+0x78>
+ 772:	2f ef       	ldi	r18, 0xFF	; 255
+ 774:	d1 cf       	rjmp	.-94     	; 0x718 <main+0x7c>
 
-00000770 <__umulhisi3>:
- 770:	a2 9f       	mul	r26, r18
- 772:	b0 01       	movw	r22, r0
- 774:	b3 9f       	mul	r27, r19
- 776:	c0 01       	movw	r24, r0
- 778:	a3 9f       	mul	r26, r19
- 77a:	70 0d       	add	r23, r0
- 77c:	81 1d       	adc	r24, r1
- 77e:	11 24       	eor	r1, r1
- 780:	91 1d       	adc	r25, r1
- 782:	b2 9f       	mul	r27, r18
- 784:	70 0d       	add	r23, r0
- 786:	81 1d       	adc	r24, r1
- 788:	11 24       	eor	r1, r1
- 78a:	91 1d       	adc	r25, r1
- 78c:	08 95       	ret
+00000776 <__umulhisi3>:
+ 776:	a2 9f       	mul	r26, r18
+ 778:	b0 01       	movw	r22, r0
+ 77a:	b3 9f       	mul	r27, r19
+ 77c:	c0 01       	movw	r24, r0
+ 77e:	a3 9f       	mul	r26, r19
+ 780:	70 0d       	add	r23, r0
+ 782:	81 1d       	adc	r24, r1
+ 784:	11 24       	eor	r1, r1
+ 786:	91 1d       	adc	r25, r1
+ 788:	b2 9f       	mul	r27, r18
+ 78a:	70 0d       	add	r23, r0
+ 78c:	81 1d       	adc	r24, r1
+ 78e:	11 24       	eor	r1, r1
+ 790:	91 1d       	adc	r25, r1
+ 792:	08 95       	ret
 
-0000078e <_exit>:
- 78e:	f8 94       	cli
+00000794 <_exit>:
+ 794:	f8 94       	cli
 
-00000790 <__stop_program>:
- 790:	ff cf       	rjmp	.-2      	; 0x790 <__stop_program>
+00000796 <__stop_program>:
+ 796:	ff cf       	rjmp	.-2      	; 0x796 <__stop_program>

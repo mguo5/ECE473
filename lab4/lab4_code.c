@@ -2,7 +2,7 @@
 * Author: Matthew Guo
 * Class: ECE 473
 * Date Due: 10/29/2019
-* Lab Number: Lab 3
+* Lab Number: Lab 4
 * School: Oregon State University
 * Description: This is Lab 3 for ECE 473. A seven segment display is used to
 *              display a count number. The displayed number can be a decimal
@@ -46,15 +46,19 @@ uint8_t dec_to_7seg[12];
 volatile int count = 0;
 
 volatile uint8_t bar_disp = 0;
+uint8_t bar_prev = 0;
 
 uint8_t encoder_left = 0;
 uint8_t encoder_right = 0;
 
-uint8_t bar_prev = 0;
-
 uint8_t hex_increment = 0;
-
 uint8_t hex_toggle = 0;
+
+uint8_t input_flag = 0;
+volatile uint8_t isr_count = 0;
+volatile uint8_t sec_count = 0;
+volatile uint8_t min_count = 0;
+volatile uint8_t hour_count = 12;
 
 /************************************************************************
  * Function: initialization
@@ -74,8 +78,11 @@ void initialization(){
 	SPSR = (1 << SPI2X);		//double speed operation
 
 
+	ASSR |= (1 << AS0);			//enables external oscillator
 	TIMSK |= (1 << TOIE0);		//enable TC interrupt
-	TCCR0 |= (1 << CS00) | (1 << CS02);		//128 prescale on normal mode
+	TCCR0 |= (1 << CS00);		//128 prescale on normal mode
+
+	TCCR2 |= (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20) | (0 << CS20) | (1 << CS21) | (0 << CS22);
 
 }//initialization
 
@@ -107,7 +114,7 @@ uint8_t chk_buttons(uint8_t button) {
 //array is loaded at exit as:  |digit3|digit2|colon|digit1|digit0|
 //NOTE: -1 is used as a way to determine leading 0s necessary to turn them off in the case statement
 //       for the seven_seg_encoding() function
-void segsum(uint16_t sum) {
+void segsum(uint8_t hour, uint8_t minute) {
 	//initialize variables to be used in this function to -1, which makes LEDs go off
 	int8_t ones = -1;
 	int8_t tens = -1;
@@ -115,87 +122,25 @@ void segsum(uint16_t sum) {
 	int8_t thousands = -1;
   //determine how many digits there are
 	//check to see if the total sum count is less than 10 for parsing
-	if(sum < 10){
-		ones = sum;
-	
-	}
-	//check to see if the total sum count less than 100 but at or greater than 10 for parsing
-	else if(sum < 100 && sum > 9){
-		ones = sum % 10;
-		tens = sum / 10;
-	
-	}
-	//check to see if the total sum count is less than 100 but at or greater than 100 for parsing
-	else if(sum < 1000 && sum > 99){
-		ones = (sum % 100) % 10;
-		tens = (sum % 100) / 10;
-		hundreds = sum / 100;
+	ones = minute % 10;
+	tens = minute / 10;
 
-	}
-	//check to see if the total sum count is less than 1024 but at or greater than 1000 for parsing
-	else if(sum <= 1023){
-		ones = (sum % 1000) % 10;
-		tens = (sum % 1000) / 10;
-		hundreds = (sum % 1000) / 100;
-		thousands = sum / 1000;
+	hundreds = hour % 10;
+	if(hour > 9)
+		thousands = hour / 10;
+
+	if(sec_count % 2 == 0)
+		segment_data[2] = 16;
+	else
+		segment_data[2] = -1;
 	
-	} 
 	//place the variables into the segment_data[] array to be displayed
 	segment_data[0] = ones;
 	segment_data[1] = tens;
-	segment_data[2] = -1;
+	
 	segment_data[3] = hundreds;
 	segment_data[4] = thousands;
 }//segment_sum
-
-/**********************************************************************
- * Function: segsum_hex
- * Parameters: uint16_t count value
- * Description: If the hex toggle is initiated, call this function to
- * do hex parsing instead of decimal parsing. This is for the extra credit
- * requirements of lab 3 project.
- *********************************************************************/
-
-void segsum_hex(uint16_t sum) {
-	//initialize variables to be used in this function to -1, which makes LEDs go off
-	int8_t ones = -1;
-	int8_t tens = -1;
-	int8_t hundreds = -1;
-	int8_t thousands = -1;
-
-	//check to see if the total sum count less than 0x000F for parsing
-	if(sum <= 0x000F){
-		ones = sum;
-	
-	}
-	//check to see if the total sum count less than 0x00FF but at or greater than 0x000F for parsing
-	else if(sum <= 0x00FF && sum > 0x000F){
-		ones = sum % 16;
-		sum /= 16;
-		tens = sum;
-	
-	}
-	//check to see if the total sum count less than 0x0FFF but at or greater than 0x00FF for parsing
-	else if(sum <= 0x0FFF && sum > 0x00FF){
-		ones = sum % 16;
-		sum /= 16;
-		tens = sum % 16;
-		sum /= 16;
-		hundreds = sum;
-
-	}
-
-	//place the variables into the segment_data[] array to be displayed
-	segment_data[0] = ones;
-	segment_data[1] = tens;
-	segment_data[2] = -1;
-	segment_data[3] = hundreds;
-	segment_data[4] = thousands;
-
-	//place the variables into the segment_data[] array to be displayed
-	
-	
-}//segsum_hex
 
 //***********************************************************************************
 									//seven_seg_encoding
@@ -295,6 +240,11 @@ uint8_t seven_seg_encoding(int8_t num){
 			//displays F on the seven segment display
 			output = 0b10001110;
 			break;
+
+		case 16:
+			//display the colon on the seven segment display
+			output = 0b11111100;
+			break;
 			
 
 		default: 
@@ -332,18 +282,19 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
-			count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
-		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
-			count += (1 << hex_increment);
+		if((OCR2 + 10) >= 255)
+			OCR2 = 255;
+		else	
+			OCR2 += 10;
+
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
-			count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
-		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
-			count -= (1 << hex_increment);
+		if((OCR2 - 10) <= 0)
+			OCR2 = 0;
+		else
+			OCR2 -= 10;
 	}
 
 	//check left encoder:
@@ -367,16 +318,14 @@ void encoder_process(uint8_t encoder){
 
 }//encoder_process()
 
-/***********************************************************************
- * Function: ISR for Timer Counter 0 Overflow
- * Description: Triggers this ISR whenever the Timer Counter 0 Overflow
- * occurs. This will then check the push buttons, read the encoder values
- * via the SPI bus, and send the SPI to the bar graph display to show the
- * current state.
- * 
- * *********************************************************************/
+/***********************************************************************************
+ * Function: button_encoder_read
+ * Parameter: None
+ * Function: A routinely called cuntion that checks the buttons being pressed and the
+ * encoders being read.
+***********************************************************************************/
+void button_encoder_read(){
 
-ISR(TIMER0_OVF_vect){
  //make PORTA an input port with pullups
 	DDRA = 0x00;
 	PORTA = 0xFF;	
@@ -403,15 +352,6 @@ ISR(TIMER0_OVF_vect){
 		}
 	
 	}
-
-	//check to see S3 is pressed, and toggle the hex parsing if it is
-	if(chk_buttons(2)){
-		hex_toggle ^= 0x01;
-		bar_disp ^= 0x04;
-	}
-
-	//obtain count incrementer from bar_disp
-	hex_increment = (bar_disp & 0x03);
 
 
   //disable tristate buffer for pushbutton switches
@@ -443,6 +383,23 @@ ISR(TIMER0_OVF_vect){
 	PORTD = (1 << PD2);
 	PORTE = (0 << PE6);
 
+}
+
+/***********************************************************************
+ * Function: ISR for Timer Counter 0 Overflow
+ * Description: Triggers this ISR whenever the Timer Counter 0 Overflow
+ * occurs. This will then check the push buttons, read the encoder values
+ * via the SPI bus, and send the SPI to the bar graph display to show the
+ * current state.
+ * 
+ * NOTE: TRIGGERS EVERY 7.8125ms
+ * *********************************************************************/
+
+ISR(TIMER0_OVF_vect){
+
+	input_flag = TRUE;		//subject to change
+
+	isr_count++;
 
 }//ISR
 
@@ -462,27 +419,35 @@ initialization();
 //enable global interrupts
 sei();
 
+OCR2 = 0;
+
 while(1){
   //insert loop delay for debounce
 	//PORTB |= (6 << 4);
 	//_delay_us(300);
- 
-  //bound the count to 0 - 1023
-  if(count > 1023){
-	  count = 1;
-  }
-  else if(count < 0){
-	  count = 1023;
-  }
-  //break up the disp_value to 4, BCD digits in the array: call (segsum)
-  //check hex_toggle value to either call 10s parse or hex parse
-	if(!hex_toggle){
-		segsum(count);
+
+  	if(input_flag == TRUE){
+	  	button_encoder_read();
+	  	input_flag = FALSE;
+  	}
+
+  	if(isr_count == 128){
+	  	sec_count++;
+		isr_count = 0;
+  	}
+  	if(sec_count == 60){
+	  	min_count++;
+		sec_count = 0;
+  	}
+  	if(min_count == 60){
+	  	hour_count++;
+		min_count = 0;
+  	}
+	if(hour_count == 13){
+		hour_count = 1;
 	}
-	else{
-		segsum_hex(count);
-	}
-	
+
+	segsum(hour_count, min_count);
   //make PORTA an output
 	DDRA = 0xFF;
 	//uses "nop" to add a little delay
