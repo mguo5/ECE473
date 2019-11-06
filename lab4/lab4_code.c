@@ -51,9 +51,7 @@ uint8_t bar_prev = 0;
 uint8_t encoder_left = 0;
 uint8_t encoder_right = 0;
 
-uint8_t hex_increment = 0;
-uint8_t hex_toggle = 0;
-
+uint8_t adjust_flag = 0;
 uint8_t input_flag = 0;
 volatile uint8_t isr_count = 0;
 volatile uint8_t sec_count = 0;
@@ -282,19 +280,35 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if((OCR2 + 10) >= 255)
-			OCR2 = 255;
-		else	
-			OCR2 += 10;
+		if(adjust_flag == 0x00){
+			if((OCR2 + 10) >= 254)
+				OCR2 = 254;
+			else	
+				OCR2 += 10;
+
+		}
+		else
+		{
+			min_count++;
+		}
+		
+		
 
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if((OCR2 - 10) <= 0)
-			OCR2 = 0;
+		if(adjust_flag == 0x00){
+			if((OCR2 - 10) <= 0)
+				OCR2 = 0;
+			else
+				OCR2 -= 10;
+		}
 		else
-			OCR2 -= 10;
+		{
+			min_count--;
+		}
+
 	}
 
 	//check left encoder:
@@ -302,18 +316,14 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
-		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
-			count += (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
-		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
-			count += (1 << hex_increment);
+		if(adjust_flag == 0x01)
+			hour_count++;
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
-		if(bar_disp != 0x03 && hex_toggle != 0x01)		//do nothing if both S1 and S2 are pressed
-			count -= (1 << bar_disp);	//increment count depending on state of bar_disp (1 or 2 or 4)
-		else if(hex_increment != 0x03 && hex_toggle == 0x01)	//do nothing if both S1 and S2 are pressed
-			count -= (1 << hex_increment);
+		if(adjust_flag == 0x01)
+			hour_count--;
 	}
 
 }//encoder_process()
@@ -353,6 +363,8 @@ void button_encoder_read(){
 	
 	}
 
+	if(chk_buttons(7))
+		adjust_flag ^= 0x01;
 
   //disable tristate buffer for pushbutton switches
     PORTB = 0x60;
@@ -366,7 +378,7 @@ void button_encoder_read(){
 
 	asm volatile ("nop");
 
-	SPDR = bar_disp;
+	SPDR = adjust_flag;
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
 	//pulse PB0 to send out bar_disp to bar graph
