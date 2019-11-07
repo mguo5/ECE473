@@ -46,9 +46,6 @@ uint8_t dec_to_7seg[12];
 
 volatile int count = 0;
 
-volatile uint8_t bar_disp = 0;
-uint8_t bar_prev = 0;
-
 uint8_t encoder_left = 0;
 uint8_t encoder_right = 0;
 
@@ -60,6 +57,9 @@ volatile uint8_t isr_count = 0;
 volatile uint8_t sec_count = 0;
 volatile uint8_t min_count = 59;
 volatile uint8_t hour_count = 11;
+
+uint8_t temp_min = 0;
+uint8_t temp_hour = 0;
 
 /************************************************************************
  * Function: initialization
@@ -294,7 +294,10 @@ void encoder_process(uint8_t encoder){
 		}
 		else
 		{
-			min_count++;
+			if(temp_min + 1 > 59)
+				temp_min = 0;
+			else
+				temp_min++;
 		}
 		
 		
@@ -311,10 +314,11 @@ void encoder_process(uint8_t encoder){
 		}
 		else
 		{
-			if(min_count - 1 < 0)
-				min_count = 59;
+			if(temp_min - 1 < 0){
+				temp_min = 59;
+			}
 			else
-				min_count--;
+				temp_min--;
 		}
 
 	}
@@ -325,17 +329,22 @@ void encoder_process(uint8_t encoder){
 	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
 		if(adjust_flag == 0x01)
-			hour_count++;
+			temp_hour++;
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
 		if(adjust_flag == 0x01)
-			if(hour_count - 1 < 1){
-				hour_count = 12;
+			if(temp_hour - 1 < 1){
+				temp_hour = 12;
 			}
 			else
-				hour_count--;
+				temp_hour--;
+	}
+
+	if(adjust_flag == 0x01){
+		hour_count = temp_hour;
+		min_count = temp_min;
 	}
 
 }//encoder_process()
@@ -360,21 +369,6 @@ void button_encoder_read(){
 
 	_delay_us(5);
 
-	//store the previous bar graph encoding
-	bar_prev = bar_disp;
-
-	//use a for-loop to check the buttons being pressed
-	for(uint8_t i_buttons = 0; i_buttons < 2; i_buttons++){
-		if(chk_buttons(i_buttons)){
-			bar_disp ^= (1 << (i_buttons));		//makes S1 add 1, S2 add 2, S3 add 4, etc, using binary shift
-			
-			if(bar_disp == bar_prev){			//make sure that the button can be toggled
-				bar_disp = 0;
-			}
-		}
-	
-	}
-
 	if(chk_buttons(7))
 		adjust_flag ^= 0x01;
 
@@ -382,11 +376,13 @@ void button_encoder_read(){
 		hour24_flag ^= 0x01;
 		if(pm_flag == 0x01 && hour24_flag == 0x01){
 			pm_flag = 0;
-			hour_count += 12;
+			if(hour_count != 12)
+				hour_count += 12;
 		}
-		if(hour24_flag == 0 && hour_count > 12){
-			hour_count -= 12;
+		if(hour24_flag == 0 && hour_count >= 12){
 			pm_flag = 0x01;
+			if(hour_count != 12)
+				hour_count -= 12;
 		}
 	}
 
@@ -405,7 +401,7 @@ void button_encoder_read(){
 
 	asm volatile ("nop");
 
-	SPDR = adjust_flag;
+	SPDR = (adjust_flag + hour24_flag);
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
 	//pulse PB0 to send out bar_disp to bar graph
@@ -422,7 +418,43 @@ void button_encoder_read(){
 	PORTD = (1 << PD2);
 	PORTE = (0 << PE6);
 
-}
+}//button_encoder_read
+
+/***********************************************************************************
+ * Function: clock_count
+ * Parameter: None
+ * Function: A function called during every main while loop that increments the sec_count,
+ * min_count, and hour_count according to how many times the ISR is being called. This function
+ * also looks into the hour24_flag to bound the hour count as necessary depending on the time
+ * mode.
+***********************************************************************************/
+void clock_count(){
+
+	if(isr_count == 128){
+	  	sec_count++;
+		isr_count = 0;
+  	}
+  	if(sec_count == 60){
+	  	min_count++;
+		sec_count = 0;
+  	}
+  	if(min_count == 60){
+	  	hour_count++;
+
+		if(hour_count == 12){
+			pm_flag ^= 0x01;
+		}
+
+		min_count = 0;
+  	}
+	if(hour_count == 13 && hour24_flag == 0){
+		hour_count = 1;	
+	}
+	else if(hour_count == 24 && hour24_flag == 0x01){
+		hour_count = 0;
+	}
+
+}//clock_count
 
 /***********************************************************************
  * Function: ISR for Timer Counter 0 Overflow
@@ -470,30 +502,10 @@ while(1){
 	  	input_flag = FALSE;
   	}
 
-  	if(isr_count == 128){
-	  	sec_count++;
-		isr_count = 0;
-  	}
-  	if(sec_count == 60){
-	  	min_count++;
-		sec_count = 0;
-  	}
-  	if(min_count == 60){
-	  	hour_count++;
+	clock_count();
 
-		if(hour_count == 12){
-			pm_flag ^= 0x01;
-		}
-
-		min_count = 0;
-  	}
-	if(hour_count == 13 && hour24_flag == 0){
-		hour_count = 1;	
-	}
-	else if(hour_count == 24 && hour24_flag == 0x01){
-		hour_count = 0;
-	}
-
+	temp_min = min_count;
+	temp_hour = hour_count;
 
 	segsum(hour_count, min_count);
   //make PORTA an output
