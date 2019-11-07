@@ -36,6 +36,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
+#include "hd44780.h"
 
 //holds data to be sent to the segments. logic zero turns segment on
 int8_t segment_data[5]; 
@@ -53,10 +54,12 @@ uint8_t encoder_right = 0;
 
 uint8_t adjust_flag = 0;
 uint8_t input_flag = 0;
+uint8_t pm_flag = 0;
+uint8_t hour24_flag = 0;
 volatile uint8_t isr_count = 0;
 volatile uint8_t sec_count = 0;
-volatile uint8_t min_count = 0;
-volatile uint8_t hour_count = 12;
+volatile uint8_t min_count = 59;
+volatile uint8_t hour_count = 11;
 
 /************************************************************************
  * Function: initialization
@@ -126,6 +129,8 @@ void segsum(uint8_t hour, uint8_t minute) {
 	hundreds = hour % 10;
 	if(hour > 9)
 		thousands = hour / 10;
+	else if(hour24_flag == 0x01)
+		thousands = 0;
 
 	if(sec_count % 2 == 0)
 		segment_data[2] = 16;
@@ -306,7 +311,10 @@ void encoder_process(uint8_t encoder){
 		}
 		else
 		{
-			min_count--;
+			if(min_count - 1 < 0)
+				min_count = 59;
+			else
+				min_count--;
 		}
 
 	}
@@ -323,7 +331,11 @@ void encoder_process(uint8_t encoder){
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
 		if(adjust_flag == 0x01)
-			hour_count--;
+			if(hour_count - 1 < 1){
+				hour_count = 12;
+			}
+			else
+				hour_count--;
 	}
 
 }//encoder_process()
@@ -365,6 +377,21 @@ void button_encoder_read(){
 
 	if(chk_buttons(7))
 		adjust_flag ^= 0x01;
+
+	if(chk_buttons(6)){
+		hour24_flag ^= 0x01;
+		if(pm_flag == 0x01 && hour24_flag == 0x01){
+			pm_flag = 0;
+			hour_count += 12;
+		}
+		if(hour24_flag == 0 && hour_count > 12){
+			hour_count -= 12;
+			pm_flag = 0x01;
+		}
+	}
+
+	if(chk_buttons(5) && adjust_flag == 0x01 && hour24_flag == 0)
+		pm_flag ^= 0x01;
 
   //disable tristate buffer for pushbutton switches
     PORTB = 0x60;
@@ -453,11 +480,20 @@ while(1){
   	}
   	if(min_count == 60){
 	  	hour_count++;
+
+		if(hour_count == 12){
+			pm_flag ^= 0x01;
+		}
+
 		min_count = 0;
   	}
-	if(hour_count == 13){
-		hour_count = 1;
+	if(hour_count == 13 && hour24_flag == 0){
+		hour_count = 1;	
 	}
+	else if(hour_count == 24 && hour24_flag == 0x01){
+		hour_count = 0;
+	}
+
 
 	segsum(hour_count, min_count);
   //make PORTA an output
@@ -469,6 +505,8 @@ while(1){
 	//based on the parsed number of the overall count
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
+		if(i_seg == 4 && pm_flag == 0x01 && hour24_flag == 0)
+			encoding &= 0b01111111;
 		PORTA = 0xFF;
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
