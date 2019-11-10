@@ -53,6 +53,9 @@ uint8_t adjust_flag = 0;
 uint8_t input_flag = 0;
 uint8_t pm_flag = 0;
 uint8_t hour24_flag = 0;
+uint8_t trigger_alarm = 0;
+uint8_t adjust_alarm = 0;
+uint8_t alarm_match_count = 0;
 volatile uint8_t isr_count = 0;
 volatile uint8_t sec_count = 0;
 volatile uint8_t min_count = 0;
@@ -60,6 +63,32 @@ volatile uint8_t hour_count = 0;
 
 uint8_t temp_min = 0;
 uint8_t temp_hour = 0;
+uint8_t temp_pm_flag = 0;
+uint8_t alarm_time_sec = 0;
+uint8_t alarm_time_min = 0;
+uint8_t alarm_time_hour = 0;
+
+
+/**********************************************************************
+* Function: real_time
+* Parameters: none
+* Description: Call this function to obtain the compile time of the
+* program. This is done to initialize sec_count, min_count, and hour_count
+* to the right start up time.
+**********************************************************************/
+void real_time(){
+
+sec_count = (__TIME__[6]-48)*10 + (__TIME__[7]-48);		//get real time seconds
+min_count = (__TIME__[3]-48)*10 + (__TIME__[4]-48);		//get real time minutes
+hour_count = (__TIME__[0]-24)*10 + (__TIME__[1]-48);	//get real time hours in 24 hour format
+
+//check if it is am or pm, set pm_flag if necessary
+if(hour_count > 12){
+	hour_count -= 12;
+	pm_flag = 0x01;
+}
+}//real_time()
+
 
 /************************************************************************
  * Function: initialization
@@ -294,7 +323,7 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if(adjust_flag == 0x00){
+		if(adjust_flag == 0x00 && adjust_alarm == 0x00){
 			if((OCR2 + 10) >= 254)
 				OCR2 = 254;
 			else	
@@ -315,7 +344,7 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if(adjust_flag == 0x00){
+		if(adjust_flag == 0x00 && adjust_alarm == 0x00){
 			if((OCR2 - 10) <= 0)
 				OCR2 = 0;
 			else
@@ -337,7 +366,7 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
-		if(adjust_flag == 0x01)
+		if(adjust_flag == 0x01 || adjust_flag == 0x01)
 			temp_hour++;
 		else{
 			if((OCR3A + 10) > 255)
@@ -350,7 +379,7 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
-		if(adjust_flag == 0x01)
+		if(adjust_flag == 0x01 || adjust_flag == 0x01)
 			if(temp_hour - 1 < 1){
 				temp_hour = 12;
 			}
@@ -369,6 +398,15 @@ void encoder_process(uint8_t encoder){
 		hour_count = temp_hour;
 		min_count = temp_min;
 	}
+
+	if(adjust_alarm == 0x01){
+		alarm_time_min = temp_min;
+		alarm_time_hour = temp_hour;
+		temp_pm_flag = pm_flag;
+	//	temp_min = min_count;
+	//	temp_hour = hour_count;	
+	}
+
 
 }//encoder_process()
 
@@ -411,7 +449,26 @@ void button_encoder_read(){
 
 	if(chk_buttons(5) && adjust_flag == 0x01 && hour24_flag == 0)
 		pm_flag ^= 0x01;
+	
+	if(chk_buttons(4))
+		adjust_alarm ^= 0x01;
 
+	if(chk_buttons(0) && trigger_alarm == 0x01){
+		trigger_alarm = 0;
+	
+		/*
+		alarm_time_sec = sec_count + 10;
+		if(alarm_time_sec >= 60){
+			alarm_time_sec -= 60;
+			alarm_time_min++;
+		}
+		if(alarm_time_min >= 60){
+			alarm_time_min -= 60;
+			alarm_time_hour++;
+		}
+		*/
+	}
+	
   //disable tristate buffer for pushbutton switches
     PORTB = 0x60;
 
@@ -424,7 +481,7 @@ void button_encoder_read(){
 
 	asm volatile ("nop");
 
-	SPDR = (adjust_flag + hour24_flag);
+	SPDR = (adjust_flag + hour24_flag + adjust_alarm);
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
 	//pulse PB0 to send out bar_disp to bar graph
@@ -476,7 +533,20 @@ void clock_count(){
 	else if(hour_count == 24 && hour24_flag == 0x01){
 		hour_count = 0;
 	}
-
+	
+	if(min_count == alarm_time_min && hour_count == alarm_time_hour && temp_pm_flag == pm_flag && adjust_alarm == 0){
+		if(alarm_match_count == 0){
+			trigger_alarm = 0x01;
+			alarm_match_count = 0x01;
+		}
+	}
+	else{
+		trigger_alarm = 0;
+		alarm_match_count = 0;
+	}
+	if(min_count == (alarm_time_min + 1) || hour_count == (alarm_time_hour + 1))
+		trigger_alarm = 0;
+	
 }//clock_count
 
 /***********************************************************************
@@ -500,8 +570,12 @@ ISR(TIMER0_OVF_vect){
 
 ISR(TIMER1_OVF_vect){
 
-	PORTC ^= (1 << PC3);
-	TCNT1 = 40000;
+	if(trigger_alarm == 0x01){
+		
+		PORTC ^= (1 << PC3);
+		TCNT1 = 40000;
+
+	}
 
 }
 
@@ -509,13 +583,6 @@ ISR(TIMER1_OVF_vect){
 //***********************************************************************************
 int main()
 {
-
-
-sec_count = (__TIME__[0]-48)*10 + (__TIME__[1]-48)*10;
-min_count = (__TIME__[3]-48)*10 + (__TIME__[4]-48)*10;
-hour_count = (__TIME__[6]-48)*10 + (__TIME__[7]-48)*10;
-
-
 //set port bits 4-7 B as outputs
 DDRB = 0xF0;
 DDRC |= (1 << PC3);
@@ -524,6 +591,8 @@ PORTC |= (0 << PC3);
 //initialize encoding value to be used
 uint8_t encoding = 0;
 
+real_time();
+
 //call function to initialize SPI and TC
 initialization();
 
@@ -531,7 +600,7 @@ initialization();
 sei();
 
 OCR2 = 0;
-OCR3A = 20;
+OCR3A = 200;
 
 while(1){
   //insert loop delay for debounce
@@ -544,11 +613,20 @@ while(1){
   	}
 
 	clock_count();
-
-	temp_min = min_count;
-	temp_hour = hour_count;
-
-	segsum(hour_count, min_count);
+	
+	if(adjust_alarm == 0){
+		temp_min = min_count;
+		temp_hour = hour_count;
+	}
+	else{
+		temp_min = alarm_time_min;
+		temp_hour = alarm_time_hour;
+	}
+	
+	if(adjust_alarm == 0)
+		segsum(hour_count, min_count);
+	else
+		segsum(alarm_time_hour, alarm_time_min);
   //make PORTA an output
 	DDRA = 0xFF;
 	//uses "nop" to add a little delay
