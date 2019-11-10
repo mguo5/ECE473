@@ -55,8 +55,8 @@ uint8_t pm_flag = 0;
 uint8_t hour24_flag = 0;
 volatile uint8_t isr_count = 0;
 volatile uint8_t sec_count = 0;
-volatile uint8_t min_count = 59;
-volatile uint8_t hour_count = 11;
+volatile uint8_t min_count = 0;
+volatile uint8_t hour_count = 0;
 
 uint8_t temp_min = 0;
 uint8_t temp_hour = 0;
@@ -84,6 +84,15 @@ void initialization(){
 	TCCR0 |= (1 << CS00);		//128 prescale on normal mode
 
 	TCCR2 |= (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20) | (0 << CS20) | (1 << CS21) | (0 << CS22);
+
+	TCNT1 = 40000;
+	TIMSK |= (1 << TOIE1);		//enable TC1 interrupt
+	TCCR1A = 0x00;				// normal mode
+	TCCR1B |= (1 << CS10) | (0 << CS11) | (0 << CS12);		//no prescale
+
+	//8-bit fast PWM for TC3 at PE3	 
+	TCCR3A |= (0 << WGM31) | (1 << WGM30) | (1 << COM3A1) | (0 << COM3A0);
+	TCCR3B |= (1 << WGM32) | (0 << WGM33) | (0 << CS30) | (1 << CS31) | (0 << CS32);	//8 prescaler
 
 }//initialization
 
@@ -330,6 +339,13 @@ void encoder_process(uint8_t encoder){
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
 		if(adjust_flag == 0x01)
 			temp_hour++;
+		else{
+			if((OCR3A + 10) > 255)
+				OCR3A = 255;
+			else
+				OCR3A += 10;
+
+		}
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
@@ -340,6 +356,13 @@ void encoder_process(uint8_t encoder){
 			}
 			else
 				temp_hour--;
+		else{
+			if((OCR3A - 10) <= 0)
+				OCR3A = 0;
+			else
+				OCR3A -= 10;
+
+		}
 	}
 
 	if(adjust_flag == 0x01){
@@ -475,11 +498,28 @@ ISR(TIMER0_OVF_vect){
 }//ISR
 
 
+ISR(TIMER1_OVF_vect){
+
+	PORTC ^= (1 << PC3);
+	TCNT1 = 40000;
+
+}
+
+
 //***********************************************************************************
 int main()
 {
+
+
+sec_count = (__TIME__[0]-48)*10 + (__TIME__[1]-48)*10;
+min_count = (__TIME__[3]-48)*10 + (__TIME__[4]-48)*10;
+hour_count = (__TIME__[6]-48)*10 + (__TIME__[7]-48)*10;
+
+
 //set port bits 4-7 B as outputs
 DDRB = 0xF0;
+DDRC |= (1 << PC3);
+PORTC |= (0 << PC3);
 
 //initialize encoding value to be used
 uint8_t encoding = 0;
@@ -491,6 +531,7 @@ initialization();
 sei();
 
 OCR2 = 0;
+OCR3A = 20;
 
 while(1){
   //insert loop delay for debounce
