@@ -53,6 +53,7 @@ uint8_t adjust_flag = 0;
 uint8_t input_flag = 0;
 uint8_t pm_flag = 0;
 uint8_t hour24_flag = 0;
+uint8_t lcd_flag = 0;
 uint8_t trigger_alarm = 0;
 uint8_t adjust_alarm = 0;
 uint8_t alarm_match_count = 0;
@@ -67,6 +68,8 @@ uint8_t temp_pm_flag = 0;
 uint8_t alarm_time_sec = 0;
 uint8_t alarm_time_min = 0;
 uint8_t alarm_time_hour = 0;
+uint8_t ten_sec_start = 0;
+uint8_t ten_sec_count = 0;
 
 
 /**********************************************************************
@@ -365,9 +368,21 @@ void encoder_process(uint8_t encoder){
 	//transistion is 3 -> 2 -> 0 -> 1 -> 3
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
+	
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
-		if(adjust_flag == 0x01 || adjust_flag == 0x01)
-			temp_hour++;
+		if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0){
+			if(temp_hour + 1 > 12)
+				temp_hour = 1;
+			else
+				temp_hour++;
+		}
+		else if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0x01){
+			if(temp_hour + 1 > 23)
+				temp_hour = 0;
+			else
+				temp_hour++;
+
+		}		
 		else{
 			if((OCR3A + 10) > 255)
 				OCR3A = 255;
@@ -379,12 +394,19 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
-		if(adjust_flag == 0x01 || adjust_flag == 0x01)
+		if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0){
 			if(temp_hour - 1 < 1){
 				temp_hour = 12;
 			}
 			else
 				temp_hour--;
+		}
+		else if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0x01){
+			if(temp_hour - 1 < 0)
+				temp_hour = 23;
+			else
+				temp_hour--;
+		}
 		else{
 			if((OCR3A - 10) <= 0)
 				OCR3A = 0;
@@ -453,20 +475,17 @@ void button_encoder_read(){
 	if(chk_buttons(4))
 		adjust_alarm ^= 0x01;
 
+	if(chk_buttons(1) && trigger_alarm == 0x01){
+		trigger_alarm = 0;
+		ten_sec_start = 0x01;
+		ten_sec_count = 0;
+		lcd_flag = 0x01;
+	}
+
 	if(chk_buttons(0) && trigger_alarm == 0x01){
 		trigger_alarm = 0;
+		lcd_flag = 0x01;
 	
-		/*
-		alarm_time_sec = sec_count + 10;
-		if(alarm_time_sec >= 60){
-			alarm_time_sec -= 60;
-			alarm_time_min++;
-		}
-		if(alarm_time_min >= 60){
-			alarm_time_min -= 60;
-			alarm_time_hour++;
-		}
-		*/
 	}
 	
   //disable tristate buffer for pushbutton switches
@@ -481,7 +500,7 @@ void button_encoder_read(){
 
 	asm volatile ("nop");
 
-	SPDR = (adjust_flag + hour24_flag + adjust_alarm);
+	SPDR = (adjust_flag << 7) | (hour24_flag << 6) | (adjust_alarm << 5);
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
 	//pulse PB0 to send out bar_disp to bar graph
@@ -513,6 +532,8 @@ void clock_count(){
 	if(isr_count == 128){
 	  	sec_count++;
 		isr_count = 0;
+		if(ten_sec_start == 0x01)
+			ten_sec_count++;
   	}
   	if(sec_count == 60){
 	  	min_count++;
@@ -527,27 +548,56 @@ void clock_count(){
 
 		min_count = 0;
   	}
-	if(hour_count == 13 && hour24_flag == 0){
-		hour_count = 1;	
+	if(hour_count >= 13 && hour24_flag == 0){
+		hour_count -= 12;	
 	}
-	else if(hour_count == 24 && hour24_flag == 0x01){
-		hour_count = 0;
+	else if(hour_count >= 24 && hour24_flag == 0x01){
+		hour_count -= 24;
 	}
 	
 	if(min_count == alarm_time_min && hour_count == alarm_time_hour && temp_pm_flag == pm_flag && adjust_alarm == 0){
 		if(alarm_match_count == 0){
 			trigger_alarm = 0x01;
 			alarm_match_count = 0x01;
+			lcd_flag = 0x01;
 		}
 	}
 	else{
 		trigger_alarm = 0;
 		alarm_match_count = 0;
 	}
-	if(min_count == (alarm_time_min + 1) || hour_count == (alarm_time_hour + 1))
-		trigger_alarm = 0;
+
+	if(ten_sec_count == 10){
+		trigger_alarm = 0x01;
+		ten_sec_start = 0;
+		ten_sec_count = 0;
+		lcd_flag = 0x01;
+		alarm_time_min = temp_min;
+		alarm_time_hour = temp_hour;
+	}
 	
 }//clock_count
+
+void set_LCD(){
+   clear_display();
+   if(trigger_alarm == 0x01){
+      	string2lcd("ALARM!!!");
+	  	line2_col1();
+		string2lcd("            ");
+
+   }
+   else if(ten_sec_start == 0x01){
+      	string2lcd("SNOOZED");
+      	line2_col1();
+      	string2lcd("            ");
+   }
+   else{
+		string2lcd("ALARM NOT TRIGGERED");
+		line2_col1();
+		string2lcd("            ");
+	}
+   cursor_home();
+}
 
 /***********************************************************************
  * Function: ISR for Timer Counter 0 Overflow
@@ -602,6 +652,9 @@ sei();
 OCR2 = 0;
 OCR3A = 200;
 
+lcd_init();
+set_LCD();
+
 while(1){
   //insert loop delay for debounce
 	//PORTB |= (6 << 4);
@@ -613,6 +666,11 @@ while(1){
   	}
 
 	clock_count();
+
+	if(lcd_flag == 0x01){
+		lcd_flag = 0;
+		set_LCD();
+	}
 	
 	if(adjust_alarm == 0){
 		temp_min = min_count;
@@ -638,6 +696,8 @@ while(1){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		if(i_seg == 4 && pm_flag == 0x01 && hour24_flag == 0)
 			encoding &= 0b01111111;
+		if(i_seg == 2 && trigger_alarm == 0x01)
+			encoding &= 0b11111011;
 		PORTA = 0xFF;
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
