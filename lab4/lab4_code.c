@@ -83,11 +83,12 @@ void real_time(){
 
 sec_count = (__TIME__[6]-48)*10 + (__TIME__[7]-48);		//get real time seconds
 min_count = (__TIME__[3]-48)*10 + (__TIME__[4]-48);		//get real time minutes
-hour_count = (__TIME__[0]-24)*10 + (__TIME__[1]-48);	//get real time hours in 24 hour format
+hour_count = (__TIME__[0]-48)*10 + (__TIME__[1]-48);	//get real time hours in 24 hour format
+
 
 //check if it is am or pm, set pm_flag if necessary
 if(hour_count > 12){
-	hour_count -= 12;
+//	hour_count -= 12;
 	pm_flag = 0x01;
 }
 }//real_time()
@@ -115,9 +116,12 @@ void initialization(){
 	TIMSK |= (1 << TOIE0);		//enable TC interrupt
 	TCCR0 |= (1 << CS00);		//128 prescale on normal mode
 
+	//enable fast PWM mode for TC2 for the seven segment adjust
+	//prescale of 8
+	//clear bit during output compare
 	TCCR2 |= (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20) | (0 << CS20) | (1 << CS21) | (0 << CS22);
 
-	TCNT1 = 40000;
+	TCNT1 = 40000;				//set TCNT1 to obtain approximately 300Hz for beep
 	TIMSK |= (1 << TOIE1);		//enable TC1 interrupt
 	TCCR1A = 0x00;				// normal mode
 	TCCR1B |= (1 << CS10) | (0 << CS11) | (0 << CS12);		//no prescale
@@ -162,17 +166,19 @@ void segsum(uint8_t hour, uint8_t minute) {
 	int8_t tens = -1;
 	int8_t hundreds = -1;
 	int8_t thousands = -1;
-  //determine how many digits there are
-	//check to see if the total sum count is less than 10 for parsing
+  
+	//parse out the two digits for the minutes
 	ones = minute % 10;
 	tens = minute / 10;
 
+	//parse out the (potential) two digits for hours
 	hundreds = hour % 10;
 	if(hour > 9)
 		thousands = hour / 10;
+	//check to see if the 24 hour flag is set, since it MUST show the leading 0
 	else if(hour24_flag == 0x01)
 		thousands = 0;
-
+	//toggle the middle colon every second
 	if(sec_count % 2 == 0)
 		segment_data[2] = 16;
 	else
@@ -335,10 +341,10 @@ void encoder_process(uint8_t encoder){
 		}
 		else
 		{
-			if(temp_min + 1 > 59)
+			if(temp_min + 1 > 59)		//bound the count to 0 and 59
 				temp_min = 0;
 			else
-				temp_min++;
+				temp_min++;				//increment minute when right encoder turned to the right
 		}
 		
 		
@@ -355,11 +361,11 @@ void encoder_process(uint8_t encoder){
 		}
 		else
 		{
-			if(temp_min - 1 < 0){
-				temp_min = 59;
+			if(temp_min - 1 < 0){		//bound the count to 0 and 59
+				temp_min = 59;			
 			}
 			else
-				temp_min--;
+				temp_min--;				//decrement minute when right encoder turned to left
 		}
 
 	}
@@ -370,61 +376,71 @@ void encoder_process(uint8_t encoder){
 	//that this was turned to the right
 	
 	if(encoder_left == 0x03 && encoder_left_prev == 0x01){
+		//increment hours during time set mode or alarm adjustment mode
+		//appropriately binds the count depending on 24 hour flag
 		if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0){
-			if(temp_hour + 1 > 12)
+			if(temp_hour + 1 > 12)		//if 24 hour flag not set, bound count to 1 and 12
 				temp_hour = 1;
 			else
-				temp_hour++;
+				temp_hour++;			//increment hour when left encoder turned right
 		}
 		else if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0x01){
-			if(temp_hour + 1 > 23)
+			if(temp_hour + 1 > 23)		//if 24 hour flag is set, bound the count from 0 to 24
 				temp_hour = 0;
 			else
-				temp_hour++;
+				temp_hour++;			//increment hour when left encoder turned right
 
-		}		
+		}
+		//else meaning that either time set modes are not set, thus default to volume adjust		
 		else{
-			if((OCR3A + 10) > 255)
+			if((OCR3A + 10) > 255)		//binds volume to 255 (~5V via PWM to DC converter)
 				OCR3A = 255;
 			else
-				OCR3A += 10;
+				OCR3A += 10;			//increment resolution by 10s to avoid spinning a lot
 
 		}
 	}
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_left == 0x03 && encoder_left_prev == 0x02){
+		//decrement hours during time set mode or alarm adjustment mode
+		//appropriately binds the count depending on 24 hour flag
 		if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0){
-			if(temp_hour - 1 < 1){
+			if(temp_hour - 1 < 1){		//if 24 hour flag not set, bound count to 1 and 12
 				temp_hour = 12;
 			}
 			else
-				temp_hour--;
+				temp_hour--;	 		//decrememnt hour when left encoder turned left
 		}
 		else if((adjust_flag == 0x01 || adjust_alarm == 0x01) && hour24_flag == 0x01){
-			if(temp_hour - 1 < 0)
+			if(temp_hour - 1 < 0)		//if 24 hour flag is set, bound count to 0 and 23
 				temp_hour = 23;
 			else
-				temp_hour--;
+				temp_hour--;			//decrement hour when left encoder turned left
 		}
+		//else meaning that either time set modes are not set, thus default to volume adjust
 		else{
-			if((OCR3A - 10) <= 0)
+			if((OCR3A - 10) <= 0)		//binds volume to 0 (~0V)
 				OCR3A = 0;
 			else
-				OCR3A -= 10;
+				OCR3A -= 10;			//decrement resolution by 10s to avoid spinning a lot
 
 		}
 	}
 
+	//if time adjustment flag is set, set the actual time to the
+	//temporary variables used to increment/decrement
 	if(adjust_flag == 0x01){
 		hour_count = temp_hour;
 		min_count = temp_min;
 	}
 
+	//if the alarm adjustment flag is set, set the alarm time
+	//to the temporary variables used to increment/decrement
 	if(adjust_alarm == 0x01){
 		alarm_time_min = temp_min;
 		alarm_time_hour = temp_hour;
-		temp_pm_flag = pm_flag;
+		temp_pm_flag = pm_flag;			//also save the pm_flag
 	//	temp_min = min_count;
 	//	temp_hour = hour_count;	
 	}
@@ -452,39 +468,52 @@ void button_encoder_read(){
 
 	_delay_us(5);
 
+	//poll if button 7 is pressed
+	//this toggles if the time adjustment flag is set or not
 	if(chk_buttons(7))
 		adjust_flag ^= 0x01;
 
+	//poll if button 6 is pressed
+	//this toggles the 24 hour flag
 	if(chk_buttons(6)){
 		hour24_flag ^= 0x01;
 		if(pm_flag == 0x01 && hour24_flag == 0x01){
-			pm_flag = 0;
-			if(hour_count != 12)
+			pm_flag = 0;			//pm_flag should not be set when in 24 hour mode
+			if(hour_count != 12)	//if it is afternoon in 12 hour format, add 12 to obtain 24 hour
 				hour_count += 12;
 		}
 		if(hour24_flag == 0 && hour_count >= 12){
-			pm_flag = 0x01;
-			if(hour_count != 12)
+			pm_flag = 0x01;			//set the pm_flag when coming from 24 hours and time is in afternoon
+			if(hour_count != 12)	//edge case of when the time is 12 for 24 hour time
 				hour_count -= 12;
 		}
 	}
 
+	//poll if button 5 is pressed
+	//this toggles the pm_flag for adjustment
+	//this only works when in time set mode
 	if(chk_buttons(5) && adjust_flag == 0x01 && hour24_flag == 0)
 		pm_flag ^= 0x01;
 	
+	//poll if button 4 is pressed
+	//this toggles the alarm adjustment mode
 	if(chk_buttons(4))
 		adjust_alarm ^= 0x01;
 
+	//poll if button 1 is pressed
+	//this activates the snooze feature
 	if(chk_buttons(1) && trigger_alarm == 0x01){
-		trigger_alarm = 0;
-		ten_sec_start = 0x01;
-		ten_sec_count = 0;
-		lcd_flag = 0x01;
+		trigger_alarm = 0;			//if pressed, alarm should turn off
+		ten_sec_start = 0x01;		//start the count for 10 second delay
+		ten_sec_count = 0;			//the count variable starts at 0
+		lcd_flag = 0x01;			//tell lcd to update
 	}
 
+	//poll if button 0 is pressed
+	//this silences all alarms, no snooze
 	if(chk_buttons(0) && trigger_alarm == 0x01){
-		trigger_alarm = 0;
-		lcd_flag = 0x01;
+		trigger_alarm = 0;			//alarm turns off
+		lcd_flag = 0x01;			//update lcd
 	
 	}
 	
@@ -500,6 +529,7 @@ void button_encoder_read(){
 
 	asm volatile ("nop");
 
+	//send out state of flags to the bar graph display
 	SPDR = (adjust_flag << 7) | (hour24_flag << 6) | (adjust_alarm << 5);
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
@@ -529,70 +559,89 @@ void button_encoder_read(){
 ***********************************************************************************/
 void clock_count(){
 
+	//after 128 jumps in TC0 ISR, one second has passed
 	if(isr_count == 128){
-	  	sec_count++;
-		isr_count = 0;
+	  	sec_count++;				//increment 1 second
+		isr_count = 0;				//reset isr_count
+		//if snooze is activated, also increment count for snooze
 		if(ten_sec_start == 0x01)
 			ten_sec_count++;
   	}
+	//after 60 seconds, 1 minute is incremented
   	if(sec_count == 60){
 	  	min_count++;
 		sec_count = 0;
   	}
+	//after 60 minutes, 1 hour is incremented
   	if(min_count == 60){
 	  	hour_count++;
-
-		if(hour_count == 12){
+		//if in 12 hour mode, set pm when necessary
+		if(hour_count == 12 && hour24_flag = 0){
 			pm_flag ^= 0x01;
 		}
 
 		min_count = 0;
   	}
+	//bind the hour to 1 and 12 if 24 hour flag is not set
 	if(hour_count >= 13 && hour24_flag == 0){
 		hour_count -= 12;	
 	}
+	//bind the hour to 0 and 24 if 24 hour flag is set
 	else if(hour_count >= 24 && hour24_flag == 0x01){
 		hour_count -= 24;
 	}
 	
+	//if current time matches saved alarm set time, then start the beeping
 	if(min_count == alarm_time_min && hour_count == alarm_time_hour && temp_pm_flag == pm_flag && adjust_alarm == 0){
-		if(alarm_match_count == 0){
-			trigger_alarm = 0x01;
+		if(alarm_match_count == 0){			//a check so that this only goes in once
+			trigger_alarm = 0x01;			//start the beeping
 			alarm_match_count = 0x01;
-			lcd_flag = 0x01;
+			lcd_flag = 0x01;				//update lcd
 		}
 	}
+	//else meaning that the actual time does not equal saved alarm time
 	else{
 		trigger_alarm = 0;
 		alarm_match_count = 0;
 	}
 
+	//if snooze is pressed, check to see if 10 seconds has elapsed
 	if(ten_sec_count == 10){
-		trigger_alarm = 0x01;
-		ten_sec_start = 0;
-		ten_sec_count = 0;
-		lcd_flag = 0x01;
-		alarm_time_min = temp_min;
-		alarm_time_hour = temp_hour;
+		trigger_alarm = 0x01;			//initiate beep again after 10 second snooze
+		ten_sec_start = 0;				//reset the start variable
+		ten_sec_count = 0;				//reset the count variable
+		lcd_flag = 0x01;				//update lcd
+		alarm_time_min = temp_min;		//beep for 1 minute
+		alarm_time_hour = temp_hour;		
 	}
 	
 }//clock_count
 
+/*************************************************************************
+* Function: set_LCD()
+* Parameters: None
+* Description: Update the LCD display to show the current state of the alarm
+* clock, such as buzzing an alarm, snoozed, or the alarm is not buzzing.
+*************************************************************************/
 void set_LCD(){
+	//clear current contents in display
    clear_display();
+	//check to see if trigger_alarm is set
    if(trigger_alarm == 0x01){
-      	string2lcd("ALARM!!!");
+      	string2lcd("ALARM!!!");			//tell lcd to show "ALARM" message
 	  	line2_col1();
 		string2lcd("            ");
 
    }
+	//check to see if alarm clock is in snooze mode
    else if(ten_sec_start == 0x01){
-      	string2lcd("SNOOZED");
+      	string2lcd("SNOOZED");			//tell lcd to show "SNOOZED" message
       	line2_col1();
       	string2lcd("            ");
    }
+	//check to see if alarm clock is not in snooze or currently buzzing state
    else{
-		string2lcd("ALARM NOT TRIGGERED");
+		string2lcd("ALARM NOT TRIGGERED");	//tell lcd to show "not triggered" message
 		line2_col1();
 		string2lcd("            ");
 	}
@@ -617,17 +666,26 @@ ISR(TIMER0_OVF_vect){
 
 }//ISR
 
-
+/*************************************************************************
+* Function: ISR for Timer Counter 1 Overflow
+* Description: Triggers the ISR whenever the Timer Counter 1 Overflow
+* occurs. This will then check to see if the trigger_alarm state is set.
+* If it is, then toggle the PORTC bit 3 pin to drive the annoying beeping
+* for the speakers.
+*
+* NOTE: FREQUENCY IS APPROXIMATELY 300Hz
+*************************************************************************/
 ISR(TIMER1_OVF_vect){
 
+	//check if trigger alarm is set
 	if(trigger_alarm == 0x01){
 		
-		PORTC ^= (1 << PC3);
-		TCNT1 = 40000;
+		PORTC ^= (1 << PC3);		//start toggling PC3
+		TCNT1 = 40000;				//reset TCN1 to 40000 for ~300Hz
 
 	}
 
-}
+}//ISR
 
 
 //***********************************************************************************
@@ -649,9 +707,12 @@ initialization();
 //enable global interrupts
 sei();
 
+//initially set output compare register for TC2 to 0 (brightness control)
 OCR2 = 0;
+//initially set output compare register for TC3 to 200 (volume control)
 OCR3A = 200;
 
+//initialize LCD
 lcd_init();
 set_LCD();
 
@@ -660,18 +721,23 @@ while(1){
 	//PORTB |= (6 << 4);
 	//_delay_us(300);
 
+	//Check to see if program went into ISR
   	if(input_flag == TRUE){
-	  	button_encoder_read();
+	  	button_encoder_read();		//if so, read the encoders/buttons
 	  	input_flag = FALSE;
   	}
-
+	
+	//update the clock counters
 	clock_count();
 
+	//call set_LCD() function if there is a need to update
 	if(lcd_flag == 0x01){
 		lcd_flag = 0;
 		set_LCD();
 	}
 	
+	//if adjustment alarm is set, need to show the alarm set time on the LED display
+	//otherwise, show the current time
 	if(adjust_alarm == 0){
 		temp_min = min_count;
 		temp_hour = hour_count;
@@ -681,6 +747,8 @@ while(1){
 		temp_hour = alarm_time_hour;
 	}
 	
+	//parse the alarm set time if necessary (if alarm adjust is set)
+	//otherwise, parse the current time
 	if(adjust_alarm == 0)
 		segsum(hour_count, min_count);
 	else
@@ -695,9 +763,10 @@ while(1){
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
 		if(i_seg == 4 && pm_flag == 0x01 && hour24_flag == 0)
-			encoding &= 0b01111111;
+			encoding &= 0b01111111;			//indicate on the LED display (decimal point for seg 4) that it is pm
 		if(i_seg == 2 && trigger_alarm == 0x01)
-			encoding &= 0b11111011;
+			encoding &= 0b11111011;			//indicate on the LED display (top decimal point for seg 2) that
+											//the alarm is triggered
 		PORTA = 0xFF;
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
