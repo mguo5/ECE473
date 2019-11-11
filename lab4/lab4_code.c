@@ -54,6 +54,7 @@ uint8_t input_flag = 0;
 uint8_t pm_flag = 0;
 uint8_t hour24_flag = 0;
 uint8_t lcd_flag = 0;
+uint8_t manual_brightness = 0;
 uint8_t trigger_alarm = 0;
 uint8_t adjust_alarm = 0;
 uint8_t alarm_match_count = 0;
@@ -129,6 +130,10 @@ void initialization(){
 	//8-bit fast PWM for TC3 at PE3	 
 	TCCR3A |= (0 << WGM31) | (1 << WGM30) | (1 << COM3A1) | (0 << COM3A0);
 	TCCR3B |= (1 << WGM32) | (0 << WGM33) | (0 << CS30) | (1 << CS31) | (0 << CS32);	//8 prescaler
+	
+	ADMUX = 0x67; //single-ended, input PORTF bit 7, left adjusted, 10 bits
+	//ADC enabled, start the conversion, single shot mode, interrupts enabled 
+	ADCSRA = (1 << ADEN)| (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADIE); 
 
 }//initialization
 
@@ -332,7 +337,7 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 1, then we know
 	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
-		if(adjust_flag == 0x00 && adjust_alarm == 0x00){
+		if(adjust_flag == 0x00 && adjust_alarm == 0x00 && manual_brightness == 0x01){
 			if((OCR2 + 10) >= 254)
 				OCR2 = 254;
 			else	
@@ -353,7 +358,7 @@ void encoder_process(uint8_t encoder){
 	//if current state is 3 and its previous is 2, then we know
 	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
-		if(adjust_flag == 0x00 && adjust_alarm == 0x00){
+		if(adjust_flag == 0x00 && adjust_alarm == 0x00 && manual_brightness == 0x01){
 			if((OCR2 - 10) <= 0)
 				OCR2 = 0;
 			else
@@ -500,6 +505,9 @@ void button_encoder_read(){
 	if(chk_buttons(4))
 		adjust_alarm ^= 0x01;
 
+	if(chk_buttons(2))
+		manual_brightness ^= 0x01;
+
 	//poll if button 1 is pressed
 	//this activates the snooze feature
 	if(chk_buttons(1) && trigger_alarm == 0x01){
@@ -530,7 +538,7 @@ void button_encoder_read(){
 	asm volatile ("nop");
 
 	//send out state of flags to the bar graph display
-	SPDR = (adjust_flag << 7) | (hour24_flag << 6) | (adjust_alarm << 5);
+	SPDR = (adjust_flag << 7) | (hour24_flag << 6) | (adjust_alarm << 5) | (manual_brightness << 2);
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
 	//pulse PB0 to send out bar_disp to bar graph
@@ -576,7 +584,7 @@ void clock_count(){
   	if(min_count == 60){
 	  	hour_count++;
 		//if in 12 hour mode, set pm when necessary
-		if(hour_count == 12 && hour24_flag = 0){
+		if(hour_count == 12 && hour24_flag == 0){
 			pm_flag ^= 0x01;
 		}
 
@@ -687,6 +695,22 @@ ISR(TIMER1_OVF_vect){
 
 }//ISR
 
+/*************************************************************************
+* Function: ISR for ADC Conversion Complete
+* Description: Triggers upon the completion of an ADC read and conversion.
+* With a defined prescale value of 128, this triggers approximately every 
+* 125kHz. It reads the voltage value of the Cds and outputs the 8 bit reading
+* to the OCR2 for brightness adjust.
+*************************************************************************/
+
+ISR(ADC_vect){
+
+	//checks to see if the manual_brightness flag is cleared
+	if(manual_brightness == 0)
+		OCR2 = ADCH;		//if cleared, store the 8 bit number to OCR2
+
+}//ISR
+
 
 //***********************************************************************************
 int main()
@@ -720,7 +744,8 @@ while(1){
   //insert loop delay for debounce
 	//PORTB |= (6 << 4);
 	//_delay_us(300);
-
+	
+	ADCSRA |= (1 << ADSC);//poke ADSC and start conversion
 	//Check to see if program went into ISR
   	if(input_flag == TRUE){
 	  	button_encoder_read();		//if so, read the encoders/buttons
