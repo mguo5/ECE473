@@ -83,6 +83,8 @@ uint8_t manual_brightness = 0;
 uint8_t trigger_alarm = 0;
 uint8_t adjust_alarm = 0;
 uint8_t alarm_match_count = 0;
+uint8_t alarm_is_set = 0;
+uint8_t alarm_set_once = 0;
 volatile uint8_t isr_count = 0;
 volatile uint8_t sec_count = 0;
 volatile uint8_t min_count = 0;
@@ -471,6 +473,7 @@ void encoder_process(uint8_t encoder){
 		alarm_time_min = temp_min;
 		alarm_time_hour = temp_hour;
 		temp_pm_flag = pm_flag;			//also save the pm_flag
+		
 	//	temp_min = min_count;
 	//	temp_hour = hour_count;	
 	}
@@ -529,6 +532,11 @@ void button_encoder_read(){
 	//this toggles the alarm adjustment mode
 	if(chk_buttons(4))
 		adjust_alarm ^= 0x01;
+	
+	if(chk_buttons(3)){
+		alarm_is_set ^= 0x01;
+		lcd_flag = 0x01;
+	}
 
 	if(chk_buttons(2))
 		manual_brightness ^= 0x01;
@@ -540,6 +548,7 @@ void button_encoder_read(){
 		ten_sec_start = 0x01;		//start the count for 10 second delay
 		ten_sec_count = 0;			//the count variable starts at 0
 		lcd_flag = 0x01;			//tell lcd to update
+		
 	}
 
 	//poll if button 0 is pressed
@@ -547,7 +556,6 @@ void button_encoder_read(){
 	if(chk_buttons(0) && trigger_alarm == 0x01){
 		trigger_alarm = 0;			//alarm turns off
 		lcd_flag = 0x01;			//update lcd
-	
 	}
 	
   //disable tristate buffer for pushbutton switches
@@ -602,6 +610,9 @@ void clock_count(){
   	}
 	//after 60 seconds, 1 minute is incremented
   	if(sec_count == 60){
+		if(trigger_alarm == 0x01){
+			lcd_flag = 0x01;
+		}
 	  	min_count++;
 		sec_count = 0;
   	}
@@ -626,7 +637,7 @@ void clock_count(){
 	
 	//if current time matches saved alarm set time, then start the beeping
 	if(min_count == alarm_time_min && hour_count == alarm_time_hour && temp_pm_flag == pm_flag && adjust_alarm == 0){
-		if(alarm_match_count == 0){			//a check so that this only goes in once
+		if(alarm_match_count == 0 && alarm_is_set == 0x01){			//a check so that this only goes in once
 			trigger_alarm = 0x01;			//start the beeping
 			alarm_match_count = 0x01;
 			lcd_flag = 0x01;				//update lcd
@@ -672,9 +683,15 @@ void set_LCD(){
       	line2_col1();
       	string2lcd("            ");
    }
-	//check to see if alarm clock is not in snooze or currently buzzing state
-   else{
-		string2lcd("ALARM NOT TRIGGERED");	//tell lcd to show "not triggered" message
+	//check to see if alarm clock is not set
+   else if(alarm_is_set == 0){
+		string2lcd("ALARM NOT SET");	//tell lcd to show "alarm not set" message
+		line2_col1();
+		string2lcd("            ");
+	}
+	//check to see if alarm clock is set
+	else if(alarm_is_set == 0x01){
+		string2lcd("ALARM SET");		//tell lcd to show "alarm set" message
 		line2_col1();
 		string2lcd("            ");
 	}
@@ -812,6 +829,8 @@ while(1){
 	//based on the parsed number of the overall count
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
+		if(i_seg == 0 && alarm_is_set == 0x01)
+			encoding &= 0b01111111;			//indicate on the LED display (decimal point for seg 0) that alarm set
 		if(i_seg == 4 && pm_flag == 0x01 && hour24_flag == 0)
 			encoding &= 0b01111111;			//indicate on the LED display (decimal point for seg 4) that it is pm
 		if(i_seg == 2 && trigger_alarm == 0x01)
