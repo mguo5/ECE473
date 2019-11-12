@@ -1,15 +1,17 @@
 /*****************************************************************************
 * Author: Matthew Guo
 * Class: ECE 473
-* Date Due: 10/29/2019
+* Date Due: 11/12/2019
 * Lab Number: Lab 4
 * School: Oregon State University
-* Description: This is Lab 3 for ECE 473. A seven segment display is used to
-*              display a count number. The displayed number can be a decimal
-*				or a hex value. Encoders are read via the SPI bus to increment
-*				or decrement the count as necessary. Different modes (add 1, add 2,
-*				or add 4) are triggered by the push buttons. A bar graph display
-*				is used to indicate the mode of operation.
+* Description: This is Lab 4 for ECE 473. This program completes the alarm clock
+*				lab, which keeps track of time, down to the minute, of actual time
+*				and displays that time to the seven segment display. The alarm clock
+*				can be both 24 hours or 12 hours, and is user adjustable. The seven
+*				segment brightness is auto adjusted using a photocell. A alarm can be
+*				set up to buzz for one minute after the time falls onto a set time.
+*				The user can then either snooze the alarm for 10 minutes (in this case,
+*				10 seconds) or turn off the alarm.
 *****************************************************************************/
 
 //  HARDWARE SETUP:
@@ -29,6 +31,14 @@
 //      - Y7 is connected to the COM_EN
 //      - PORTA is connected to the 7 segments
 //      - PORTB bits 4-6 is used to control the digit select
+
+
+
+//  TIMER COUNTER USAGE:
+//		TCO - Keeps track of time
+//		TC1 - Oscillates for the alarm
+//		TC2 - Fast PWM for brightness control
+//		TC3 - Fast PWM for volume control
 
 #define F_CPU 16000000 // cpu speed in hertz 
 #define TRUE 1
@@ -120,7 +130,7 @@ void initialization(){
 	//enable fast PWM mode for TC2 for the seven segment adjust
 	//prescale of 8
 	//clear bit during output compare
-	TCCR2 |= (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20) | (0 << CS20) | (1 << CS21) | (0 << CS22);
+	TCCR2 |= (1 << WGM21) | (1 << WGM20) | (1 << COM21) | (0 << COM20) | (1 << CS20) | (0 << CS21) | (0 << CS22);
 
 	TCNT1 = 40000;				//set TCNT1 to obtain approximately 300Hz for beep
 	TIMSK |= (1 << TOIE1);		//enable TC1 interrupt
@@ -338,10 +348,10 @@ void encoder_process(uint8_t encoder){
 	//that this was turned to the right
 	if(encoder_right == 0x03 && encoder_right_prev == 0x01){
 		if(adjust_flag == 0x00 && adjust_alarm == 0x00 && manual_brightness == 0x01){
-			if((OCR2 + 10) >= 254)
-				OCR2 = 254;
+			if((OCR2 + 5) >= 254)
+				OCR2 = 250;
 			else	
-				OCR2 += 10;
+				OCR2 += 5;
 
 		}
 		else
@@ -359,10 +369,10 @@ void encoder_process(uint8_t encoder){
 	//that this was turned to the left
 	else if (encoder_right == 0x03 && encoder_right_prev == 0x02){
 		if(adjust_flag == 0x00 && adjust_alarm == 0x00 && manual_brightness == 0x01){
-			if((OCR2 - 10) <= 0)
-				OCR2 = 0;
+			if((OCR2 - 5) <= 0)
+				OCR2 = 3;
 			else
-				OCR2 -= 10;
+				OCR2 -= 5;
 		}
 		else
 		{
