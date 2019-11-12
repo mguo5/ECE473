@@ -31,6 +31,21 @@
 //      - Y7 is connected to the COM_EN
 //      - PORTA is connected to the 7 segments
 //      - PORTB bits 4-6 is used to control the digit select
+//	BAR GRAPH:
+//		- RCLK is connected to PB0
+//		- SRCLK is connected to PB1
+//		- SER is connected to PB2
+//		- nOE is connected to PWM to PB7
+//	Encoders:
+//		- Shift Load is connected to PE6
+//		- Clk INH is connected to PD2
+//		- SRCLK is connected to PB1
+//	OP Amp:
+//		- The AVR oscillation outputs on PC3
+//	Audio Amp:
+//		- The Volume PWM outputs on PE3
+//	Photoresistor:
+//		- The photoresistor volage divider is sampled at PF7
 
 
 
