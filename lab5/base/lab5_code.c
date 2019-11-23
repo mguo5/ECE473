@@ -62,12 +62,17 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include "hd44780.h"
+#include "twi_master.h"
+#include "lm73_functions.h"
+#include "uart_functions.h"
 
 //holds data to be sent to the segments. logic zero turns segment on
 int8_t segment_data[5]; 
 
 //decimal to 7-segment LED display encodings, logic "0" turns on segment
 uint8_t dec_to_7seg[12]; 
+
+uint8_t read_i2c_buffer[2];
 
 volatile int count = 0;
 
@@ -163,6 +168,18 @@ void initialization(){
 	ADCSRA = (1 << ADEN)| (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0) | (1 << ADIE); 
 
 }//initialization
+
+/******************************************************************************
+* Function: init_lm73_sensor()
+* Description: Initializes the lm73 temperature sensor via i2c by calling the
+* twi_start_wr() from twi_master.c at location LM73_ADDRESS.
+******************************************************************************/
+void init_lm73_sensor(){
+
+	twi_start_wr(LM73_ADDRESS, 0x00, 1);		//called from twi_master.c
+	asm volatile("nop");	
+
+}//init_lm73_sensor()
 
 //******************************************************************************
 //                            chk_buttons                                      
@@ -698,6 +715,30 @@ void set_LCD(){
    cursor_home();
 }
 
+/**********************************************************************
+* Function: read_lm73_sensor
+* Description: calls the twi_start_rd() function from twi_master.c to start
+* a reading process from the lm73 temperature sensor at i2c location
+* LM73_ADDRESS. The reading is stored in read_i2c_buffer, which is then
+* returned via 16 bit value for temp_reading. 
+**********************************************************************/
+uint16_t read_lm73_sensor(){
+
+	//initialize a 16-bit variable to return
+	uint16_t temp_reading = 0;
+
+	//called from twi_master.c to obtain temp reading
+	twi_start_rd(LM73_ADDRESS, read_i2c_buffer, 2);
+
+	//stores temp reading to temp_reading
+	temp_reading = read_i2c_buffer[0] << 8;
+	temp_reading |= read_i2c_buffer[1];
+
+	//returns temp_reading
+	return temp_reading;
+
+}//temp_reading
+
 /***********************************************************************
  * Function: ISR for Timer Counter 0 Overflow
  * Description: Triggers this ISR whenever the Timer Counter 0 Overflow
@@ -769,6 +810,10 @@ real_time();
 
 //call function to initialize SPI and TC
 initialization();
+
+//initialize I2C
+init_twi(); //called from twi_master.c
+init_lm73_sensor();
 
 //enable global interrupts
 sei();
