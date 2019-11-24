@@ -69,6 +69,9 @@
 
 
 uint8_t read_i2c_buffer[2];
+uint8_t read_temp_flag = 0x00;
+uint16_t temp;
+uint16_t uart_buf;
 
 
 void init_lm73_sensor(){
@@ -95,12 +98,12 @@ uint16_t read_lm73_sensor(){
 
 }//temp_reading
 
-/
+
 int main()
 {
 	init_twi();
 	init_lm73_sensor();
-	uart_init()
+	uart_init();
 
 	sei();
 
@@ -113,7 +116,7 @@ int main()
 
 		if(read_temp_flag = 0x01){
 			uart_buf = read_lm73_sensor();
-			while(!(UCSROA & (1 << UDRE0)));
+			while(!(UCSR0A & (1 << UDRE0)));
 			UDR0 = uart_buf;
 			while(!(UCSR0A & (1 << UDRE0)));
 			read_temp_flag = 0x00;

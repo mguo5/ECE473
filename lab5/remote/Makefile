@@ -1,7 +1,7 @@
 SHELL               = /bin/bash
 PRG                 = lab5_168
-OBJS                = lab5_168.o hd44780.o twi_master.o lm73_functions.o uart_functions.o
-SRCS                = lab5_168.c hd44780.c twi_master.c lm73_functions.c uart_functions.c
+OBJS                = lab5_168.o twi_master.o lm73_functions.o uart_functions.o
+SRCS                = lab5_168.c twi_master.c lm73_functions.c uart_functions.c
 MCU_TARGET          = atmega168
 F_CPU               = 8000000UL
 PROGRAMMER_TARGET   = m168
