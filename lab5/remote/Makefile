@@ -15,6 +15,10 @@ DEFS                =
 LIBS                =
 CC                  = avr-gcc
 
+LFUSE_VAL = E2
+HFUSE_VAL = DF
+EFUSE_VAL = 01
+
 # Override is only needed by avr-lib build system.
 override CFLAGS        = -g -Wall $(OPTIMIZE) -mmcu=$(MCU_TARGET) $(DEFS) -DF_CPU=$(F_CPU)
 override LDFLAGS       = -Wl,-Map,$(PRG).map

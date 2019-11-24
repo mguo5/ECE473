@@ -2,8 +2,9 @@
 // Roger Traylor 11.28.10
 
 #include <util/twi.h>
-#include "lm73_functions_skel.h"
+#include "lm73_functions.h"
 #include <util/delay.h>
+#include <stdlib.h>
 
 //TODO: remove volatile type modifier?  I think so.
 //TODO: initalize with more resolution and disable the smb bus timeout

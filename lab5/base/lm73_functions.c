@@ -2,8 +2,9 @@
 // Roger Traylor 11.28.10
 
 #include <util/twi.h>
-#include "lm73_functions_skel.h"
+#include "lm73_functions.h"
 #include <util/delay.h>
+#include <stdlib.h>
 
 //TODO: remove volatile type modifier?  I think so.
 //TODO: initalize with more resolution and disable the smb bus timeout
@@ -21,7 +22,15 @@ uint8_t lm73_temp_convert(char temp_digits[], uint16_t lm73_temp, uint8_t f_not_
 //the buffer pointed to by the arguement.
 //TODO:Returns what???(uint8_t)??? Probably a BUG?
 
-//Yeah, this is for you to do! ;^)
+	uint16_t temperature = lm73_temp / 128;
+
+	if(f_not_c == 0x01){
+		temperature = (temperature * 9)/5 + 32;
+	}
+
+	itoa((int)temperature, temp_digits, 10);
+
+	return temperature;
 
 }//lm73_temp_convert
 //******************************************************************************
