@@ -934,3 +934,11 @@ while(1){
 		//asm volatile ("nop");
 		_delay_us(80);					//add in tiny delay, but not large enough for flicker
 	}
+		
+
+	//anti-ghosting protocol
+	PORTA = 0xFF;
+	PORTB = (5 << 4);
+
+  }//while
+}//main
