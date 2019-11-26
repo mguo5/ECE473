@@ -104,6 +104,11 @@ uint8_t alarm_time_hour = 0;
 uint8_t ten_sec_start = 0;
 uint8_t ten_sec_count = 0;
 
+uint8_t temp_read_flag = 0x01;
+uint8_t uart_send_flag = 0;
+char temp_digits[3];
+char *temp_string = " B:    R:   "; 
+volatile uint8_t f_not_c = 0;
 
 /**********************************************************************
 * Function: real_time
@@ -369,7 +374,7 @@ uint8_t seven_seg_encoding(int8_t num){
 void encoder_process(uint8_t encoder){
 
 	//initialize variables to store previous encoder state
-	uint8_t encoder_left_prev = encoder_left;
+	int8_t encoder_left_prev = encoder_left;
 	uint8_t encoder_right_prev = encoder_right;
 
 	//obtain the left and right encoder values from the SPDR
@@ -621,6 +626,9 @@ void clock_count(){
 	if(isr_count == 128){
 	  	sec_count++;				//increment 1 second
 		isr_count = 0;				//reset isr_count
+		uart_send_flag ^= 0x01;
+		temp_read_flag ^= 0x01;
+	//	set_LCD();
 		//if snooze is activated, also increment count for snooze
 		if(ten_sec_start == 0x01)
 			ten_sec_count++;
@@ -686,33 +694,40 @@ void clock_count(){
 *************************************************************************/
 void set_LCD(){
 	//clear current contents in display
-   clear_display();
+  // clear_display();
 	//check to see if trigger_alarm is set
    if(trigger_alarm == 0x01){
       	string2lcd("ALARM!!!");			//tell lcd to show "ALARM" message
-	  	line2_col1();
-		string2lcd("            ");
+	  //	line2_col1();
+	//	string2lcd(temp_string);
 
    }
 	//check to see if alarm clock is in snooze mode
    else if(ten_sec_start == 0x01){
       	string2lcd("SNOOZED");			//tell lcd to show "SNOOZED" message
-      	line2_col1();
-      	string2lcd("            ");
+      //	line2_col1();
+      //	string2lcd(temp_string);
    }
 	//check to see if alarm clock is not set
    else if(alarm_is_set == 0){
 		string2lcd("ALARM NOT SET");	//tell lcd to show "alarm not set" message
-		line2_col1();
-		string2lcd("            ");
+	//	line2_col1();
+	//	string2lcd(temp_string);
 	}
 	//check to see if alarm clock is set
 	else if(alarm_is_set == 0x01){
 		string2lcd("ALARM SET");		//tell lcd to show "alarm set" message
-		line2_col1();
-		string2lcd("            ");
+	//	line2_col1();
+	//	string2lcd(temp_string);
 	}
    cursor_home();
+}
+
+void set_LCD_temp(){
+
+	line2_col1();
+	string2lcd(temp_string);
+
 }
 
 /**********************************************************************
@@ -738,6 +753,19 @@ uint16_t read_lm73_sensor(){
 	return temp_reading;
 
 }//temp_reading
+
+void uart_send_read(){
+	
+	while(!(UCSR0A & (1 << UDRE0)));
+	if(f_not_c == 0x01)
+		UDR0 = 'F';
+	else
+		UDR0 = 'C';
+	
+	temp_string[9] = uart_getc();
+	temp_string[10] = uart_getc();
+
+}
 
 /***********************************************************************
  * Function: ISR for Timer Counter 0 Overflow
@@ -833,6 +861,25 @@ while(1){
 	//_delay_us(300);
 	
 	ADCSRA |= (1 << ADSC);//poke ADSC and start conversion
+
+	if(temp_read_flag == 0x01){
+		lm73_temp_convert(temp_digits, read_lm73_sensor(), f_not_c);
+		temp_string[3] = temp_digits[0];
+		temp_string[4] = temp_digits[1];
+		temp_read_flag = 0x00;
+		if(f_not_c == 0x01)
+			temp_string[5] = 'F';
+		else
+			temp_string[5] = 'C';		
+		set_LCD_temp();
+	}
+	/*
+	if(uart_send_flag == 0x01){
+		uart_send_read();
+		set_LCD();
+	}
+*/
+
 	//Check to see if program went into ISR
   	if(input_flag == TRUE){
 	  	button_encoder_read();		//if so, read the encoders/buttons
@@ -845,7 +892,7 @@ while(1){
 	//call set_LCD() function if there is a need to update
 	if(lcd_flag == 0x01){
 		lcd_flag = 0;
-		set_LCD();
+	//	set_LCD();
 	}
 	
 	//if adjustment alarm is set, need to show the alarm set time on the LED display
@@ -886,12 +933,4 @@ while(1){
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
 		//asm volatile ("nop");
 		_delay_us(80);					//add in tiny delay, but not large enough for flicker
-	
 	}
-
-	//anti-ghosting protocol
-	PORTA = 0xFF;
-	PORTB = (5 << 4);
-
-  }//while
-}//main
