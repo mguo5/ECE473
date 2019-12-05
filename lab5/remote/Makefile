@@ -2,9 +2,9 @@ SHELL               = /bin/bash
 PRG                 = lab5_168
 OBJS                = lab5_168.o twi_master.o lm73_functions.o uart_functions.o
 SRCS                = lab5_168.c twi_master.c lm73_functions.c uart_functions.c
-MCU_TARGET          = atmega168
-F_CPU               = 8000000UL
-PROGRAMMER_TARGET   = m168
+MCU_TARGET          = atmega168p
+F_CPU               = 16000000UL
+PROGRAMMER_TARGET   = m168p
 
 #agressive optimization
 OPTIMIZE       = -O2    # options are 1, 2, 3, s

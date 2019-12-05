@@ -108,7 +108,7 @@ uint8_t temp_read_flag = 0x01;
 uint8_t uart_send_flag = 0;
 char temp_digits[3];
 char *temp_string = " B:    R:   "; 
-volatile uint8_t f_not_c = 0;
+volatile uint8_t f_not_c = 0x01;
 
 /**********************************************************************
 * Function: real_time
@@ -756,14 +756,22 @@ uint16_t read_lm73_sensor(){
 
 void uart_send_read(){
 	
+	if(f_not_c == 0x01)
+		uart_putc('F');
+	else
+		uart_putc('C');
+	//_delay_ms(100);
+	
+	/*
 	while(!(UCSR0A & (1 << UDRE0)));
 	if(f_not_c == 0x01)
 		UDR0 = 'F';
 	else
 		UDR0 = 'C';
-	
+	*/
 	temp_string[9] = uart_getc();
 	temp_string[10] = uart_getc();
+	temp_string[11] = uart_getc();
 
 }
 
@@ -841,6 +849,7 @@ initialization();
 
 //initialize I2C
 init_twi(); //called from twi_master.c
+uart_init();
 init_lm73_sensor();
 
 //enable global interrupts
@@ -849,7 +858,7 @@ sei();
 //initially set output compare register for TC2 to 0 (brightness control)
 OCR2 = 0;
 //initially set output compare register for TC3 to 200 (volume control)
-OCR3A = 200;
+OCR3A = 100;
 
 //initialize LCD
 lcd_init();
@@ -862,6 +871,7 @@ while(1){
 	
 	ADCSRA |= (1 << ADSC);//poke ADSC and start conversion
 
+	
 	if(temp_read_flag == 0x01){
 		lm73_temp_convert(temp_digits, read_lm73_sensor(), f_not_c);
 		temp_string[3] = temp_digits[0];
@@ -871,15 +881,16 @@ while(1){
 			temp_string[5] = 'F';
 		else
 			temp_string[5] = 'C';		
-		set_LCD_temp();
+		//set_LCD_temp();
 	}
-	/*
+	
 	if(uart_send_flag == 0x01){
 		uart_send_read();
-		set_LCD();
+		set_LCD_temp();
+		uart_send_flag = 0x00;
 	}
-*/
 
+	
 	//Check to see if program went into ISR
   	if(input_flag == TRUE){
 	  	button_encoder_read();		//if so, read the encoders/buttons
@@ -892,7 +903,7 @@ while(1){
 	//call set_LCD() function if there is a need to update
 	if(lcd_flag == 0x01){
 		lcd_flag = 0;
-	//	set_LCD();
+		set_LCD();
 	}
 	
 	//if adjustment alarm is set, need to show the alarm set time on the LED display

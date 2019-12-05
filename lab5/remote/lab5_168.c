@@ -55,9 +55,10 @@
 //		TC2 - Fast PWM for brightness control
 //		TC3 - Fast PWM for volume control
 
-#define F_CPU 8000000 // cpu speed in hertz 
+#define F_CPU 16000000 // cpu speed in hertz 
 #define TRUE 1
 #define FALSE 0
+#define TEMP_MEASURE 0xE3
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
@@ -69,7 +70,8 @@
 
 
 uint8_t read_i2c_buffer[2];
-uint8_t read_temp_flag = 0x00;
+uint8_t write_i2c_buffer[1] = {0xE3};
+uint8_t read_temp_flag = 0x01;
 char temp[1];
 volatile char uart_buf[2];
 uint8_t f_not_c = 0x01;
@@ -77,7 +79,7 @@ uint8_t f_not_c = 0x01;
 
 void init_lm73_sensor(){
 
-	twi_start_wr(LM73_ADDRESS, 0x00, 1);		//called from twi_master.c
+	twi_start_wr(LM73_ADDRESS, write_i2c_buffer[0], 1);		//called from twi_master.c
 	asm volatile("nop");	
 
 }//init_lm73_sensor()
@@ -99,6 +101,10 @@ uint16_t read_lm73_sensor(){
 
 }//temp_reading
 
+ISR(USART_RX_vect){
+	temp[0] = UDR0;
+}
+
 
 int main()
 {
@@ -108,25 +114,34 @@ int main()
 
 	sei();
 
+	DDRB |= (1 << PB5);
+
 	while(1)
 	{
-		temp[0] = uart_getc();
+
 
 		if(temp[0] == 'C'){
 			read_temp_flag = 0x01;
+			PORTB |= (1 << PB5);
 			f_not_c = 0;
 		}
 		else if(temp[0] == 'F'){
 			read_temp_flag = 0x01;
+			PORTB |= (1 << PB5);
 			f_not_c = 0x01;
 		}
+		
+		if(UDR0 == 0)
+			PORTB |= (1 << PB5);
 
 		if(read_temp_flag == 0x01){
+			init_lm73_sensor();
 			lm73_temp_convert(uart_buf, read_lm73_sensor(), f_not_c);
+			/*
 			while(!(UCSR0A & (1 << UDRE0)));
-			UDR0 = uart_buf[0];
+			UDR0 = '5';//uart_buf[0];
 			while(!(UCSR0A & (1 << UDRE0)));
-			UDR0 = uart_buf[1];
+			UDR0 = '7';//uart_buf[1];
 			while(!(UCSR0A & (1 << UDRE0)));
 			if(f_not_c == 0x01){
 				UDR0 = 'F';
@@ -136,8 +151,24 @@ int main()
 				UDR0 = 'C';
 				while(!(UCSR0A & (1 << UDRE0)));
 			}
-			read_temp_flag = 0x00;
+			//read_temp_flag = 0x00;
+			*/
+			uart_putc('5');
+			if(f_not_c == 0x01)
+				uart_putc('F');
+			else
+				uart_putc('C');
+
+
+		
+
 		}	
+	/*
+	uart_putc('7');
+	_delay_ms(500);
+	*/
+
+
 	}
 
 
