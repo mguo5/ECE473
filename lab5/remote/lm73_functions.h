@@ -9,7 +9,7 @@
 #include "twi_master.h"  //my TWCR_START, STOP, NACK, RNACK, SEND
 //use the status codes in: usr/local/AVRMacPack/avr-3/include/util/twi.h
 
-#define LM73_ADDRESS 0x80                    //LM73-0, address pin floating
+#define LM73_ADDRESS 0x90                    //LM73-0, address pin floating
 #define LM73_WRITE (LM73_ADDRESS | TW_WRITE) //LSB is a zero to write
 #define LM73_READ  (LM73_ADDRESS | TW_READ)  //LSB is a one to read
 #define LM73_PTR_TEMP          0x00          //LM73 temperature address

@@ -108,7 +108,7 @@ uint8_t temp_read_flag = 0x01;
 uint8_t uart_send_flag = 0;
 char temp_digits[3];
 char *temp_string = " B:    R:   "; 
-volatile uint8_t f_not_c = 0x01;
+volatile uint8_t f_not_c = 0;
 
 /**********************************************************************
 * Function: real_time
@@ -756,10 +756,14 @@ uint16_t read_lm73_sensor(){
 
 void uart_send_read(){
 	
-	if(f_not_c == 0x01)
-		uart_putc('G');
-	else
+	if(f_not_c == 0x01){
+		uart_putc('F');
+		temp_string[11] = 'F';
+	}
+	else{
 		uart_putc('C');
+		temp_string[11] = 'C';
+	}
 	//_delay_ms(100);
 	
 	/*
@@ -769,11 +773,16 @@ void uart_send_read(){
 	else
 		UDR0 = 'C';
 	*/
+	
+	asm volatile ("nop");
 	temp_string[9] = uart_getc();
+	_delay_us(100);
 	temp_string[10] = uart_getc();
-	temp_string[11] = uart_getc();
+	_delay_us(100);
+	//temp_string[11] = uart_getc();*/
 
 }
+
 
 /***********************************************************************
  * Function: ISR for Timer Counter 0 Overflow

@@ -1,7 +1,7 @@
 SHELL               = /bin/bash
-PRG                 = lab5_atmega48
-OBJS                = lab5_168.o uart_functions_m48.o lm73_functions.o twi_master.o
-SRCS                = lab5_168.c uart_functions_m48.c lm73_functions.c twi_master.c
+PRG                 = lab5_168
+OBJS                = lab5_168.o twi_master.o lm73_functions.o uart_functions.o
+SRCS                = lab5_168.c twi_master.c lm73_functions.c uart_functions_m48.c
 MCU_TARGET          = atmega48
 F_CPU               = 8000000UL
 PROGRAMMER_TARGET   = m48
@@ -33,7 +33,7 @@ $(PRG).elf: $(OBJS)
 clean: 
 	-rm -rf $(PRG).o $(PRG).elf $(PRG).lst $(PRG).map $(PRG).srec $(PRG)*.bin
 	-rm -rf $(PRG)_eeprom.srec $(PRG)_eeprom*.bin $(PRG)_eeprom.hex $(PRG).hex 
-	-rm -rf $(PRG).d
+	-rm -rf *.d  *.o
 
 #clean entire directory
 all_clean:
@@ -48,7 +48,7 @@ all_clean:
 	rm -f $@.$$$$
 
 #include the dependencies from the other makefiles
-#include $(SRCS:.c=.d)
+-include $(SRCS:.c=.d)
 
 #setup for usb programmer
 program: $(PRG).hex
