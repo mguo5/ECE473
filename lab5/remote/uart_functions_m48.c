@@ -1,14 +1,16 @@
-//UART Functions 
-//Roger Traylor 11.l6.11
-//For controlling the UART and sending debug data to a terminal
-//as an aid in debugging.
+//UART Functions for Mega 48 only
+//Roger Traylor 12.7.15
+//For controlling the UART and sending debug data to a terminal as an aid 
+//in debugging. Note that RX and TX lines are marked relative to the device
+//they are located on.
 
 #include <avr/io.h>
 #include <stdlib.h>
 #include <avr/pgmspace.h>
 
+//F_CPU is set in makefile, don't set it here.
+
 #define USART_BAUDRATE 9600  
-//Compute baudvalue at compile time from USART_BAUDRATE and F_CPU
 #define BAUDVALUE  ((F_CPU/(USART_BAUDRATE * 16UL)) - 1 )
 
 #include <string.h>
@@ -33,8 +35,9 @@ void uart_putc(char data) {
 // Takes a string and sends each charater to be sent to USART0
 //void uart_puts(unsigned char *str) {
 void uart_puts(char *str) {
-    int i = 0;
-    while(str[i] != '\0') { // Loop through string, sending each character
+    int i = 0;               
+    // Loop through string, sending each character
+    while(str[i] != '\0') { 
         uart_putc(str[i]);
         i++;
     }
@@ -43,10 +46,11 @@ void uart_puts(char *str) {
 
 //******************************************************************
 //                        uart_puts_p
-// Takes a string in flash memory and sends each charater to be sent to USART0
+// Takes a string in flash memory and sends each charater to USART0
 //void uart_puts(unsigned char *str) {
-void uart_puts_p(const char *str) {
-    while(pgm_read_byte(str) != 0x00) { // Loop through string, sending each character
+void uart_puts_p(const char *str) {      
+    // Loop through string, sending each character
+    while(pgm_read_byte(str) != 0x00) { 
         uart_putc(pgm_read_byte(str++));
     }
 }
@@ -55,21 +59,18 @@ void uart_puts_p(const char *str) {
 //******************************************************************
 //                            uart_init
 //
-//RXD0 is PORT E bit 0
-//TXD0 is PORT E bit 1
-//Jumpers J14 and J16 (mega128.1) or Jumpers J7 and J9 (mega128.2)
-//must be in place for the MAX232 chip to get data.
+//RXD is PORT D bit 0
+//TXD is PORT D bit 1
 
 void uart_init(){
 //rx and tx enable, receive interrupt enabled, 8 bit characters
-//  UCSR0B |= (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0);
-  UCSR0B |= (1<<RXEN0) | (1<<TXEN0);  //INTERRUPS DISABLED!!!
+UCSR0B |= (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0); //INTERRUPTS ENABLED
+//  UCSR0B |= (1<<RXEN0) | (1<<TXEN0);               //INTERRUPS DISABLED
 
-//  UCSR0B |= (1<<RXEN0) | (1<<TXEN0) ;
 //async operation, no parity,  one stop bit, 8-bit characters
-UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);
-UBRR0H = (BAUDVALUE >>8 ); //load upper byte of the baud rate into UBRR 
-UBRR0L =  BAUDVALUE;       //load lower byte of the baud rate into UBRR 
+  UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);
+  UBRR0H = (BAUDVALUE >>8 ); //load upper byte of the baud rate into UBRR 
+  UBRR0L =  BAUDVALUE;       //load lower byte of the baud rate into UBRR 
 
 }
 //******************************************************************
@@ -92,17 +93,4 @@ char uart_getc(void) {
   return(UDR0); //return the received data
 }
 //******************************************************************
-// Usage examples:
-//uart_puts(".");
-//uart_puts("   ");
-//uart_puts("strength = ");
-//itoa((int)strength, str, 10);
-//uart_puts(str);
-//uart_puts("   ");
-//uart_init();
-//uart_putc('\n');
-//uart_puts("*****************\n");
-//uart_puts("wrote first byte: ");
-//uart_puts(str);
-//uart_putc('\n');
-  
+

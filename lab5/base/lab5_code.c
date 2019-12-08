@@ -757,7 +757,7 @@ uint16_t read_lm73_sensor(){
 void uart_send_read(){
 	
 	if(f_not_c == 0x01)
-		uart_putc('F');
+		uart_putc('G');
 	else
 		uart_putc('C');
 	//_delay_ms(100);

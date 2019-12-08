@@ -2,7 +2,7 @@
 // Roger Traylor 11.27.10
 //special defines and functions for the lm73 temperature sensor
 
-#define F_CPU 16000000UL
+#define F_CPU 8000000UL
 #define TRUE  1
 #define FALSE 0
 

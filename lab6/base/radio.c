@@ -19,14 +19,14 @@ uint16_t eeprom_am_freq;
 uint16_t eeprom_sw_freq;
 uint8_t  eeprom_volume;
 
-uint16_t current_fm_freq = 10630;
-uint16_t current_am_freq;
-uint16_t current_sw_freq;
+volatile uint16_t current_fm_freq = 9990;
+volatile uint16_t current_am_freq;
+volatile uint16_t current_sw_freq;
 uint8_t  current_volume;
 
 //Used in debug mode for UART1
-char uart1_tx_buf[40];      //holds string to send to crt
-char uart1_rx_buf[40];      //holds string that recieves data from uart
+//char uart1_tx_buf[40];      //holds string to send to crt
+//char uart1_rx_buf[40];      //holds string that recieves data from uart
 
 
 //******************************************************************************
@@ -34,19 +34,26 @@ char uart1_rx_buf[40];      //holds string that recieves data from uart
 // rising edge of Port E bit 7.  The i/o clock must be running to detect the
 // edge (not asynchronouslly triggered)
 //******************************************************************************
-ISR(INT7_vect){STC_interrupt = TRUE;}
+ISR(INT7_vect){
+	STC_interrupt = TRUE;
+	PORTF |= (0 << PF1);
+}
 /***********************************************************************/
 
 
 int main(){
-        init_twi();
+        //init_twi();
+
+	DDRF |= (1 << PF1);
+	PORTF |= (1 << PF1);
 
         //Setup audio output (max)
-        PORTE |= 0x08;
-	DDRE  |= 0x08;
+	DDRE  |= (1 << PE3);
+        PORTE |= (1 << PE3);
+	
 
-	DDRE  |= 0x04; //Port E bit 2 is active high reset for radio 
-	PORTE |= 0x04; //radio reset is on at powerup (active high)
+	DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
+	PORTE |= (1 << PE2); //radio reset is on at powerup (active high)
 
         EICRB |= (1<<ISC71) | (1<ISC70);
 	EIMSK |= (1<<INT7);
@@ -61,14 +68,17 @@ int main(){
 	//Si code in "low" has 30us delay...no explaination
 	DDRE  &= ~(0x80);   //now Port E bit 7 becomes input from the radio interrupt
 
-        sei();
-
 	fm_pwr_up(); //powerup the radio as appropriate
-	current_fm_freq = 10630; //arg2, arg3: 99.9Mhz, 200khz steps
+	current_fm_freq = 9990; //arg2, arg3: 99.9Mhz, 200khz steps
+	while(twi_busy()){}
 	fm_tune_freq(); //tune radio to frequency in current_fm_freq
 
-	/*
+	sei();
+
+	
 	   while(1){
+		
+
 	   }
-	 */
+	 
 }
