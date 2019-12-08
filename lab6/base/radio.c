@@ -36,47 +36,64 @@ uint8_t  current_volume;
 //******************************************************************************
 ISR(INT7_vect){
 	STC_interrupt = TRUE;
-	PORTF |= (0 << PF1);
+	PORTF ^= (1 << PF1);
 }
 /***********************************************************************/
 
 
 int main(){
-        //init_twi();
+        init_twi();
 
 	DDRF |= (1 << PF1);
-	PORTF |= (1 << PF1);
+	PORTF |= (0 << PF1);
 
         //Setup audio output (max)
 	DDRE  |= (1 << PE3);
         PORTE |= (1 << PE3);
 	
 
-	DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
-	PORTE |= (1 << PE2); //radio reset is on at powerup (active high)
 
         EICRB |= (1<<ISC71) | (1<ISC70);
 	EIMSK |= (1<<INT7);
 
-	//hardware reset of Si4734
-	PORTE &= ~(1<<PE7); //int2 initially low to sense TWI mode
-	DDRE  |= 0x80;      //turn on Port E bit 7 to drive it low
-	PORTE |=  (1<<PE2); //hardware reset Si4734 
-	_delay_us(200);     //hold for 200us, 100us by spec         
-	PORTE &= ~(1<<PE2); //release reset 
-	_delay_us(30);      //5us required because of my slow I2C translators I suspect
-	//Si code in "low" has 30us delay...no explaination
-	DDRE  &= ~(0x80);   //now Port E bit 7 becomes input from the radio interrupt
 
-	fm_pwr_up(); //powerup the radio as appropriate
-	current_fm_freq = 9990; //arg2, arg3: 99.9Mhz, 200khz steps
-	while(twi_busy()){}
-	fm_tune_freq(); //tune radio to frequency in current_fm_freq
+
+	_delay_ms(1000);
+
+
 
 	sei();
 
+	for(int i = 0; i < 5; i++){
+
+		
+		DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
+		PORTE |= (1 << PE2); //radio reset is on at powerup (active high)
+
+		//hardware reset of Si4734
+		PORTE &= ~(1<<PE7); //int2 initially low to sense TWI mode
+		DDRE  |= 0x80;      //turn on Port E bit 7 to drive it low
+		PORTE |=  (1<<PE2); //hardware reset Si4734 
+		_delay_us(200);     //hold for 200us, 100us by spec         
+		PORTE &= ~(1<<PE2); //release reset 
+		_delay_us(30);      //5us required because of my slow I2C translators I suspect
+		//Si code in "low" has 30us delay...no explaination
+		DDRE  &= ~(0x80);   //now Port E bit 7 becomes input from the radio interrupt
+
+		fm_pwr_up(); //powerup the radio as appropriate
+		current_fm_freq = 9910; //arg2, arg3: 99.9Mhz, 200khz steps
+		fm_tune_freq(); //tune radio to frequency in current_fm_freq
+
+	}
+
 	
 	   while(1){
+
+
+
+		_delay_ms(10000);
+
+
 		
 
 	   }
