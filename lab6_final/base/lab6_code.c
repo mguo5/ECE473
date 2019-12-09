@@ -121,14 +121,15 @@ uint8_t temp_read_flag = 0x01;		//flag to read local temp
 uint8_t uart_send_flag = 0;		//flag to send/read remote
 char temp_digits[3];			
 char *temp_string = " B:    R:   "; 	//string for lcd
-volatile uint8_t f_not_c = 0x01;	//flag for if in C or F
+volatile uint8_t f_not_c = 0;	//flag for if in C or F
 
-volatile uint16_t current_fm_freq = 9990;
+volatile uint16_t current_fm_freq = 9910;
 uint8_t radio_trigger = 0;		//flag for radio alarm
 uint8_t radio_tune = 0;			//flag for radio tune
 uint8_t radio_trig_once = 0;		//flag for no radio spamming
 uint8_t radio_power_down = 0;		//flag for no radio spamm on power down
 uint8_t update_frequency = 0;		//flag to update frequency
+uint8_t alarm_radio_once = 0;		//flag to trigger radio alarm once
 
 /**********************************************************************
 * Function: real_time
@@ -203,7 +204,7 @@ void initialization(){
 
 void radio_init(){
 
-	for(int i = 0; i < 2; i++){
+	for(int i = 0; i < 3; i++){
 
 		
 		DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
@@ -269,18 +270,20 @@ void segsum_freq(uint16_t frequency){
 	int8_t hundreds = -1;
 	int8_t thousands = -1;
 
+	frequency /= 10;
+
 	//check to see if the total sum count is less than 1024 but at or greater than 1000 for parsing
-	if(frequency <= 9999){
+	if(frequency <= 999){
+		ones = (frequency % 1000) % 10;
+		tens = (frequency % 100) / 10;
+		hundreds = (frequency % 1000) / 100;
+		//thousands = frequency / 1000;
+	}
+	else{
 		ones = (frequency % 1000) % 10;
 		tens = (frequency % 100) / 10;
 		hundreds = (frequency % 1000) / 100;
 		thousands = frequency / 1000;
-	}
-	else{
-		ones = (frequency % 10000) % 10;
-		tens = (frequency % 10000) / 100;
-		hundreds = (frequency % 10000) / 1000;
-		thousands = frequency / 10000;
 	
 	}
 	
@@ -688,6 +691,7 @@ void button_encoder_read(){
 		radio_tune ^= 0x01;
 		radio_trig_once = 0x01;
 		radio_power_down = radio_tune ^ 0x01;
+		trigger_alarm = 0;
 	}
 	
   //disable tristate buffer for pushbutton switches
@@ -703,7 +707,7 @@ void button_encoder_read(){
 	asm volatile ("nop");
 
 	//send out state of flags to the bar graph display
-	SPDR = (adjust_flag << 7) | (hour24_flag << 6) | (adjust_alarm << 5) | (manual_brightness << 2);
+	SPDR = (adjust_flag << 7) | (hour24_flag << 6) | (adjust_alarm << 5) | (manual_brightness << 2) | (radio_trigger << 1);
 	while(bit_is_clear(SPSR, SPIF)){}		//continue on while loop until all SPI contents are sent
 
 	//pulse PB0 to send out bar_disp to bar graph
@@ -997,7 +1001,7 @@ sei();
 //initially set output compare register for TC2 to 0 (brightness control)
 OCR2 = 0;
 //initially set output compare register for TC3 to 200 (volume control)
-OCR3A = 200;
+OCR3A = 150;
 
 //initialize LCD
 lcd_init();
@@ -1021,6 +1025,17 @@ while(1){
 	else if(update_frequency == 0x01){
 		update_frequency = 0;
 		fm_tune_freq(); //tune radio to frequency in current_fm_freq
+	}
+
+	if(radio_trigger == 0x01 && trigger_alarm == 0x01 && radio_trig_once == 0x01){
+		radio_trig_once = 0;
+		radio_init();
+		alarm_radio_once = 0x01;
+
+	}
+	else if(trigger_alarm == 0 && alarm_radio_once == 0x01){
+		alarm_radio_once = 0;
+		radio_pwr_dwn();
 	}
 	
 	/*
@@ -1104,8 +1119,8 @@ while(1){
 			encoding &= 0b01111111;			//indicate on the LED display (decimal point for seg 4) that it is pm
 		if(i_seg == 2 && trigger_alarm == 0x01 && radio_tune == 0)
 			encoding &= 0b11111011;			//indicate on the LED display (top decimal point for seg 2) that
-											//the alarm is triggered
-		if(radio_tune == 0x01)
+		if(i_seg == 1 && radio_tune == 0x01)
+			encoding &= 0b01111111;									//the alarm is triggered
 		PORTA = 0xFF;
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display
