@@ -62,6 +62,22 @@
 #include "twi_master.h"
 #include "lm73_functions.h"
 #include "uart_functions.h"
+#include "si4734.h"
+
+extern enum radio_band{FM, AM, SW};
+extern volatile uint8_t STC_interrupt;
+
+volatile enum radio_band current_radio_band = FM;
+
+uint16_t eeprom_fm_freq;
+uint16_t eeprom_am_freq;
+uint16_t eeprom_sw_freq;
+uint8_t  eeprom_volume;
+
+volatile uint16_t current_am_freq;
+volatile uint16_t current_sw_freq;
+
+uint8_t  current_volume;
 
 //holds data to be sent to the segments. logic zero turns segment on
 int8_t segment_data[5]; 
@@ -106,6 +122,13 @@ uint8_t uart_send_flag = 0;		//flag to send/read remote
 char temp_digits[3];			
 char *temp_string = " B:    R:   "; 	//string for lcd
 volatile uint8_t f_not_c = 0x01;	//flag for if in C or F
+
+volatile uint16_t current_fm_freq = 9990;
+uint8_t radio_trigger = 0;		//flag for radio alarm
+uint8_t radio_tune = 0;			//flag for radio tune
+uint8_t radio_trig_once = 0;		//flag for no radio spamming
+uint8_t radio_power_down = 0;		//flag for no radio spamm on power down
+uint8_t update_frequency = 0;		//flag to update frequency
 
 /**********************************************************************
 * Function: real_time
@@ -171,6 +194,40 @@ void initialization(){
 
 }//initialization
 
+/*****************************************************************************
+* Function: radio_init()
+* Description: initializes the radio by doing the appropriate hardware reset of
+* the radio module. This was from the code snippet handed out by Roger.
+* After some experimentation, a loop of 5 times makes this radio turn on.
+*****************************************************************************/
+
+void radio_init(){
+
+	for(int i = 0; i < 2; i++){
+
+		
+		DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
+		PORTE |= (1 << PE2); //radio reset is on at powerup (active high)
+
+		//hardware reset of Si4734
+		PORTE &= ~(1<<PE7); //int2 initially low to sense TWI mode
+		DDRE  |= 0x80;      //turn on Port E bit 7 to drive it low
+		PORTE |=  (1<<PE2); //hardware reset Si4734 
+		_delay_us(200);     //hold for 200us, 100us by spec         
+		PORTE &= ~(1<<PE2); //release reset 
+		_delay_us(30);      //5us required because of my slow I2C translators I suspect
+		//Si code in "low" has 30us delay...no explaination
+		DDRE  &= ~(0x80);   //now Port E bit 7 becomes input from the radio interrupt
+
+		fm_pwr_up(); //powerup the radio as appropriate
+		current_fm_freq = 9910; //arg2, arg3: 99.9Mhz, 200khz steps
+		fm_tune_freq(); //tune radio to frequency in current_fm_freq
+
+	}
+
+
+}//radio_init
+
 /******************************************************************************
 * Function: init_lm73_sensor()
 * Description: Initializes the lm73 temperature sensor via i2c by calling the
@@ -203,6 +260,38 @@ uint8_t chk_buttons(uint8_t button) {
 
 }
 //******************************************************************************
+
+void segsum_freq(uint16_t frequency){
+
+	//initialize variables to be used in this function to -1, which makes LEDs go off
+	int8_t ones = -1;
+	int8_t tens = -1;
+	int8_t hundreds = -1;
+	int8_t thousands = -1;
+
+	//check to see if the total sum count is less than 1024 but at or greater than 1000 for parsing
+	if(frequency <= 9999){
+		ones = (frequency % 1000) % 10;
+		tens = (frequency % 100) / 10;
+		hundreds = (frequency % 1000) / 100;
+		thousands = frequency / 1000;
+	}
+	else{
+		ones = (frequency % 10000) % 10;
+		tens = (frequency % 10000) / 100;
+		hundreds = (frequency % 10000) / 1000;
+		thousands = frequency / 10000;
+	
+	}
+	
+	//place the variables into the segment_data[] array to be displayed
+	segment_data[0] = ones;
+	segment_data[1] = tens;
+	segment_data[2] = -1;
+	segment_data[3] = hundreds;
+	segment_data[4] = thousands;
+
+}
 
 //***********************************************************************************
 //                                   segment_sum                                    
@@ -388,14 +477,21 @@ void encoder_process(uint8_t encoder){
 				OCR2 = 250;
 			else	
 				OCR2 += 5;
+			
 
 		}
 		else
 		{
-			if(temp_min + 1 > 59)		//bound the count to 0 and 59
-				temp_min = 0;
-			else
-				temp_min++;				//increment minute when right encoder turned to the right
+			if(radio_tune == 0x01){
+				current_fm_freq += 10;
+				update_frequency ^= 0x01;
+			}
+			else{
+				if(temp_min + 1 > 59)		//bound the count to 0 and 59
+					temp_min = 0;
+				else
+					temp_min++;				//increment minute when right encoder turned to the right
+			}
 		}
 		
 		
@@ -412,11 +508,17 @@ void encoder_process(uint8_t encoder){
 		}
 		else
 		{
-			if(temp_min - 1 < 0){		//bound the count to 0 and 59
-				temp_min = 59;			
+			if(radio_tune == 0x01){
+				current_fm_freq -= 10;
+				update_frequency ^= 0x01;			
 			}
-			else
-				temp_min--;				//decrement minute when right encoder turned to left
+			else{
+				if(temp_min - 1 < 0){		//bound the count to 0 and 59
+					temp_min = 59;			
+				}
+				else
+					temp_min--;				//decrement minute when right encoder turned to left
+			}
 		}
 
 	}
@@ -571,12 +673,21 @@ void button_encoder_read(){
 		lcd_flag = 0x01;			//tell lcd to update
 		
 	}
+	else if(chk_buttons(1)){
+		radio_trigger ^= 0x01;
+		radio_trig_once = 0x01;
+	}
 
 	//poll if button 0 is pressed
 	//this silences all alarms, no snooze
 	if(chk_buttons(0) && trigger_alarm == 0x01){
 		trigger_alarm = 0;			//alarm turns off
 		lcd_flag = 0x01;			//update lcd
+	}
+	else if(chk_buttons(0)){
+		radio_tune ^= 0x01;
+		radio_trig_once = 0x01;
+		radio_power_down = radio_tune ^ 0x01;
 	}
 	
   //disable tristate buffer for pushbutton switches
@@ -814,7 +925,7 @@ ISR(TIMER0_OVF_vect){
 ISR(TIMER1_OVF_vect){
 
 	//check if trigger alarm is set
-	if(trigger_alarm == 0x01){
+	if(trigger_alarm == 0x01 && radio_trigger == 0){
 		
 		PORTC ^= (1 << PC3);		//start toggling PC3
 		TCNT1 = 40000;				//reset TCN1 to 40000 for ~300Hz
@@ -840,6 +951,17 @@ ISR(ADC_vect){
 }//ISR
 
 
+//******************************************************************************
+// External interrupt 7 is on Port E bit 7. The interrupt is triggered on the
+// rising edge of Port E bit 7.  The i/o clock must be running to detect the
+// edge (not asynchronouslly triggered)
+//******************************************************************************
+ISR(INT7_vect){
+	STC_interrupt = TRUE;
+}
+/***********************************************************************/
+
+
 //***********************************************************************************
 int main()
 {
@@ -861,13 +983,21 @@ init_twi(); //called from twi_master.c
 uart_init();
 init_lm73_sensor();
 
+EICRB |= (1<<ISC71) | (1<ISC70);
+EIMSK |= (1<<INT7);
+
+_delay_ms(2);
+
 //enable global interrupts
 sei();
+
+//radio_init();
+//radio_pwr_dwn();
 
 //initially set output compare register for TC2 to 0 (brightness control)
 OCR2 = 0;
 //initially set output compare register for TC3 to 200 (volume control)
-OCR3A = 100;
+OCR3A = 200;
 
 //initialize LCD
 lcd_init();
@@ -879,6 +1009,29 @@ while(1){
 	//_delay_us(300);
 	
 	ADCSRA |= (1 << ADSC);//poke ADSC and start conversion
+
+	if(radio_tune == 0x01 && radio_trig_once == 0x01){
+		radio_init();
+		radio_trig_once = 0;
+	}
+	else if(radio_tune == 0 && radio_power_down == 0x01){
+		radio_pwr_dwn();
+		radio_power_down = 0;
+	}
+	else if(update_frequency == 0x01){
+		update_frequency = 0;
+		fm_tune_freq(); //tune radio to frequency in current_fm_freq
+	}
+	
+	/*
+	if((radio_trigger == 0x01 && trigger_alarm == 0x01 && radio_trig_once == 0x01) || (radio_tune == 0x01 && radio_trig_once == 0x01)){
+		radio_init();
+		radio_trig_once = 0;
+	}
+	else if(radio_power_down == 0x01){
+		radio_pwr_dwn();
+		radio_power_down = 0;
+	}*/
 
 	
 	if(temp_read_flag == 0x01){
@@ -928,10 +1081,14 @@ while(1){
 	
 	//parse the alarm set time if necessary (if alarm adjust is set)
 	//otherwise, parse the current time
-	if(adjust_alarm == 0)
-		segsum(hour_count, min_count);
+	if(radio_tune == 0){
+		if(adjust_alarm == 0)
+			segsum(hour_count, min_count);
+		else
+			segsum(alarm_time_hour, alarm_time_min);
+	}
 	else
-		segsum(alarm_time_hour, alarm_time_min);
+		segsum_freq(current_fm_freq);
   //make PORTA an output
 	DDRA = 0xFF;
 	//uses "nop" to add a little delay
@@ -941,13 +1098,14 @@ while(1){
 	//based on the parsed number of the overall count
 	for(int i_seg = 0; i_seg < 5; i_seg++){
 		encoding = seven_seg_encoding(segment_data[i_seg]);
-		if(i_seg == 0 && alarm_is_set == 0x01)
+		if(i_seg == 0 && alarm_is_set == 0x01 && radio_tune == 0)
 			encoding &= 0b01111111;			//indicate on the LED display (decimal point for seg 0) that alarm set
-		if(i_seg == 4 && pm_flag == 0x01 && hour24_flag == 0)
+		if(i_seg == 4 && pm_flag == 0x01 && hour24_flag == 0 && radio_tune == 0)
 			encoding &= 0b01111111;			//indicate on the LED display (decimal point for seg 4) that it is pm
-		if(i_seg == 2 && trigger_alarm == 0x01)
+		if(i_seg == 2 && trigger_alarm == 0x01 && radio_tune == 0)
 			encoding &= 0b11111011;			//indicate on the LED display (top decimal point for seg 2) that
 											//the alarm is triggered
+		if(radio_tune == 0x01)
 		PORTA = 0xFF;
 		PORTB = (i_seg << 4);			//output onto PORTB to select segment digit
 		PORTA = encoding;				//output the encoding value to PORTA for seven seg display

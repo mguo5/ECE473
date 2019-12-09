@@ -41,6 +41,34 @@ ISR(INT7_vect){
 /***********************************************************************/
 
 
+void radio_init(){
+
+	for(int i = 0; i < 2; i++){
+
+		
+		DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
+		PORTE |= (1 << PE2); //radio reset is on at powerup (active high)
+
+		//hardware reset of Si4734
+		PORTE &= ~(1<<PE7); //int2 initially low to sense TWI mode
+		DDRE  |= 0x80;      //turn on Port E bit 7 to drive it low
+		PORTE |=  (1<<PE2); //hardware reset Si4734 
+		_delay_us(200);     //hold for 200us, 100us by spec         
+		PORTE &= ~(1<<PE2); //release reset 
+		_delay_us(30);      //5us required because of my slow I2C translators I suspect
+		//Si code in "low" has 30us delay...no explaination
+		DDRE  &= ~(0x80);   //now Port E bit 7 becomes input from the radio interrupt
+
+		fm_pwr_up(); //powerup the radio as appropriate
+		current_fm_freq = 9910; //arg2, arg3: 99.9Mhz, 200khz steps
+		fm_tune_freq(); //tune radio to frequency in current_fm_freq
+
+	}
+
+
+}
+
+
 int main(){
         init_twi();
 
@@ -64,27 +92,8 @@ int main(){
 
 	sei();
 
-	for(int i = 0; i < 5; i++){
+	
 
-		
-		DDRE  |= (1 << PE2); //Port E bit 2 is active high reset for radio 
-		PORTE |= (1 << PE2); //radio reset is on at powerup (active high)
-
-		//hardware reset of Si4734
-		PORTE &= ~(1<<PE7); //int2 initially low to sense TWI mode
-		DDRE  |= 0x80;      //turn on Port E bit 7 to drive it low
-		PORTE |=  (1<<PE2); //hardware reset Si4734 
-		_delay_us(200);     //hold for 200us, 100us by spec         
-		PORTE &= ~(1<<PE2); //release reset 
-		_delay_us(30);      //5us required because of my slow I2C translators I suspect
-		//Si code in "low" has 30us delay...no explaination
-		DDRE  &= ~(0x80);   //now Port E bit 7 becomes input from the radio interrupt
-
-		fm_pwr_up(); //powerup the radio as appropriate
-		current_fm_freq = 9910; //arg2, arg3: 99.9Mhz, 200khz steps
-		fm_tune_freq(); //tune radio to frequency in current_fm_freq
-
-	}
 
 	
 	   while(1){
@@ -93,11 +102,11 @@ int main(){
 
 		_delay_ms(3000);
 
-		radio_pwr_down();
+		radio_pwr_dwn();
 
 		_delay_ms(3000);
 
-		fm_pwr_up();
+		radio_init();
 
 
 		
