@@ -486,7 +486,7 @@ void encoder_process(uint8_t encoder){
 		else
 		{
 			if(radio_tune == 0x01){
-				current_fm_freq += 10;
+				current_fm_freq += 20;
 				update_frequency ^= 0x01;
 			}
 			else{
@@ -512,7 +512,7 @@ void encoder_process(uint8_t encoder){
 		else
 		{
 			if(radio_tune == 0x01){
-				current_fm_freq -= 10;
+				current_fm_freq -= 20;
 				update_frequency ^= 0x01;			
 			}
 			else{
@@ -669,20 +669,38 @@ void button_encoder_read(){
 
 	//poll if button 1 is pressed
 	//this activates the snooze feature
+	/*
 	if(chk_buttons(1) && trigger_alarm == 0x01){
 		trigger_alarm = 0;			//if pressed, alarm should turn off
 		ten_sec_start = 0x01;		//start the count for 10 second delay
 		ten_sec_count = 0;			//the count variable starts at 0
 		lcd_flag = 0x01;			//tell lcd to update
+		radio_pwr_dwn();
 		
 	}
 	else if(chk_buttons(1)){
 		radio_trigger ^= 0x01;
 		radio_trig_once = 0x01;
+	}*/
+
+	if(chk_buttons(1)){
+		if(trigger_alarm == 0x01){
+			trigger_alarm = 0;			//if pressed, alarm should turn off
+			ten_sec_start = 0x01;		//start the count for 10 second delay
+			ten_sec_count = 0;			//the count variable starts at 0
+			lcd_flag = 0x01;			//tell lcd to update
+			radio_pwr_dwn();
+		}
+		else{
+			radio_trigger ^= 0x01;
+			radio_trig_once = 0x01;
+		}
+		
 	}
 
 	//poll if button 0 is pressed
 	//this silences all alarms, no snooze
+	/*
 	if(chk_buttons(0) && trigger_alarm == 0x01){
 		trigger_alarm = 0;			//alarm turns off
 		lcd_flag = 0x01;			//update lcd
@@ -692,6 +710,22 @@ void button_encoder_read(){
 		radio_trig_once = 0x01;
 		radio_power_down = radio_tune ^ 0x01;
 		trigger_alarm = 0;
+		lcd_flag = 0x01;
+	}*/
+
+	if(chk_buttons(0)){
+		if(trigger_alarm == 0x01){
+			trigger_alarm = 0;			//alarm turns off
+			lcd_flag = 0x01;			//update lcd
+		}
+		else{
+			radio_tune ^= 0x01;
+			radio_trig_once = 0x01;
+			radio_power_down = radio_tune ^ 0x01;
+			trigger_alarm = 0;
+			lcd_flag = 0x01;
+
+		}			
 	}
 	
   //disable tristate buffer for pushbutton switches
@@ -795,7 +829,10 @@ void clock_count(){
 		ten_sec_count = 0;				//reset the count variable
 		lcd_flag = 0x01;				//update lcd
 		alarm_time_min = temp_min;		//beep for 1 minute
-		alarm_time_hour = temp_hour;		
+		alarm_time_hour = temp_hour;
+		if(radio_trigger == 0x01){
+			radio_init();
+		}		
 	}
 	
 }//clock_count
