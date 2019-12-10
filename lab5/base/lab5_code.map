@@ -507,123 +507,122 @@ END GROUP
  *(.fini0)
                 0x0000000000001a1a                _etext = .
 
-.data           0x0000000000800100       0x4c load address 0x0000000000001a1a
+.data           0x0000000000800100       0x4a load address 0x0000000000001a1a
                 0x0000000000800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000800100        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/crtatmega128.o
- .data          0x0000000000800100        0x4 lab5_code.o
-                0x0000000000800100                f_not_c
-                0x0000000000800101                temp_string
-                0x0000000000800103                temp_read_flag
- .data          0x0000000000800104        0x0 hd44780.o
- .data          0x0000000000800104        0x0 twi_master.o
- .data          0x0000000000800104        0x0 lm73_functions.o
- .data          0x0000000000800104        0x0 uart_functions.o
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodhi4.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodsi4.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_negsi2.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_exit.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_tablejump2.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_copy_data.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_clear_bss.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_umulhisi3.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodhi4.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodsi4.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(itoa_ncheck.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(utoa_ncheck.o)
- .data          0x0000000000800104        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(strrev.o)
+ .data          0x0000000000800100        0x3 lab5_code.o
+                0x0000000000800100                temp_string
+                0x0000000000800102                temp_read_flag
+ .data          0x0000000000800103        0x0 hd44780.o
+ .data          0x0000000000800103        0x0 twi_master.o
+ .data          0x0000000000800103        0x0 lm73_functions.o
+ .data          0x0000000000800103        0x0 uart_functions.o
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodhi4.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodsi4.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_negsi2.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_exit.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_tablejump2.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_copy_data.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_clear_bss.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_umulhisi3.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodhi4.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodsi4.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(itoa_ncheck.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(utoa_ncheck.o)
+ .data          0x0000000000800103        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(strrev.o)
  *(.data*)
  *(.gnu.linkonce.d*)
  *(.rodata)
- .rodata        0x0000000000800104       0x11 lab5_code.o
+ .rodata        0x0000000000800103       0x11 lab5_code.o
  *(.rodata*)
  .rodata.str1.1
-                0x0000000000800115       0x36 lab5_code.o
+                0x0000000000800114       0x36 lab5_code.o
  *(.gnu.linkonce.r*)
-                0x000000000080014c                . = ALIGN (0x2)
- *fill*         0x000000000080014b        0x1 
-                0x000000000080014c                _edata = .
-                0x000000000080014c                PROVIDE (__data_end, .)
+                0x000000000080014a                . = ALIGN (0x2)
+                0x000000000080014a                _edata = .
+                0x000000000080014a                PROVIDE (__data_end, .)
 
-.bss            0x000000000080014c       0xce
-                0x000000000080014c                PROVIDE (__bss_start, .)
+.bss            0x000000000080014a       0xcf
+                0x000000000080014a                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x000000000080014c        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/crtatmega128.o
- .bss           0x000000000080014c       0x2c lab5_code.o
-                0x000000000080014c                uart_send_flag
-                0x000000000080014d                ten_sec_count
-                0x000000000080014e                ten_sec_start
-                0x000000000080014f                alarm_time_hour
-                0x0000000000800150                alarm_time_min
-                0x0000000000800151                alarm_time_sec
-                0x0000000000800152                temp_pm_flag
-                0x0000000000800153                temp_hour
-                0x0000000000800154                temp_min
-                0x0000000000800155                hour_count
-                0x0000000000800156                min_count
-                0x0000000000800157                sec_count
-                0x0000000000800158                isr_count
-                0x0000000000800159                alarm_set_once
-                0x000000000080015a                alarm_is_set
-                0x000000000080015b                alarm_match_count
-                0x000000000080015c                adjust_alarm
-                0x000000000080015d                trigger_alarm
-                0x000000000080015e                manual_brightness
-                0x000000000080015f                lcd_flag
-                0x0000000000800160                hour24_flag
-                0x0000000000800161                pm_flag
-                0x0000000000800162                input_flag
-                0x0000000000800163                adjust_flag
-                0x0000000000800164                encoder_right
-                0x0000000000800165                encoder_left
-                0x0000000000800166                count
- .bss           0x0000000000800178        0x2 hd44780.o
- .bss           0x000000000080017a        0x1 twi_master.o
- .bss           0x000000000080017b        0x0 lm73_functions.o
- .bss           0x000000000080017b        0x0 uart_functions.o
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodhi4.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodsi4.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_negsi2.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_exit.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_tablejump2.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_copy_data.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_clear_bss.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_umulhisi3.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodhi4.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodsi4.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(itoa_ncheck.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(utoa_ncheck.o)
- .bss           0x000000000080017b        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(strrev.o)
+ .bss           0x000000000080014a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/crtatmega128.o
+ .bss           0x000000000080014a       0x2d lab5_code.o
+                0x000000000080014a                f_not_c
+                0x000000000080014b                uart_send_flag
+                0x000000000080014c                ten_sec_count
+                0x000000000080014d                ten_sec_start
+                0x000000000080014e                alarm_time_hour
+                0x000000000080014f                alarm_time_min
+                0x0000000000800150                alarm_time_sec
+                0x0000000000800151                temp_pm_flag
+                0x0000000000800152                temp_hour
+                0x0000000000800153                temp_min
+                0x0000000000800154                hour_count
+                0x0000000000800155                min_count
+                0x0000000000800156                sec_count
+                0x0000000000800157                isr_count
+                0x0000000000800158                alarm_set_once
+                0x0000000000800159                alarm_is_set
+                0x000000000080015a                alarm_match_count
+                0x000000000080015b                adjust_alarm
+                0x000000000080015c                trigger_alarm
+                0x000000000080015d                manual_brightness
+                0x000000000080015e                lcd_flag
+                0x000000000080015f                hour24_flag
+                0x0000000000800160                pm_flag
+                0x0000000000800161                input_flag
+                0x0000000000800162                adjust_flag
+                0x0000000000800163                encoder_right
+                0x0000000000800164                encoder_left
+                0x0000000000800165                count
+ .bss           0x0000000000800177        0x2 hd44780.o
+ .bss           0x0000000000800179        0x1 twi_master.o
+ .bss           0x000000000080017a        0x0 lm73_functions.o
+ .bss           0x000000000080017a        0x0 uart_functions.o
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodhi4.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_divmodsi4.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_negsi2.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_exit.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_tablejump2.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_copy_data.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_clear_bss.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_umulhisi3.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodhi4.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/avr51/libgcc.a(_udivmodsi4.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(itoa_ncheck.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(utoa_ncheck.o)
+ .bss           0x000000000080017a        0x0 /home/matt/opt/avr8-gnu-toolchain-linux_x86_64/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr51/libc.a(strrev.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x000000000080017b       0x16 lab5_code.o
-                0x000000000080017b                dec_to_7seg
-                0x0000000000800187                temp_digits
-                0x000000000080018a                read_i2c_buffer
-                0x000000000080018c                segment_data
- COMMON         0x0000000000800191       0x30 hd44780.o
-                0x0000000000800191                lcd_string_array
-                0x00000000008001b1                lcd_str
- COMMON         0x00000000008001c1        0x5 twi_master.o
-                0x00000000008001c1                twi_state
-                0x00000000008001c2                twi_buf
-                0x00000000008001c4                twi_bus_addr
-                0x00000000008001c5                twi_msg_size
- COMMON         0x00000000008001c6        0x4 lm73_functions.o
-                0x00000000008001c6                lm73_wr_buf
-                0x00000000008001c8                lm73_rd_buf
- COMMON         0x00000000008001ca       0x50 uart_functions.o
-                0x00000000008001ca                uart_tx_buf
-                0x00000000008001f2                uart_rx_buf
-                0x000000000080021a                PROVIDE (__bss_end, .)
+ COMMON         0x000000000080017a       0x16 lab5_code.o
+                0x000000000080017a                dec_to_7seg
+                0x0000000000800186                temp_digits
+                0x0000000000800189                read_i2c_buffer
+                0x000000000080018b                segment_data
+ COMMON         0x0000000000800190       0x30 hd44780.o
+                0x0000000000800190                lcd_string_array
+                0x00000000008001b0                lcd_str
+ COMMON         0x00000000008001c0        0x5 twi_master.o
+                0x00000000008001c0                twi_state
+                0x00000000008001c1                twi_buf
+                0x00000000008001c3                twi_bus_addr
+                0x00000000008001c4                twi_msg_size
+ COMMON         0x00000000008001c5        0x4 lm73_functions.o
+                0x00000000008001c5                lm73_wr_buf
+                0x00000000008001c7                lm73_rd_buf
+ COMMON         0x00000000008001c9       0x50 uart_functions.o
+                0x00000000008001c9                uart_tx_buf
+                0x00000000008001f1                uart_rx_buf
+                0x0000000000800219                PROVIDE (__bss_end, .)
                 0x0000000000001a1a                __data_load_start = LOADADDR (.data)
-                0x0000000000001a66                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x0000000000001a64                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x000000000080021a        0x0
+.noinit         0x0000000000800219        0x0
                 [!provide]                        PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                        PROVIDE (__noinit_end, .)
-                0x000000000080021a                _end = .
+                0x0000000000800219                _end = .
                 [!provide]                        PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x0

@@ -2,13 +2,14 @@
 * Author: Matthew Guo
 * Class: ECE 473
 * Date Due: 12/13/2019
-* Lab Number: Lab 5
+* Lab Number: Lab 6
 * School: Oregon State University
-* Description: This is lab 5 for ECE473. This lab uses both I2C and UART. The I2C is used
-		for the LM73 base temperature sensor. It is updated once every second on the alarm clock
-		and sends to the LCD display. UART is used to communicate with another
-		temperature sensor. This other temperature sensor communicates with the 48
-		board via I2C. The remote temperature sensor updates once every second.
+* Description: This is lab 6 and final project for ECE473, using the radio. All of
+		the functionality from the alarm clock is handled here as well,
+		as well as incorporating the radio. The radio, if set, will trigger
+		radio as the buzzing instead of the annoying tone. Snooze functionality
+		is incorporated as well. User can tune the radio to different
+		frequencies.
 *****************************************************************************/
 
 //  HARDWARE SETUP:
@@ -262,6 +263,11 @@ uint8_t chk_buttons(uint8_t button) {
 }
 //******************************************************************************
 
+/******************************************************************************
+* Function: segsum_freq()
+* Description: parses through the frequency for the radio board. A 99.1MHz will
+* show up as 99.1 on the LCD screen.
+*******************************************************************************/
 void segsum_freq(uint16_t frequency){
 
 	//initialize variables to be used in this function to -1, which makes LEDs go off
@@ -294,7 +300,7 @@ void segsum_freq(uint16_t frequency){
 	segment_data[3] = hundreds;
 	segment_data[4] = thousands;
 
-}
+}//segsum_freq
 
 //***********************************************************************************
 //                                   segment_sum                                    
@@ -719,11 +725,11 @@ void button_encoder_read(){
 			lcd_flag = 0x01;			//update lcd
 		}
 		else{
-			radio_tune ^= 0x01;
-			radio_trig_once = 0x01;
+			radio_tune ^= 0x01;			//toggle tuning mode
+			radio_trig_once = 0x01;			//make sure to trigger just once
 			radio_power_down = radio_tune ^ 0x01;
 			trigger_alarm = 0;
-			lcd_flag = 0x01;
+			lcd_flag = 0x01;			//update lcd
 
 		}			
 	}
@@ -872,7 +878,7 @@ void set_LCD(){
 	//	line2_col1();
 	//	string2lcd(temp_string);
 	}
-   cursor_home();
+   //cursor_home();
 }
 
 void set_LCD_temp(){
@@ -1024,6 +1030,7 @@ init_twi(); //called from twi_master.c
 uart_init();
 init_lm73_sensor();
 
+//set up interrupts for the radio
 EICRB |= (1<<ISC71) | (1<ISC70);
 EIMSK |= (1<<INT7);
 
@@ -1051,25 +1058,27 @@ while(1){
 	
 	ADCSRA |= (1 << ADSC);//poke ADSC and start conversion
 
+	//if in tuning mode, turn on the radio
 	if(radio_tune == 0x01 && radio_trig_once == 0x01){
 		radio_init();
 		radio_trig_once = 0;
-	}
+	}//otherwise, turn off the radio
 	else if(radio_tune == 0 && radio_power_down == 0x01){
 		radio_pwr_dwn();
 		radio_power_down = 0;
-	}
+	}//update the frequency for tuning
 	else if(update_frequency == 0x01){
 		update_frequency = 0;
 		fm_tune_freq(); //tune radio to frequency in current_fm_freq
 	}
 
+	//if the radio is triggered and alarm is set, then turn on radio
 	if(radio_trigger == 0x01 && trigger_alarm == 0x01 && radio_trig_once == 0x01){
 		radio_trig_once = 0;
 		radio_init();
 		alarm_radio_once = 0x01;
 
-	}
+	}//otherwise, turn off the radio
 	else if(trigger_alarm == 0 && alarm_radio_once == 0x01){
 		alarm_radio_once = 0;
 		radio_pwr_dwn();
@@ -1085,7 +1094,7 @@ while(1){
 		radio_power_down = 0;
 	}*/
 
-	
+	//update local temperature
 	if(temp_read_flag == 0x01){
 		lm73_temp_convert(temp_digits, read_lm73_sensor(), f_not_c);
 		temp_string[3] = temp_digits[0];
@@ -1097,7 +1106,7 @@ while(1){
 			temp_string[5] = 'C';		
 		//set_LCD_temp();
 	}
-	
+	//get uart data for remote temperature
 	if(uart_send_flag == 0x01){
 		uart_send_read();
 		set_LCD_temp();

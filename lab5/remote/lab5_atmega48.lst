@@ -3,33 +3,33 @@ lab5_atmega48.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000002  00800100  000004d4  00000568  2**0
+  0 .data         00000002  00800100  000004d0  00000564  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000004d4  00000000  00000000  00000094  2**1
+  1 .text         000004d0  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .bss          00000060  00800102  00800102  0000056a  2**0
+  2 .bss          00000060  00800102  00800102  00000566  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  0000056a  2**0
+  3 .comment      00000030  00000000  00000000  00000566  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000059c  2**2
+  4 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000598  2**2
                   CONTENTS, READONLY
-  5 .avr.prop     00000016  00000000  00000000  000005d8  2**0
+  5 .avr.prop     00000016  00000000  00000000  000005d4  2**0
                   CONTENTS, READONLY
-  6 .debug_aranges 00000088  00000000  00000000  000005ee  2**0
+  6 .debug_aranges 00000088  00000000  00000000  000005ea  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_info   00000fa7  00000000  00000000  00000676  2**0
+  7 .debug_info   00000fa7  00000000  00000000  00000672  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 00000b0e  00000000  00000000  0000161d  2**0
+  8 .debug_abbrev 00000b0e  00000000  00000000  00001619  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_line   00000590  00000000  00000000  0000212b  2**0
+  9 .debug_line   0000058a  00000000  00000000  00002127  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_frame  00000198  00000000  00000000  000026bc  2**2
+ 10 .debug_frame  00000198  00000000  00000000  000026b4  2**2
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_str    00000519  00000000  00000000  00002854  2**0
+ 11 .debug_str    00000519  00000000  00000000  0000284c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_loc    00000488  00000000  00000000  00002d6d  2**0
+ 12 .debug_loc    00000488  00000000  00000000  00002d65  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_ranges 00000030  00000000  00000000  000031f5  2**0
+ 13 .debug_ranges 00000030  00000000  00000000  000031ed  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -59,89 +59,89 @@ Disassembly of section .text:
   2a:	70 c0       	rjmp	.+224    	; 0x10c <__bad_interrupt>
   2c:	6f c0       	rjmp	.+222    	; 0x10c <__bad_interrupt>
   2e:	6e c0       	rjmp	.+220    	; 0x10c <__bad_interrupt>
-  30:	11 c1       	rjmp	.+546    	; 0x254 <__vector_24>
+  30:	0f c1       	rjmp	.+542    	; 0x250 <__vector_24>
   32:	6c c0       	rjmp	.+216    	; 0x10c <__bad_interrupt>
-  34:	4b c1       	rjmp	.+662    	; 0x2cc <__vector_24+0x78>
-  36:	24 c1       	rjmp	.+584    	; 0x280 <__vector_24+0x2c>
-  38:	23 c1       	rjmp	.+582    	; 0x280 <__vector_24+0x2c>
-  3a:	22 c1       	rjmp	.+580    	; 0x280 <__vector_24+0x2c>
-  3c:	21 c1       	rjmp	.+578    	; 0x280 <__vector_24+0x2c>
-  3e:	20 c1       	rjmp	.+576    	; 0x280 <__vector_24+0x2c>
-  40:	1f c1       	rjmp	.+574    	; 0x280 <__vector_24+0x2c>
-  42:	1e c1       	rjmp	.+572    	; 0x280 <__vector_24+0x2c>
-  44:	43 c1       	rjmp	.+646    	; 0x2cc <__vector_24+0x78>
-  46:	1c c1       	rjmp	.+568    	; 0x280 <__vector_24+0x2c>
-  48:	1b c1       	rjmp	.+566    	; 0x280 <__vector_24+0x2c>
-  4a:	1a c1       	rjmp	.+564    	; 0x280 <__vector_24+0x2c>
-  4c:	19 c1       	rjmp	.+562    	; 0x280 <__vector_24+0x2c>
-  4e:	18 c1       	rjmp	.+560    	; 0x280 <__vector_24+0x2c>
-  50:	17 c1       	rjmp	.+558    	; 0x280 <__vector_24+0x2c>
-  52:	16 c1       	rjmp	.+556    	; 0x280 <__vector_24+0x2c>
-  54:	45 c1       	rjmp	.+650    	; 0x2e0 <__vector_24+0x8c>
-  56:	14 c1       	rjmp	.+552    	; 0x280 <__vector_24+0x2c>
-  58:	13 c1       	rjmp	.+550    	; 0x280 <__vector_24+0x2c>
-  5a:	12 c1       	rjmp	.+548    	; 0x280 <__vector_24+0x2c>
-  5c:	11 c1       	rjmp	.+546    	; 0x280 <__vector_24+0x2c>
-  5e:	10 c1       	rjmp	.+544    	; 0x280 <__vector_24+0x2c>
-  60:	0f c1       	rjmp	.+542    	; 0x280 <__vector_24+0x2c>
-  62:	0e c1       	rjmp	.+540    	; 0x280 <__vector_24+0x2c>
-  64:	0d c1       	rjmp	.+538    	; 0x280 <__vector_24+0x2c>
-  66:	0c c1       	rjmp	.+536    	; 0x280 <__vector_24+0x2c>
-  68:	0b c1       	rjmp	.+534    	; 0x280 <__vector_24+0x2c>
-  6a:	0a c1       	rjmp	.+532    	; 0x280 <__vector_24+0x2c>
-  6c:	09 c1       	rjmp	.+530    	; 0x280 <__vector_24+0x2c>
-  6e:	08 c1       	rjmp	.+528    	; 0x280 <__vector_24+0x2c>
-  70:	07 c1       	rjmp	.+526    	; 0x280 <__vector_24+0x2c>
-  72:	06 c1       	rjmp	.+524    	; 0x280 <__vector_24+0x2c>
-  74:	35 c1       	rjmp	.+618    	; 0x2e0 <__vector_24+0x8c>
-  76:	04 c1       	rjmp	.+520    	; 0x280 <__vector_24+0x2c>
-  78:	03 c1       	rjmp	.+518    	; 0x280 <__vector_24+0x2c>
-  7a:	02 c1       	rjmp	.+516    	; 0x280 <__vector_24+0x2c>
-  7c:	01 c1       	rjmp	.+514    	; 0x280 <__vector_24+0x2c>
-  7e:	00 c1       	rjmp	.+512    	; 0x280 <__vector_24+0x2c>
-  80:	ff c0       	rjmp	.+510    	; 0x280 <__vector_24+0x2c>
-  82:	fe c0       	rjmp	.+508    	; 0x280 <__vector_24+0x2c>
-  84:	fd c0       	rjmp	.+506    	; 0x280 <__vector_24+0x2c>
-  86:	fc c0       	rjmp	.+504    	; 0x280 <__vector_24+0x2c>
-  88:	fb c0       	rjmp	.+502    	; 0x280 <__vector_24+0x2c>
-  8a:	fa c0       	rjmp	.+500    	; 0x280 <__vector_24+0x2c>
-  8c:	f9 c0       	rjmp	.+498    	; 0x280 <__vector_24+0x2c>
-  8e:	f8 c0       	rjmp	.+496    	; 0x280 <__vector_24+0x2c>
-  90:	f7 c0       	rjmp	.+494    	; 0x280 <__vector_24+0x2c>
-  92:	f6 c0       	rjmp	.+492    	; 0x280 <__vector_24+0x2c>
-  94:	3c c1       	rjmp	.+632    	; 0x30e <__stack+0xf>
-  96:	f4 c0       	rjmp	.+488    	; 0x280 <__vector_24+0x2c>
-  98:	f3 c0       	rjmp	.+486    	; 0x280 <__vector_24+0x2c>
-  9a:	f2 c0       	rjmp	.+484    	; 0x280 <__vector_24+0x2c>
-  9c:	f1 c0       	rjmp	.+482    	; 0x280 <__vector_24+0x2c>
-  9e:	f0 c0       	rjmp	.+480    	; 0x280 <__vector_24+0x2c>
-  a0:	ef c0       	rjmp	.+478    	; 0x280 <__vector_24+0x2c>
-  a2:	ee c0       	rjmp	.+476    	; 0x280 <__vector_24+0x2c>
-  a4:	38 c1       	rjmp	.+624    	; 0x316 <__stack+0x17>
-  a6:	ec c0       	rjmp	.+472    	; 0x280 <__vector_24+0x2c>
-  a8:	eb c0       	rjmp	.+470    	; 0x280 <__vector_24+0x2c>
-  aa:	ea c0       	rjmp	.+468    	; 0x280 <__vector_24+0x2c>
-  ac:	e9 c0       	rjmp	.+466    	; 0x280 <__vector_24+0x2c>
-  ae:	e8 c0       	rjmp	.+464    	; 0x280 <__vector_24+0x2c>
-  b0:	e7 c0       	rjmp	.+462    	; 0x280 <__vector_24+0x2c>
-  b2:	e6 c0       	rjmp	.+460    	; 0x280 <__vector_24+0x2c>
-  b4:	e5 c0       	rjmp	.+458    	; 0x280 <__vector_24+0x2c>
-  b6:	e4 c0       	rjmp	.+456    	; 0x280 <__vector_24+0x2c>
-  b8:	e3 c0       	rjmp	.+454    	; 0x280 <__vector_24+0x2c>
-  ba:	e2 c0       	rjmp	.+452    	; 0x280 <__vector_24+0x2c>
-  bc:	e1 c0       	rjmp	.+450    	; 0x280 <__vector_24+0x2c>
-  be:	e0 c0       	rjmp	.+448    	; 0x280 <__vector_24+0x2c>
-  c0:	df c0       	rjmp	.+446    	; 0x280 <__vector_24+0x2c>
-  c2:	de c0       	rjmp	.+444    	; 0x280 <__vector_24+0x2c>
-  c4:	36 c1       	rjmp	.+620    	; 0x332 <__stack+0x33>
-  c6:	dc c0       	rjmp	.+440    	; 0x280 <__vector_24+0x2c>
-  c8:	db c0       	rjmp	.+438    	; 0x280 <__vector_24+0x2c>
-  ca:	da c0       	rjmp	.+436    	; 0x280 <__vector_24+0x2c>
-  cc:	d9 c0       	rjmp	.+434    	; 0x280 <__vector_24+0x2c>
-  ce:	d8 c0       	rjmp	.+432    	; 0x280 <__vector_24+0x2c>
-  d0:	d7 c0       	rjmp	.+430    	; 0x280 <__vector_24+0x2c>
-  d2:	d6 c0       	rjmp	.+428    	; 0x280 <__vector_24+0x2c>
-  d4:	ec c0       	rjmp	.+472    	; 0x2ae <__vector_24+0x5a>
+  34:	49 c1       	rjmp	.+658    	; 0x2c8 <__vector_24+0x78>
+  36:	22 c1       	rjmp	.+580    	; 0x27c <__vector_24+0x2c>
+  38:	21 c1       	rjmp	.+578    	; 0x27c <__vector_24+0x2c>
+  3a:	20 c1       	rjmp	.+576    	; 0x27c <__vector_24+0x2c>
+  3c:	1f c1       	rjmp	.+574    	; 0x27c <__vector_24+0x2c>
+  3e:	1e c1       	rjmp	.+572    	; 0x27c <__vector_24+0x2c>
+  40:	1d c1       	rjmp	.+570    	; 0x27c <__vector_24+0x2c>
+  42:	1c c1       	rjmp	.+568    	; 0x27c <__vector_24+0x2c>
+  44:	41 c1       	rjmp	.+642    	; 0x2c8 <__vector_24+0x78>
+  46:	1a c1       	rjmp	.+564    	; 0x27c <__vector_24+0x2c>
+  48:	19 c1       	rjmp	.+562    	; 0x27c <__vector_24+0x2c>
+  4a:	18 c1       	rjmp	.+560    	; 0x27c <__vector_24+0x2c>
+  4c:	17 c1       	rjmp	.+558    	; 0x27c <__vector_24+0x2c>
+  4e:	16 c1       	rjmp	.+556    	; 0x27c <__vector_24+0x2c>
+  50:	15 c1       	rjmp	.+554    	; 0x27c <__vector_24+0x2c>
+  52:	14 c1       	rjmp	.+552    	; 0x27c <__vector_24+0x2c>
+  54:	43 c1       	rjmp	.+646    	; 0x2dc <__vector_24+0x8c>
+  56:	12 c1       	rjmp	.+548    	; 0x27c <__vector_24+0x2c>
+  58:	11 c1       	rjmp	.+546    	; 0x27c <__vector_24+0x2c>
+  5a:	10 c1       	rjmp	.+544    	; 0x27c <__vector_24+0x2c>
+  5c:	0f c1       	rjmp	.+542    	; 0x27c <__vector_24+0x2c>
+  5e:	0e c1       	rjmp	.+540    	; 0x27c <__vector_24+0x2c>
+  60:	0d c1       	rjmp	.+538    	; 0x27c <__vector_24+0x2c>
+  62:	0c c1       	rjmp	.+536    	; 0x27c <__vector_24+0x2c>
+  64:	0b c1       	rjmp	.+534    	; 0x27c <__vector_24+0x2c>
+  66:	0a c1       	rjmp	.+532    	; 0x27c <__vector_24+0x2c>
+  68:	09 c1       	rjmp	.+530    	; 0x27c <__vector_24+0x2c>
+  6a:	08 c1       	rjmp	.+528    	; 0x27c <__vector_24+0x2c>
+  6c:	07 c1       	rjmp	.+526    	; 0x27c <__vector_24+0x2c>
+  6e:	06 c1       	rjmp	.+524    	; 0x27c <__vector_24+0x2c>
+  70:	05 c1       	rjmp	.+522    	; 0x27c <__vector_24+0x2c>
+  72:	04 c1       	rjmp	.+520    	; 0x27c <__vector_24+0x2c>
+  74:	33 c1       	rjmp	.+614    	; 0x2dc <__vector_24+0x8c>
+  76:	02 c1       	rjmp	.+516    	; 0x27c <__vector_24+0x2c>
+  78:	01 c1       	rjmp	.+514    	; 0x27c <__vector_24+0x2c>
+  7a:	00 c1       	rjmp	.+512    	; 0x27c <__vector_24+0x2c>
+  7c:	ff c0       	rjmp	.+510    	; 0x27c <__vector_24+0x2c>
+  7e:	fe c0       	rjmp	.+508    	; 0x27c <__vector_24+0x2c>
+  80:	fd c0       	rjmp	.+506    	; 0x27c <__vector_24+0x2c>
+  82:	fc c0       	rjmp	.+504    	; 0x27c <__vector_24+0x2c>
+  84:	fb c0       	rjmp	.+502    	; 0x27c <__vector_24+0x2c>
+  86:	fa c0       	rjmp	.+500    	; 0x27c <__vector_24+0x2c>
+  88:	f9 c0       	rjmp	.+498    	; 0x27c <__vector_24+0x2c>
+  8a:	f8 c0       	rjmp	.+496    	; 0x27c <__vector_24+0x2c>
+  8c:	f7 c0       	rjmp	.+494    	; 0x27c <__vector_24+0x2c>
+  8e:	f6 c0       	rjmp	.+492    	; 0x27c <__vector_24+0x2c>
+  90:	f5 c0       	rjmp	.+490    	; 0x27c <__vector_24+0x2c>
+  92:	f4 c0       	rjmp	.+488    	; 0x27c <__vector_24+0x2c>
+  94:	3a c1       	rjmp	.+628    	; 0x30a <__stack+0xb>
+  96:	f2 c0       	rjmp	.+484    	; 0x27c <__vector_24+0x2c>
+  98:	f1 c0       	rjmp	.+482    	; 0x27c <__vector_24+0x2c>
+  9a:	f0 c0       	rjmp	.+480    	; 0x27c <__vector_24+0x2c>
+  9c:	ef c0       	rjmp	.+478    	; 0x27c <__vector_24+0x2c>
+  9e:	ee c0       	rjmp	.+476    	; 0x27c <__vector_24+0x2c>
+  a0:	ed c0       	rjmp	.+474    	; 0x27c <__vector_24+0x2c>
+  a2:	ec c0       	rjmp	.+472    	; 0x27c <__vector_24+0x2c>
+  a4:	36 c1       	rjmp	.+620    	; 0x312 <__stack+0x13>
+  a6:	ea c0       	rjmp	.+468    	; 0x27c <__vector_24+0x2c>
+  a8:	e9 c0       	rjmp	.+466    	; 0x27c <__vector_24+0x2c>
+  aa:	e8 c0       	rjmp	.+464    	; 0x27c <__vector_24+0x2c>
+  ac:	e7 c0       	rjmp	.+462    	; 0x27c <__vector_24+0x2c>
+  ae:	e6 c0       	rjmp	.+460    	; 0x27c <__vector_24+0x2c>
+  b0:	e5 c0       	rjmp	.+458    	; 0x27c <__vector_24+0x2c>
+  b2:	e4 c0       	rjmp	.+456    	; 0x27c <__vector_24+0x2c>
+  b4:	e3 c0       	rjmp	.+454    	; 0x27c <__vector_24+0x2c>
+  b6:	e2 c0       	rjmp	.+452    	; 0x27c <__vector_24+0x2c>
+  b8:	e1 c0       	rjmp	.+450    	; 0x27c <__vector_24+0x2c>
+  ba:	e0 c0       	rjmp	.+448    	; 0x27c <__vector_24+0x2c>
+  bc:	df c0       	rjmp	.+446    	; 0x27c <__vector_24+0x2c>
+  be:	de c0       	rjmp	.+444    	; 0x27c <__vector_24+0x2c>
+  c0:	dd c0       	rjmp	.+442    	; 0x27c <__vector_24+0x2c>
+  c2:	dc c0       	rjmp	.+440    	; 0x27c <__vector_24+0x2c>
+  c4:	34 c1       	rjmp	.+616    	; 0x32e <__stack+0x2f>
+  c6:	da c0       	rjmp	.+436    	; 0x27c <__vector_24+0x2c>
+  c8:	d9 c0       	rjmp	.+434    	; 0x27c <__vector_24+0x2c>
+  ca:	d8 c0       	rjmp	.+432    	; 0x27c <__vector_24+0x2c>
+  cc:	d7 c0       	rjmp	.+430    	; 0x27c <__vector_24+0x2c>
+  ce:	d6 c0       	rjmp	.+428    	; 0x27c <__vector_24+0x2c>
+  d0:	d5 c0       	rjmp	.+426    	; 0x27c <__vector_24+0x2c>
+  d2:	d4 c0       	rjmp	.+424    	; 0x27c <__vector_24+0x2c>
+  d4:	ea c0       	rjmp	.+468    	; 0x2aa <__vector_24+0x5a>
 
 000000d6 <__ctors_end>:
   d6:	11 24       	eor	r1, r1
@@ -155,7 +155,7 @@ Disassembly of section .text:
   e2:	11 e0       	ldi	r17, 0x01	; 1
   e4:	a0 e0       	ldi	r26, 0x00	; 0
   e6:	b1 e0       	ldi	r27, 0x01	; 1
-  e8:	e4 ed       	ldi	r30, 0xD4	; 212
+  e8:	e0 ed       	ldi	r30, 0xD0	; 208
   ea:	f4 e0       	ldi	r31, 0x04	; 4
   ec:	02 c0       	rjmp	.+4      	; 0xf2 <__do_copy_data+0x10>
   ee:	05 90       	lpm	r0, Z+
@@ -177,8 +177,8 @@ Disassembly of section .text:
  102:	a2 36       	cpi	r26, 0x62	; 98
  104:	b2 07       	cpc	r27, r18
  106:	e1 f7       	brne	.-8      	; 0x100 <.do_clear_bss_loop>
- 108:	5e d1       	rcall	.+700    	; 0x3c6 <main>
- 10a:	e2 c1       	rjmp	.+964    	; 0x4d0 <_exit>
+ 108:	5c d1       	rcall	.+696    	; 0x3c2 <main>
+ 10a:	e0 c1       	rjmp	.+960    	; 0x4cc <_exit>
 
 0000010c <__bad_interrupt>:
  10c:	79 cf       	rjmp	.-270    	; 0x0 <__vectors>
@@ -194,7 +194,7 @@ void init_lm73_sensor(){
  110:	60 e0       	ldi	r22, 0x00	; 0
  112:	70 e0       	ldi	r23, 0x00	; 0
  114:	80 e9       	ldi	r24, 0x90	; 144
- 116:	2c d1       	rcall	.+600    	; 0x370 <twi_start_wr>
+ 116:	2a d1       	rcall	.+596    	; 0x36c <twi_start_wr>
 	asm volatile("nop");	
  118:	00 00       	nop
  11a:	08 95       	ret
@@ -210,7 +210,7 @@ void init_lm73_sensor(){
  11e:	66 e0       	ldi	r22, 0x06	; 6
  120:	71 e0       	ldi	r23, 0x01	; 1
  122:	80 e9       	ldi	r24, 0x90	; 144
- 124:	36 d1       	rcall	.+620    	; 0x392 <twi_start_rd>
+ 124:	34 d1       	rcall	.+616    	; 0x38e <twi_start_rd>
 
 	//stores temp reading to temp_reading
 	temp_reading = read_i2c_buffer[0] << 8;
@@ -240,744 +240,748 @@ ISR(USART_RX_vect){
  140:	11 24       	eor	r1, r1
  142:	8f 93       	push	r24
  144:	9f 93       	push	r25
+	//grab the UDR0 value from 128
 	temp[0] = UDR0;
  146:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
  14a:	80 93 05 01 	sts	0x0105, r24	; 0x800105 <temp>
+	//for debugging, toggle PB2
 	PORTB ^= (1 << PB2);
  14e:	95 b1       	in	r25, 0x05	; 5
  150:	84 e0       	ldi	r24, 0x04	; 4
  152:	89 27       	eor	r24, r25
  154:	85 b9       	out	0x05, r24	; 5
-	flag = 0x01;
- 156:	81 e0       	ldi	r24, 0x01	; 1
- 158:	80 93 02 01 	sts	0x0102, r24	; 0x800102 <__data_end>
+	//set the read flag for main function
 	read_temp_flag = 0x01;
- 15c:	80 93 03 01 	sts	0x0103, r24	; 0x800103 <read_temp_flag>
+ 156:	81 e0       	ldi	r24, 0x01	; 1
+ 158:	80 93 03 01 	sts	0x0103, r24	; 0x800103 <read_temp_flag>
 	
-}
- 160:	9f 91       	pop	r25
- 162:	8f 91       	pop	r24
+}//ISR
+ 15c:	9f 91       	pop	r25
+ 15e:	8f 91       	pop	r24
+ 160:	0f 90       	pop	r0
+ 162:	0f be       	out	0x3f, r0	; 63
  164:	0f 90       	pop	r0
- 166:	0f be       	out	0x3f, r0	; 63
- 168:	0f 90       	pop	r0
- 16a:	1f 90       	pop	r1
- 16c:	18 95       	reti
+ 166:	1f 90       	pop	r1
+ 168:	18 95       	reti
 
-0000016e <uart_putc>:
+0000016a <uart_putc>:
 //                        uart_putc
 //
 // Takes a character and sends it to USART0
 //
 void uart_putc(char data) {
     while (!(UCSR0A&(1<<UDRE0)));    // Wait for previous transmissions
- 16e:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 172:	95 ff       	sbrs	r25, 5
- 174:	fc cf       	rjmp	.-8      	; 0x16e <uart_putc>
+ 16a:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 16e:	95 ff       	sbrs	r25, 5
+ 170:	fc cf       	rjmp	.-8      	; 0x16a <uart_putc>
     UDR0 = data;    // Send data byte
- 176:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
+ 172:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
     while (!(UCSR0A&(1<<UDRE0)));    // Wait for previous transmissions
- 17a:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 17e:	85 ff       	sbrs	r24, 5
- 180:	fc cf       	rjmp	.-8      	; 0x17a <uart_putc+0xc>
+ 176:	80 91 c0 00 	lds	r24, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 17a:	85 ff       	sbrs	r24, 5
+ 17c:	fc cf       	rjmp	.-8      	; 0x176 <uart_putc+0xc>
 }
- 182:	08 95       	ret
+ 17e:	08 95       	ret
 
-00000184 <uart_puts>:
+00000180 <uart_puts>:
 // Takes a string and sends each charater to be sent to USART0
 //void uart_puts(unsigned char *str) {
 void uart_puts(char *str) {
     int i = 0;               
     // Loop through string, sending each character
     while(str[i] != '\0') { 
- 184:	fc 01       	movw	r30, r24
- 186:	20 81       	ld	r18, Z
- 188:	22 23       	and	r18, r18
- 18a:	71 f0       	breq	.+28     	; 0x1a8 <uart_puts+0x24>
- 18c:	31 96       	adiw	r30, 0x01	; 1
+ 180:	fc 01       	movw	r30, r24
+ 182:	20 81       	ld	r18, Z
+ 184:	22 23       	and	r18, r18
+ 186:	71 f0       	breq	.+28     	; 0x1a4 <uart_puts+0x24>
+ 188:	31 96       	adiw	r30, 0x01	; 1
 //                        uart_putc
 //
 // Takes a character and sends it to USART0
 //
 void uart_putc(char data) {
     while (!(UCSR0A&(1<<UDRE0)));    // Wait for previous transmissions
- 18e:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 192:	95 ff       	sbrs	r25, 5
- 194:	fc cf       	rjmp	.-8      	; 0x18e <uart_puts+0xa>
+ 18a:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 18e:	95 ff       	sbrs	r25, 5
+ 190:	fc cf       	rjmp	.-8      	; 0x18a <uart_puts+0xa>
     UDR0 = data;    // Send data byte
- 196:	20 93 c6 00 	sts	0x00C6, r18	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
+ 192:	20 93 c6 00 	sts	0x00C6, r18	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
     while (!(UCSR0A&(1<<UDRE0)));    // Wait for previous transmissions
- 19a:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 19e:	95 ff       	sbrs	r25, 5
- 1a0:	fc cf       	rjmp	.-8      	; 0x19a <uart_puts+0x16>
+ 196:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 19a:	95 ff       	sbrs	r25, 5
+ 19c:	fc cf       	rjmp	.-8      	; 0x196 <uart_puts+0x16>
 // Takes a string and sends each charater to be sent to USART0
 //void uart_puts(unsigned char *str) {
 void uart_puts(char *str) {
     int i = 0;               
     // Loop through string, sending each character
     while(str[i] != '\0') { 
- 1a2:	21 91       	ld	r18, Z+
- 1a4:	21 11       	cpse	r18, r1
- 1a6:	f3 cf       	rjmp	.-26     	; 0x18e <uart_puts+0xa>
- 1a8:	08 95       	ret
+ 19e:	21 91       	ld	r18, Z+
+ 1a0:	21 11       	cpse	r18, r1
+ 1a2:	f3 cf       	rjmp	.-26     	; 0x18a <uart_puts+0xa>
+ 1a4:	08 95       	ret
 
-000001aa <uart_puts_p>:
+000001a6 <uart_puts_p>:
 
 //******************************************************************
 //                        uart_puts_p
 // Takes a string in flash memory and sends each charater to USART0
 //void uart_puts(unsigned char *str) {
 void uart_puts_p(const char *str) {      
- 1aa:	9c 01       	movw	r18, r24
+ 1a6:	9c 01       	movw	r18, r24
     // Loop through string, sending each character
     while(pgm_read_byte(str) != 0x00) { 
- 1ac:	c9 01       	movw	r24, r18
- 1ae:	f9 01       	movw	r30, r18
- 1b0:	44 91       	lpm	r20, Z
- 1b2:	44 23       	and	r20, r20
- 1b4:	99 f0       	breq	.+38     	; 0x1dc <uart_puts_p+0x32>
+ 1a8:	c9 01       	movw	r24, r18
+ 1aa:	f9 01       	movw	r30, r18
+ 1ac:	44 91       	lpm	r20, Z
+ 1ae:	44 23       	and	r20, r20
+ 1b0:	99 f0       	breq	.+38     	; 0x1d8 <uart_puts_p+0x32>
         uart_putc(pgm_read_byte(str++));
- 1b6:	2f 5f       	subi	r18, 0xFF	; 255
- 1b8:	3f 4f       	sbci	r19, 0xFF	; 255
- 1ba:	fc 01       	movw	r30, r24
- 1bc:	84 91       	lpm	r24, Z
+ 1b2:	2f 5f       	subi	r18, 0xFF	; 255
+ 1b4:	3f 4f       	sbci	r19, 0xFF	; 255
+ 1b6:	fc 01       	movw	r30, r24
+ 1b8:	84 91       	lpm	r24, Z
 //                        uart_putc
 //
 // Takes a character and sends it to USART0
 //
 void uart_putc(char data) {
     while (!(UCSR0A&(1<<UDRE0)));    // Wait for previous transmissions
- 1be:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 1c2:	95 ff       	sbrs	r25, 5
- 1c4:	fc cf       	rjmp	.-8      	; 0x1be <uart_puts_p+0x14>
+ 1ba:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 1be:	95 ff       	sbrs	r25, 5
+ 1c0:	fc cf       	rjmp	.-8      	; 0x1ba <uart_puts_p+0x14>
     UDR0 = data;    // Send data byte
- 1c6:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
+ 1c2:	80 93 c6 00 	sts	0x00C6, r24	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
     while (!(UCSR0A&(1<<UDRE0)));    // Wait for previous transmissions
- 1ca:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 1ce:	95 ff       	sbrs	r25, 5
- 1d0:	fc cf       	rjmp	.-8      	; 0x1ca <uart_puts_p+0x20>
+ 1c6:	90 91 c0 00 	lds	r25, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 1ca:	95 ff       	sbrs	r25, 5
+ 1cc:	fc cf       	rjmp	.-8      	; 0x1c6 <uart_puts_p+0x20>
 //                        uart_puts_p
 // Takes a string in flash memory and sends each charater to USART0
 //void uart_puts(unsigned char *str) {
 void uart_puts_p(const char *str) {      
     // Loop through string, sending each character
     while(pgm_read_byte(str) != 0x00) { 
- 1d2:	c9 01       	movw	r24, r18
- 1d4:	f9 01       	movw	r30, r18
- 1d6:	44 91       	lpm	r20, Z
- 1d8:	41 11       	cpse	r20, r1
- 1da:	ed cf       	rjmp	.-38     	; 0x1b6 <uart_puts_p+0xc>
+ 1ce:	c9 01       	movw	r24, r18
+ 1d0:	f9 01       	movw	r30, r18
+ 1d2:	44 91       	lpm	r20, Z
+ 1d4:	41 11       	cpse	r20, r1
+ 1d6:	ed cf       	rjmp	.-38     	; 0x1b2 <uart_puts_p+0xc>
         uart_putc(pgm_read_byte(str++));
     }
 }
- 1dc:	08 95       	ret
+ 1d8:	08 95       	ret
 
-000001de <uart_init>:
+000001da <uart_init>:
 //RXD is PORT D bit 0
 //TXD is PORT D bit 1
 
 void uart_init(){
 //rx and tx enable, receive interrupt enabled, 8 bit characters
 UCSR0B |= (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0); //INTERRUPTS ENABLED
- 1de:	e1 ec       	ldi	r30, 0xC1	; 193
- 1e0:	f0 e0       	ldi	r31, 0x00	; 0
- 1e2:	80 81       	ld	r24, Z
- 1e4:	88 69       	ori	r24, 0x98	; 152
- 1e6:	80 83       	st	Z, r24
+ 1da:	e1 ec       	ldi	r30, 0xC1	; 193
+ 1dc:	f0 e0       	ldi	r31, 0x00	; 0
+ 1de:	80 81       	ld	r24, Z
+ 1e0:	88 69       	ori	r24, 0x98	; 152
+ 1e2:	80 83       	st	Z, r24
 //  UCSR0B |= (1<<RXEN0) | (1<<TXEN0);               //INTERRUPS DISABLED
 
 //async operation, no parity,  one stop bit, 8-bit characters
   UCSR0C |= (1<<UCSZ01) | (1<<UCSZ00);
- 1e8:	e2 ec       	ldi	r30, 0xC2	; 194
- 1ea:	f0 e0       	ldi	r31, 0x00	; 0
- 1ec:	80 81       	ld	r24, Z
- 1ee:	86 60       	ori	r24, 0x06	; 6
- 1f0:	80 83       	st	Z, r24
+ 1e4:	e2 ec       	ldi	r30, 0xC2	; 194
+ 1e6:	f0 e0       	ldi	r31, 0x00	; 0
+ 1e8:	80 81       	ld	r24, Z
+ 1ea:	86 60       	ori	r24, 0x06	; 6
+ 1ec:	80 83       	st	Z, r24
   UBRR0H = (BAUDVALUE >>8 ); //load upper byte of the baud rate into UBRR 
- 1f2:	10 92 c5 00 	sts	0x00C5, r1	; 0x8000c5 <__EEPROM_REGION_LENGTH__+0x7f00c5>
+ 1ee:	10 92 c5 00 	sts	0x00C5, r1	; 0x8000c5 <__EEPROM_REGION_LENGTH__+0x7f00c5>
   UBRR0L =  BAUDVALUE;       //load lower byte of the baud rate into UBRR 
- 1f6:	83 e3       	ldi	r24, 0x33	; 51
- 1f8:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__EEPROM_REGION_LENGTH__+0x7f00c4>
- 1fc:	08 95       	ret
+ 1f2:	83 e3       	ldi	r24, 0x33	; 51
+ 1f4:	80 93 c4 00 	sts	0x00C4, r24	; 0x8000c4 <__EEPROM_REGION_LENGTH__+0x7f00c4>
+ 1f8:	08 95       	ret
 
-000001fe <uart_getc>:
+000001fa <uart_getc>:
 //Modified to not block indefinately in the case of a lost byte
 //
 char uart_getc(void) {
   uint16_t timer = 0;
 
   while (!(UCSR0A & (1<<RXC0))) {
- 1fe:	80 e8       	ldi	r24, 0x80	; 128
- 200:	9e e3       	ldi	r25, 0x3E	; 62
- 202:	02 c0       	rjmp	.+4      	; 0x208 <uart_getc+0xa>
- 204:	01 97       	sbiw	r24, 0x01	; 1
+ 1fa:	80 e8       	ldi	r24, 0x80	; 128
+ 1fc:	9e e3       	ldi	r25, 0x3E	; 62
+ 1fe:	02 c0       	rjmp	.+4      	; 0x204 <uart_getc+0xa>
+ 200:	01 97       	sbiw	r24, 0x01	; 1
   timer++;
   if(timer >= 16000){ return(0);}
- 206:	39 f0       	breq	.+14     	; 0x216 <uart_getc+0x18>
+ 202:	39 f0       	breq	.+14     	; 0x212 <uart_getc+0x18>
 //Modified to not block indefinately in the case of a lost byte
 //
 char uart_getc(void) {
   uint16_t timer = 0;
 
   while (!(UCSR0A & (1<<RXC0))) {
- 208:	20 91 c0 00 	lds	r18, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
- 20c:	27 ff       	sbrs	r18, 7
- 20e:	fa cf       	rjmp	.-12     	; 0x204 <uart_getc+0x6>
+ 204:	20 91 c0 00 	lds	r18, 0x00C0	; 0x8000c0 <__EEPROM_REGION_LENGTH__+0x7f00c0>
+ 208:	27 ff       	sbrs	r18, 7
+ 20a:	fa cf       	rjmp	.-12     	; 0x200 <uart_getc+0x6>
   //what should we return if nothing comes in?
   //return the data into a global variable
   //give uart_getc the address of the variable
   //return a -1 if no data comes back.
   } // Wait for byte to arrive
   return(UDR0); //return the received data
- 210:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
- 214:	08 95       	ret
+ 20c:	80 91 c6 00 	lds	r24, 0x00C6	; 0x8000c6 <__EEPROM_REGION_LENGTH__+0x7f00c6>
+ 210:	08 95       	ret
 char uart_getc(void) {
   uint16_t timer = 0;
 
   while (!(UCSR0A & (1<<RXC0))) {
   timer++;
   if(timer >= 16000){ return(0);}
- 216:	80 e0       	ldi	r24, 0x00	; 0
+ 212:	80 e0       	ldi	r24, 0x00	; 0
   //return the data into a global variable
   //give uart_getc the address of the variable
   //return a -1 if no data comes back.
   } // Wait for byte to arrive
   return(UDR0); //return the received data
 }
- 218:	08 95       	ret
+ 214:	08 95       	ret
 
-0000021a <lm73_temp_convert>:
+00000216 <lm73_temp_convert>:
 volatile uint8_t lm73_rd_buf[2];
 
 //********************************************************************************
 
 //******************************************************************************
 void lm73_temp_convert(char temp_digits[], uint16_t lm73_temp, uint8_t f_not_c){
- 21a:	fc 01       	movw	r30, r24
+ 216:	fc 01       	movw	r30, r24
 //given a temperature reading from an LM73, the address of a buffer
 //array, and a format (deg F or C) it formats the temperature into ascii in 
 //the buffer pointed to by the arguement.
 //TODO:Returns what???(uint8_t)??? Probably a BUG?
 
 	uint16_t temperature = lm73_temp / 128;
- 21c:	cb 01       	movw	r24, r22
- 21e:	88 0f       	add	r24, r24
- 220:	89 2f       	mov	r24, r25
- 222:	88 1f       	adc	r24, r24
- 224:	99 0b       	sbc	r25, r25
- 226:	91 95       	neg	r25
+ 218:	cb 01       	movw	r24, r22
+ 21a:	88 0f       	add	r24, r24
+ 21c:	89 2f       	mov	r24, r25
+ 21e:	88 1f       	adc	r24, r24
+ 220:	99 0b       	sbc	r25, r25
+ 222:	91 95       	neg	r25
 
 	if(f_not_c == 0x01){
- 228:	41 30       	cpi	r20, 0x01	; 1
- 22a:	89 f4       	brne	.+34     	; 0x24e <lm73_temp_convert+0x34>
+ 224:	41 30       	cpi	r20, 0x01	; 1
+ 226:	89 f4       	brne	.+34     	; 0x24a <lm73_temp_convert+0x34>
 		temperature = (temperature * 9)/5 + 32;
- 22c:	9c 01       	movw	r18, r24
+ 228:	9c 01       	movw	r18, r24
+ 22a:	22 0f       	add	r18, r18
+ 22c:	33 1f       	adc	r19, r19
  22e:	22 0f       	add	r18, r18
  230:	33 1f       	adc	r19, r19
  232:	22 0f       	add	r18, r18
  234:	33 1f       	adc	r19, r19
- 236:	22 0f       	add	r18, r18
- 238:	33 1f       	adc	r19, r19
- 23a:	28 0f       	add	r18, r24
- 23c:	39 1f       	adc	r19, r25
- 23e:	ad ec       	ldi	r26, 0xCD	; 205
- 240:	bc ec       	ldi	r27, 0xCC	; 204
- 242:	07 d1       	rcall	.+526    	; 0x452 <__umulhisi3>
+ 236:	28 0f       	add	r18, r24
+ 238:	39 1f       	adc	r19, r25
+ 23a:	ad ec       	ldi	r26, 0xCD	; 205
+ 23c:	bc ec       	ldi	r27, 0xCC	; 204
+ 23e:	07 d1       	rcall	.+526    	; 0x44e <__umulhisi3>
+ 240:	96 95       	lsr	r25
+ 242:	87 95       	ror	r24
  244:	96 95       	lsr	r25
  246:	87 95       	ror	r24
- 248:	96 95       	lsr	r25
- 24a:	87 95       	ror	r24
- 24c:	80 96       	adiw	r24, 0x20	; 32
+ 248:	80 96       	adiw	r24, 0x20	; 32
     } else if (__radix < 2 || __radix > 36) {
 	*__s = 0;
 	return __s;
     } else {
 	extern char *__itoa_ncheck (int, char *, unsigned char);
 	return __itoa_ncheck (__val, __s, __radix);
- 24e:	4a e0       	ldi	r20, 0x0A	; 10
- 250:	bf 01       	movw	r22, r30
- 252:	0b c1       	rjmp	.+534    	; 0x46a <__itoa_ncheck>
+ 24a:	4a e0       	ldi	r20, 0x0A	; 10
+ 24c:	bf 01       	movw	r22, r30
+ 24e:	0b c1       	rjmp	.+534    	; 0x466 <__itoa_ncheck>
 
-00000254 <__vector_24>:
+00000250 <__vector_24>:
 
 //****************************************************************************
 //This is the TWI ISR. Different actions are taken depending upon the value
 //of the TWI status register TWSR.
 //****************************************************************************/
 ISR(TWI_vect){
- 254:	1f 92       	push	r1
+ 250:	1f 92       	push	r1
+ 252:	0f 92       	push	r0
+ 254:	0f b6       	in	r0, 0x3f	; 63
  256:	0f 92       	push	r0
- 258:	0f b6       	in	r0, 0x3f	; 63
- 25a:	0f 92       	push	r0
- 25c:	11 24       	eor	r1, r1
- 25e:	2f 93       	push	r18
- 260:	3f 93       	push	r19
- 262:	8f 93       	push	r24
- 264:	9f 93       	push	r25
- 266:	af 93       	push	r26
- 268:	bf 93       	push	r27
- 26a:	ef 93       	push	r30
- 26c:	ff 93       	push	r31
+ 258:	11 24       	eor	r1, r1
+ 25a:	2f 93       	push	r18
+ 25c:	3f 93       	push	r19
+ 25e:	8f 93       	push	r24
+ 260:	9f 93       	push	r25
+ 262:	af 93       	push	r26
+ 264:	bf 93       	push	r27
+ 266:	ef 93       	push	r30
+ 268:	ff 93       	push	r31
   static uint8_t twi_buf_ptr;  //index into the buffer being used 
 
   switch (TWSR) {
- 26e:	e0 91 b9 00 	lds	r30, 0x00B9	; 0x8000b9 <__EEPROM_REGION_LENGTH__+0x7f00b9>
- 272:	8e 2f       	mov	r24, r30
- 274:	90 e0       	ldi	r25, 0x00	; 0
- 276:	fc 01       	movw	r30, r24
- 278:	38 97       	sbiw	r30, 0x08	; 8
- 27a:	e1 35       	cpi	r30, 0x51	; 81
- 27c:	f1 05       	cpc	r31, r1
- 27e:	a0 f0       	brcs	.+40     	; 0x2a8 <__vector_24+0x54>
+ 26a:	e0 91 b9 00 	lds	r30, 0x00B9	; 0x8000b9 <__EEPROM_REGION_LENGTH__+0x7f00b9>
+ 26e:	8e 2f       	mov	r24, r30
+ 270:	90 e0       	ldi	r25, 0x00	; 0
+ 272:	fc 01       	movw	r30, r24
+ 274:	38 97       	sbiw	r30, 0x08	; 8
+ 276:	e1 35       	cpi	r30, 0x51	; 81
+ 278:	f1 05       	cpc	r31, r1
+ 27a:	a0 f0       	brcs	.+40     	; 0x2a4 <__vector_24+0x54>
       break;      
     case TW_MT_ARB_LOST:                //Arbitration lost 
       TWCR = TWCR_START;                //initiate RESTART 
       break;
     default:                            //Error occured, save TWSR 
       twi_state = TWSR;         
- 280:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__EEPROM_REGION_LENGTH__+0x7f00b9>
- 284:	80 93 5d 01 	sts	0x015D, r24	; 0x80015d <twi_state>
+ 27c:	80 91 b9 00 	lds	r24, 0x00B9	; 0x8000b9 <__EEPROM_REGION_LENGTH__+0x7f00b9>
+ 280:	80 93 5d 01 	sts	0x015D, r24	; 0x80015d <twi_state>
       TWCR = TWCR_RST;                  //Reset TWI, disable interupts 
- 288:	84 e0       	ldi	r24, 0x04	; 4
- 28a:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 284:	84 e0       	ldi	r24, 0x04	; 4
+ 286:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
   }//switch
 }//TWI_isr
- 28e:	ff 91       	pop	r31
- 290:	ef 91       	pop	r30
- 292:	bf 91       	pop	r27
- 294:	af 91       	pop	r26
- 296:	9f 91       	pop	r25
- 298:	8f 91       	pop	r24
- 29a:	3f 91       	pop	r19
- 29c:	2f 91       	pop	r18
+ 28a:	ff 91       	pop	r31
+ 28c:	ef 91       	pop	r30
+ 28e:	bf 91       	pop	r27
+ 290:	af 91       	pop	r26
+ 292:	9f 91       	pop	r25
+ 294:	8f 91       	pop	r24
+ 296:	3f 91       	pop	r19
+ 298:	2f 91       	pop	r18
+ 29a:	0f 90       	pop	r0
+ 29c:	0f be       	out	0x3f, r0	; 63
  29e:	0f 90       	pop	r0
- 2a0:	0f be       	out	0x3f, r0	; 63
- 2a2:	0f 90       	pop	r0
- 2a4:	1f 90       	pop	r1
- 2a6:	18 95       	reti
+ 2a0:	1f 90       	pop	r1
+ 2a2:	18 95       	reti
 //of the TWI status register TWSR.
 //****************************************************************************/
 ISR(TWI_vect){
   static uint8_t twi_buf_ptr;  //index into the buffer being used 
 
   switch (TWSR) {
- 2a8:	e6 5e       	subi	r30, 0xE6	; 230
- 2aa:	ff 4f       	sbci	r31, 0xFF	; 255
- 2ac:	09 94       	ijmp
+ 2a4:	e6 5e       	subi	r30, 0xE6	; 230
+ 2a6:	ff 4f       	sbci	r31, 0xFF	; 255
+ 2a8:	09 94       	ijmp
     case TW_MR_SLA_ACK:                 //SLA+R xmitted and ACK rcvd
       if (twi_buf_ptr < (twi_msg_size-1)){TWCR = TWCR_RACK;}  //ACK each byte
       else                               {TWCR = TWCR_RNACK;} //NACK last byte 
       break; 
     case TW_MR_DATA_NACK: //Data byte was rcvd and NACK xmitted
       twi_buf[twi_buf_ptr] = TWDR;      //save last byte to buffer
- 2ae:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <twi_buf_ptr.1780>
- 2b2:	e0 91 5e 01 	lds	r30, 0x015E	; 0x80015e <twi_buf>
- 2b6:	f0 91 5f 01 	lds	r31, 0x015F	; 0x80015f <twi_buf+0x1>
- 2ba:	e8 0f       	add	r30, r24
- 2bc:	f1 1d       	adc	r31, r1
- 2be:	80 91 bb 00 	lds	r24, 0x00BB	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
- 2c2:	80 83       	st	Z, r24
+ 2aa:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <twi_buf_ptr.1780>
+ 2ae:	e0 91 5e 01 	lds	r30, 0x015E	; 0x80015e <twi_buf>
+ 2b2:	f0 91 5f 01 	lds	r31, 0x015F	; 0x80015f <twi_buf+0x1>
+ 2b6:	e8 0f       	add	r30, r24
+ 2b8:	f1 1d       	adc	r31, r1
+ 2ba:	80 91 bb 00 	lds	r24, 0x00BB	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
+ 2be:	80 83       	st	Z, r24
       TWCR = TWCR_STOP;                 //initiate a STOP
- 2c4:	84 e9       	ldi	r24, 0x94	; 148
- 2c6:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 2c0:	84 e9       	ldi	r24, 0x94	; 148
+ 2c2:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
       break;      
- 2ca:	e1 cf       	rjmp	.-62     	; 0x28e <__vector_24+0x3a>
+ 2c6:	e1 cf       	rjmp	.-62     	; 0x28a <__vector_24+0x3a>
   static uint8_t twi_buf_ptr;  //index into the buffer being used 
 
   switch (TWSR) {
     case TW_START:          //START has been xmitted, fall thorough
     case TW_REP_START:      //Repeated START was xmitted
       TWDR = twi_bus_addr;  //load up the twi bus address
- 2cc:	80 91 60 01 	lds	r24, 0x0160	; 0x800160 <twi_bus_addr>
- 2d0:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
+ 2c8:	80 91 60 01 	lds	r24, 0x0160	; 0x800160 <twi_bus_addr>
+ 2cc:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
       twi_buf_ptr = 0;      //initalize buffer pointer 
- 2d4:	10 92 04 01 	sts	0x0104, r1	; 0x800104 <twi_buf_ptr.1780>
+ 2d0:	10 92 04 01 	sts	0x0104, r1	; 0x800104 <twi_buf_ptr.1780>
       TWCR = TWCR_SEND;     //send SLA+RW
- 2d8:	85 e8       	ldi	r24, 0x85	; 133
- 2da:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 2d4:	85 e8       	ldi	r24, 0x85	; 133
+ 2d6:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
       break;
- 2de:	d7 cf       	rjmp	.-82     	; 0x28e <__vector_24+0x3a>
+ 2da:	d7 cf       	rjmp	.-82     	; 0x28a <__vector_24+0x3a>
     case TW_MT_SLA_ACK:     //SLA+W was xmitted and ACK rcvd, fall through 
     case TW_MT_DATA_ACK:                //Data byte was xmitted and ACK rcvd
       if (twi_buf_ptr < twi_msg_size){  //send data till done
- 2e0:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <twi_buf_ptr.1780>
- 2e4:	90 91 61 01 	lds	r25, 0x0161	; 0x800161 <twi_msg_size>
- 2e8:	89 17       	cp	r24, r25
- 2ea:	60 f7       	brcc	.-40     	; 0x2c4 <__vector_24+0x70>
+ 2dc:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <twi_buf_ptr.1780>
+ 2e0:	90 91 61 01 	lds	r25, 0x0161	; 0x800161 <twi_msg_size>
+ 2e4:	89 17       	cp	r24, r25
+ 2e6:	60 f7       	brcc	.-40     	; 0x2c0 <__vector_24+0x70>
         TWDR = twi_buf[twi_buf_ptr++];  //load next and postincrement index
- 2ec:	e0 91 5e 01 	lds	r30, 0x015E	; 0x80015e <twi_buf>
- 2f0:	f0 91 5f 01 	lds	r31, 0x015F	; 0x80015f <twi_buf+0x1>
- 2f4:	91 e0       	ldi	r25, 0x01	; 1
- 2f6:	98 0f       	add	r25, r24
- 2f8:	90 93 04 01 	sts	0x0104, r25	; 0x800104 <twi_buf_ptr.1780>
- 2fc:	e8 0f       	add	r30, r24
- 2fe:	f1 1d       	adc	r31, r1
- 300:	80 81       	ld	r24, Z
- 302:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
+ 2e8:	e0 91 5e 01 	lds	r30, 0x015E	; 0x80015e <twi_buf>
+ 2ec:	f0 91 5f 01 	lds	r31, 0x015F	; 0x80015f <twi_buf+0x1>
+ 2f0:	91 e0       	ldi	r25, 0x01	; 1
+ 2f2:	98 0f       	add	r25, r24
+ 2f4:	90 93 04 01 	sts	0x0104, r25	; 0x800104 <twi_buf_ptr.1780>
+ 2f8:	e8 0f       	add	r30, r24
+ 2fa:	f1 1d       	adc	r31, r1
+ 2fc:	80 81       	ld	r24, Z
+ 2fe:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
         TWCR = TWCR_SEND;               //send next byte 
- 306:	85 e8       	ldi	r24, 0x85	; 133
- 308:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
- 30c:	c0 cf       	rjmp	.-128    	; 0x28e <__vector_24+0x3a>
+ 302:	85 e8       	ldi	r24, 0x85	; 133
+ 304:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 308:	c0 cf       	rjmp	.-128    	; 0x28a <__vector_24+0x3a>
     case TW_MR_DATA_NACK: //Data byte was rcvd and NACK xmitted
       twi_buf[twi_buf_ptr] = TWDR;      //save last byte to buffer
       TWCR = TWCR_STOP;                 //initiate a STOP
       break;      
     case TW_MT_ARB_LOST:                //Arbitration lost 
       TWCR = TWCR_START;                //initiate RESTART 
- 30e:	85 ea       	ldi	r24, 0xA5	; 165
- 310:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 30a:	85 ea       	ldi	r24, 0xA5	; 165
+ 30c:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
       break;
- 314:	bc cf       	rjmp	.-136    	; 0x28e <__vector_24+0x3a>
- 316:	20 91 04 01 	lds	r18, 0x0104	; 0x800104 <twi_buf_ptr.1780>
+ 310:	bc cf       	rjmp	.-136    	; 0x28a <__vector_24+0x3a>
+ 312:	20 91 04 01 	lds	r18, 0x0104	; 0x800104 <twi_buf_ptr.1780>
       else{TWCR = TWCR_STOP;}           //last byte sent, send STOP 
       break;
     case TW_MR_DATA_ACK:                //Data byte has been rcvd, ACK xmitted, fall through
       twi_buf[twi_buf_ptr++] = TWDR;    //fill buffer with rcvd data
     case TW_MR_SLA_ACK:                 //SLA+R xmitted and ACK rcvd
       if (twi_buf_ptr < (twi_msg_size-1)){TWCR = TWCR_RACK;}  //ACK each byte
- 31a:	80 91 61 01 	lds	r24, 0x0161	; 0x800161 <twi_msg_size>
- 31e:	30 e0       	ldi	r19, 0x00	; 0
- 320:	90 e0       	ldi	r25, 0x00	; 0
- 322:	01 97       	sbiw	r24, 0x01	; 1
- 324:	28 17       	cp	r18, r24
- 326:	39 07       	cpc	r19, r25
- 328:	dc f4       	brge	.+54     	; 0x360 <__stack+0x61>
- 32a:	85 ec       	ldi	r24, 0xC5	; 197
- 32c:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
- 330:	ae cf       	rjmp	.-164    	; 0x28e <__vector_24+0x3a>
+ 316:	80 91 61 01 	lds	r24, 0x0161	; 0x800161 <twi_msg_size>
+ 31a:	30 e0       	ldi	r19, 0x00	; 0
+ 31c:	90 e0       	ldi	r25, 0x00	; 0
+ 31e:	01 97       	sbiw	r24, 0x01	; 1
+ 320:	28 17       	cp	r18, r24
+ 322:	39 07       	cpc	r19, r25
+ 324:	dc f4       	brge	.+54     	; 0x35c <__stack+0x5d>
+ 326:	85 ec       	ldi	r24, 0xC5	; 197
+ 328:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 32c:	ae cf       	rjmp	.-164    	; 0x28a <__vector_24+0x3a>
         TWCR = TWCR_SEND;               //send next byte 
       }
       else{TWCR = TWCR_STOP;}           //last byte sent, send STOP 
       break;
     case TW_MR_DATA_ACK:                //Data byte has been rcvd, ACK xmitted, fall through
       twi_buf[twi_buf_ptr++] = TWDR;    //fill buffer with rcvd data
- 332:	e0 91 5e 01 	lds	r30, 0x015E	; 0x80015e <twi_buf>
- 336:	f0 91 5f 01 	lds	r31, 0x015F	; 0x80015f <twi_buf+0x1>
- 33a:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <twi_buf_ptr.1780>
- 33e:	21 e0       	ldi	r18, 0x01	; 1
- 340:	28 0f       	add	r18, r24
- 342:	20 93 04 01 	sts	0x0104, r18	; 0x800104 <twi_buf_ptr.1780>
- 346:	e8 0f       	add	r30, r24
- 348:	f1 1d       	adc	r31, r1
- 34a:	80 91 bb 00 	lds	r24, 0x00BB	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
- 34e:	80 83       	st	Z, r24
+ 32e:	e0 91 5e 01 	lds	r30, 0x015E	; 0x80015e <twi_buf>
+ 332:	f0 91 5f 01 	lds	r31, 0x015F	; 0x80015f <twi_buf+0x1>
+ 336:	80 91 04 01 	lds	r24, 0x0104	; 0x800104 <twi_buf_ptr.1780>
+ 33a:	21 e0       	ldi	r18, 0x01	; 1
+ 33c:	28 0f       	add	r18, r24
+ 33e:	20 93 04 01 	sts	0x0104, r18	; 0x800104 <twi_buf_ptr.1780>
+ 342:	e8 0f       	add	r30, r24
+ 344:	f1 1d       	adc	r31, r1
+ 346:	80 91 bb 00 	lds	r24, 0x00BB	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
+ 34a:	80 83       	st	Z, r24
     case TW_MR_SLA_ACK:                 //SLA+R xmitted and ACK rcvd
       if (twi_buf_ptr < (twi_msg_size-1)){TWCR = TWCR_RACK;}  //ACK each byte
- 350:	80 91 61 01 	lds	r24, 0x0161	; 0x800161 <twi_msg_size>
- 354:	30 e0       	ldi	r19, 0x00	; 0
- 356:	90 e0       	ldi	r25, 0x00	; 0
- 358:	01 97       	sbiw	r24, 0x01	; 1
- 35a:	28 17       	cp	r18, r24
- 35c:	39 07       	cpc	r19, r25
- 35e:	2c f3       	brlt	.-54     	; 0x32a <__stack+0x2b>
+ 34c:	80 91 61 01 	lds	r24, 0x0161	; 0x800161 <twi_msg_size>
+ 350:	30 e0       	ldi	r19, 0x00	; 0
+ 352:	90 e0       	ldi	r25, 0x00	; 0
+ 354:	01 97       	sbiw	r24, 0x01	; 1
+ 356:	28 17       	cp	r18, r24
+ 358:	39 07       	cpc	r19, r25
+ 35a:	2c f3       	brlt	.-54     	; 0x326 <__stack+0x27>
       else                               {TWCR = TWCR_RNACK;} //NACK last byte 
- 360:	85 e8       	ldi	r24, 0x85	; 133
- 362:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
- 366:	93 cf       	rjmp	.-218    	; 0x28e <__vector_24+0x3a>
+ 35c:	85 e8       	ldi	r24, 0x85	; 133
+ 35e:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 362:	93 cf       	rjmp	.-218    	; 0x28a <__vector_24+0x3a>
 
-00000368 <twi_busy>:
+00000364 <twi_busy>:
 //Call this function to test if the TWI unit is busy transferring data. The TWI
 //code uses the the interrupt enable bit (TWIE) to indicate if the TWI unit
 //is busy or not.  This protocol must be maintained for correct operation.
 //*****************************************************************************
 uint8_t twi_busy(void){
   return (bit_is_set(TWCR,TWIE)); //if interrupt is enabled, twi is busy
- 368:	80 91 bc 00 	lds	r24, 0x00BC	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 364:	80 91 bc 00 	lds	r24, 0x00BC	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
 }
- 36c:	81 70       	andi	r24, 0x01	; 1
- 36e:	08 95       	ret
+ 368:	81 70       	andi	r24, 0x01	; 1
+ 36a:	08 95       	ret
 
-00000370 <twi_start_wr>:
+0000036c <twi_start_wr>:
 //Call this function to test if the TWI unit is busy transferring data. The TWI
 //code uses the the interrupt enable bit (TWIE) to indicate if the TWI unit
 //is busy or not.  This protocol must be maintained for correct operation.
 //*****************************************************************************
 uint8_t twi_busy(void){
   return (bit_is_set(TWCR,TWIE)); //if interrupt is enabled, twi is busy
- 370:	90 91 bc 00 	lds	r25, 0x00BC	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 36c:	90 91 bc 00 	lds	r25, 0x00BC	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
 //Initiates a write transfer. Loads global variables. Sends START. ISR handles
 //the rest.
 //****************************************************************************
 void twi_start_wr(uint8_t twi_addr, uint8_t *twi_data, uint8_t byte_cnt){
 
   while(twi_busy());                    //wait till TWI rdy for next xfer
- 374:	90 fd       	sbrc	r25, 0
- 376:	fc cf       	rjmp	.-8      	; 0x370 <twi_start_wr>
+ 370:	90 fd       	sbrc	r25, 0
+ 372:	fc cf       	rjmp	.-8      	; 0x36c <twi_start_wr>
   twi_bus_addr = (twi_addr & ~TW_READ); //set twi bus address, mark as write 
- 378:	8e 7f       	andi	r24, 0xFE	; 254
- 37a:	80 93 60 01 	sts	0x0160, r24	; 0x800160 <twi_bus_addr>
+ 374:	8e 7f       	andi	r24, 0xFE	; 254
+ 376:	80 93 60 01 	sts	0x0160, r24	; 0x800160 <twi_bus_addr>
   twi_buf = twi_data;                   //load pointer to write buffer
- 37e:	70 93 5f 01 	sts	0x015F, r23	; 0x80015f <twi_buf+0x1>
- 382:	60 93 5e 01 	sts	0x015E, r22	; 0x80015e <twi_buf>
+ 37a:	70 93 5f 01 	sts	0x015F, r23	; 0x80015f <twi_buf+0x1>
+ 37e:	60 93 5e 01 	sts	0x015E, r22	; 0x80015e <twi_buf>
   twi_msg_size = byte_cnt;              //load size of xfer 
- 386:	40 93 61 01 	sts	0x0161, r20	; 0x800161 <twi_msg_size>
+ 382:	40 93 61 01 	sts	0x0161, r20	; 0x800161 <twi_msg_size>
   TWCR = TWCR_START;                    //initiate START
- 38a:	85 ea       	ldi	r24, 0xA5	; 165
- 38c:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
- 390:	08 95       	ret
+ 386:	85 ea       	ldi	r24, 0xA5	; 165
+ 388:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 38c:	08 95       	ret
 
-00000392 <twi_start_rd>:
+0000038e <twi_start_rd>:
 //Call this function to test if the TWI unit is busy transferring data. The TWI
 //code uses the the interrupt enable bit (TWIE) to indicate if the TWI unit
 //is busy or not.  This protocol must be maintained for correct operation.
 //*****************************************************************************
 uint8_t twi_busy(void){
   return (bit_is_set(TWCR,TWIE)); //if interrupt is enabled, twi is busy
- 392:	90 91 bc 00 	lds	r25, 0x00BC	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 38e:	90 91 bc 00 	lds	r25, 0x00BC	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
 //Initiates a read transfer. Loads global variables. Sends START. ISR handles
 //the rest.
 //****************************************************************************
 void twi_start_rd(uint8_t twi_addr, uint8_t *twi_data, uint8_t byte_cnt){
 
   while(twi_busy());                   //wait till TWI rdy for next xfer
- 396:	90 fd       	sbrc	r25, 0
- 398:	fc cf       	rjmp	.-8      	; 0x392 <twi_start_rd>
+ 392:	90 fd       	sbrc	r25, 0
+ 394:	fc cf       	rjmp	.-8      	; 0x38e <twi_start_rd>
   twi_bus_addr = (twi_addr | TW_READ); //set twi bus address, mark as read  
- 39a:	81 60       	ori	r24, 0x01	; 1
- 39c:	80 93 60 01 	sts	0x0160, r24	; 0x800160 <twi_bus_addr>
+ 396:	81 60       	ori	r24, 0x01	; 1
+ 398:	80 93 60 01 	sts	0x0160, r24	; 0x800160 <twi_bus_addr>
   twi_buf = twi_data;                  //load pointer to write buffer
- 3a0:	70 93 5f 01 	sts	0x015F, r23	; 0x80015f <twi_buf+0x1>
- 3a4:	60 93 5e 01 	sts	0x015E, r22	; 0x80015e <twi_buf>
+ 39c:	70 93 5f 01 	sts	0x015F, r23	; 0x80015f <twi_buf+0x1>
+ 3a0:	60 93 5e 01 	sts	0x015E, r22	; 0x80015e <twi_buf>
   twi_msg_size = byte_cnt;             //load size of xfer 
- 3a8:	40 93 61 01 	sts	0x0161, r20	; 0x800161 <twi_msg_size>
+ 3a4:	40 93 61 01 	sts	0x0161, r20	; 0x800161 <twi_msg_size>
   TWCR = TWCR_START;                   //initiate START
- 3ac:	85 ea       	ldi	r24, 0xA5	; 165
- 3ae:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
- 3b2:	08 95       	ret
+ 3a8:	85 ea       	ldi	r24, 0xA5	; 165
+ 3aa:	80 93 bc 00 	sts	0x00BC, r24	; 0x8000bc <__EEPROM_REGION_LENGTH__+0x7f00bc>
+ 3ae:	08 95       	ret
 
-000003b4 <init_twi>:
+000003b0 <init_twi>:
 //10K pullups are present on the board
 //for alarm clock an additional 4.7K resistor is also there for pullup
 //******************************************************************************
 
 void init_twi(){
   TWDR = 0xFF;     //release SDA, default contents
- 3b4:	8f ef       	ldi	r24, 0xFF	; 255
- 3b6:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
+ 3b0:	8f ef       	ldi	r24, 0xFF	; 255
+ 3b2:	80 93 bb 00 	sts	0x00BB, r24	; 0x8000bb <__EEPROM_REGION_LENGTH__+0x7f00bb>
   TWSR = 0x00;     //prescaler value = 1
- 3ba:	10 92 b9 00 	sts	0x00B9, r1	; 0x8000b9 <__EEPROM_REGION_LENGTH__+0x7f00b9>
+ 3b6:	10 92 b9 00 	sts	0x00B9, r1	; 0x8000b9 <__EEPROM_REGION_LENGTH__+0x7f00b9>
   TWBR = TWI_TWBR; //defined in twi_master.h 
- 3be:	8c e0       	ldi	r24, 0x0C	; 12
- 3c0:	80 93 b8 00 	sts	0x00B8, r24	; 0x8000b8 <__EEPROM_REGION_LENGTH__+0x7f00b8>
- 3c4:	08 95       	ret
+ 3ba:	8c e0       	ldi	r24, 0x0C	; 12
+ 3bc:	80 93 b8 00 	sts	0x00B8, r24	; 0x8000b8 <__EEPROM_REGION_LENGTH__+0x7f00b8>
+ 3c0:	08 95       	ret
 
-000003c6 <main>:
+000003c2 <main>:
 
 
 int main()
 {
- 3c6:	cf 93       	push	r28
- 3c8:	df 93       	push	r29
- 3ca:	00 d0       	rcall	.+0      	; 0x3cc <main+0x6>
- 3cc:	cd b7       	in	r28, 0x3d	; 61
- 3ce:	de b7       	in	r29, 0x3e	; 62
-	init_twi();
- 3d0:	f1 df       	rcall	.-30     	; 0x3b4 <init_twi>
+ 3c2:	cf 93       	push	r28
+ 3c4:	df 93       	push	r29
+ 3c6:	00 d0       	rcall	.+0      	; 0x3c8 <main+0x6>
+ 3c8:	cd b7       	in	r28, 0x3d	; 61
+ 3ca:	de b7       	in	r29, 0x3e	; 62
+	init_twi();		//called from twi_master.c
+ 3cc:	f1 df       	rcall	.-30     	; 0x3b0 <init_twi>
 	
 	DDRC = 0x20;
- 3d2:	80 e2       	ldi	r24, 0x20	; 32
- 3d4:	87 b9       	out	0x07, r24	; 7
-	uart_init();
- 3d6:	03 df       	rcall	.-506    	; 0x1de <uart_init>
+ 3ce:	80 e2       	ldi	r24, 0x20	; 32
+ 3d0:	87 b9       	out	0x07, r24	; 7
+	uart_init();		//initialized uart
+ 3d2:	03 df       	rcall	.-506    	; 0x1da <uart_init>
 
 	sei();
- 3d8:	78 94       	sei
-		lm73_temp_convert(uart_buf, read_lm73_sensor(), f_not_c);
+ 3d4:	78 94       	sei
+		//obtain value from 128 indicating if convert to C or F
 		if(temp[0] == 'C'){
 			f_not_c = 0;
 		}
 		else if(temp[0] == 'F'){
 			f_not_c = 0x01;
- 3da:	01 e0       	ldi	r16, 0x01	; 1
- 3dc:	06 c0       	rjmp	.+12     	; 0x3ea <main+0x24>
-		volatile char uart_buf[2];
-		lm73_temp_convert(uart_buf, read_lm73_sensor(), f_not_c);
+ 3d6:	01 e0       	ldi	r16, 0x01	; 1
+ 3d8:	06 c0       	rjmp	.+12     	; 0x3e6 <main+0x24>
+
+		//obtain value from 128 indicating if convert to C or F
 		if(temp[0] == 'C'){
 			f_not_c = 0;
 		}
 		else if(temp[0] == 'F'){
- 3de:	86 34       	cpi	r24, 0x46	; 70
- 3e0:	a9 f1       	breq	.+106    	; 0x44c <__LOCK_REGION_LENGTH__+0x4c>
+ 3da:	86 34       	cpi	r24, 0x46	; 70
+ 3dc:	a9 f1       	breq	.+106    	; 0x448 <__LOCK_REGION_LENGTH__+0x48>
 			f_not_c = 0x01;
 		}
 
+		//if we went through the interrupt, start sending uart to 128
 		if(read_temp_flag == 0x01){
- 3e2:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <read_temp_flag>
- 3e6:	81 30       	cpi	r24, 0x01	; 1
- 3e8:	e9 f0       	breq	.+58     	; 0x424 <__LOCK_REGION_LENGTH__+0x24>
+ 3de:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <read_temp_flag>
+ 3e2:	81 30       	cpi	r24, 0x01	; 1
+ 3e4:	e9 f0       	breq	.+58     	; 0x420 <__LOCK_REGION_LENGTH__+0x20>
 	{
 
 		
-		
+		//convert temperature from lm73
 		volatile char uart_buf[2];
 		lm73_temp_convert(uart_buf, read_lm73_sensor(), f_not_c);
- 3ea:	10 91 00 01 	lds	r17, 0x0100	; 0x800100 <__data_start>
+ 3e6:	10 91 00 01 	lds	r17, 0x0100	; 0x800100 <__data_start>
 
 	//initialize a 16-bit variable to return
 	uint16_t temp_reading = 0;
 
 	//called from twi_master.c to obtain temp reading
 	twi_start_rd(LM73_ADDRESS, read_i2c_buffer, 2);
- 3ee:	42 e0       	ldi	r20, 0x02	; 2
- 3f0:	66 e0       	ldi	r22, 0x06	; 6
- 3f2:	71 e0       	ldi	r23, 0x01	; 1
- 3f4:	80 e9       	ldi	r24, 0x90	; 144
- 3f6:	cd df       	rcall	.-102    	; 0x392 <twi_start_rd>
+ 3ea:	42 e0       	ldi	r20, 0x02	; 2
+ 3ec:	66 e0       	ldi	r22, 0x06	; 6
+ 3ee:	71 e0       	ldi	r23, 0x01	; 1
+ 3f0:	80 e9       	ldi	r24, 0x90	; 144
+ 3f2:	cd df       	rcall	.-102    	; 0x38e <twi_start_rd>
 
 	//stores temp reading to temp_reading
 	temp_reading = read_i2c_buffer[0] << 8;
- 3f8:	60 91 06 01 	lds	r22, 0x0106	; 0x800106 <read_i2c_buffer>
- 3fc:	70 e0       	ldi	r23, 0x00	; 0
- 3fe:	76 2f       	mov	r23, r22
- 400:	66 27       	eor	r22, r22
+ 3f4:	60 91 06 01 	lds	r22, 0x0106	; 0x800106 <read_i2c_buffer>
+ 3f8:	70 e0       	ldi	r23, 0x00	; 0
+ 3fa:	76 2f       	mov	r23, r22
+ 3fc:	66 27       	eor	r22, r22
 	{
 
 		
-		
+		//convert temperature from lm73
 		volatile char uart_buf[2];
 		lm73_temp_convert(uart_buf, read_lm73_sensor(), f_not_c);
- 402:	80 91 07 01 	lds	r24, 0x0107	; 0x800107 <read_i2c_buffer+0x1>
- 406:	68 2b       	or	r22, r24
- 408:	41 2f       	mov	r20, r17
- 40a:	ce 01       	movw	r24, r28
- 40c:	01 96       	adiw	r24, 0x01	; 1
- 40e:	05 df       	rcall	.-502    	; 0x21a <lm73_temp_convert>
+ 3fe:	80 91 07 01 	lds	r24, 0x0107	; 0x800107 <read_i2c_buffer+0x1>
+ 402:	68 2b       	or	r22, r24
+ 404:	41 2f       	mov	r20, r17
+ 406:	ce 01       	movw	r24, r28
+ 408:	01 96       	adiw	r24, 0x01	; 1
+ 40a:	05 df       	rcall	.-502    	; 0x216 <lm73_temp_convert>
+
+		//obtain value from 128 indicating if convert to C or F
 		if(temp[0] == 'C'){
- 410:	80 91 05 01 	lds	r24, 0x0105	; 0x800105 <temp>
- 414:	83 34       	cpi	r24, 0x43	; 67
- 416:	19 f7       	brne	.-58     	; 0x3de <main+0x18>
+ 40c:	80 91 05 01 	lds	r24, 0x0105	; 0x800105 <temp>
+ 410:	83 34       	cpi	r24, 0x43	; 67
+ 412:	19 f7       	brne	.-58     	; 0x3da <main+0x18>
 			f_not_c = 0;
- 418:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <__data_start>
-		}
+ 414:	10 92 00 01 	sts	0x0100, r1	; 0x800100 <__data_start>
 		else if(temp[0] == 'F'){
 			f_not_c = 0x01;
 		}
 
+		//if we went through the interrupt, start sending uart to 128
 		if(read_temp_flag == 0x01){
- 41c:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <read_temp_flag>
- 420:	81 30       	cpi	r24, 0x01	; 1
- 422:	19 f7       	brne	.-58     	; 0x3ea <main+0x24>
-			uart_putc('\0');
-			_delay_us(100);
-			*/
+ 418:	80 91 03 01 	lds	r24, 0x0103	; 0x800103 <read_temp_flag>
+ 41c:	81 30       	cpi	r24, 0x01	; 1
+ 41e:	19 f7       	brne	.-58     	; 0x3e6 <main+0x24>
 			
 			
+			//send one character at a time
 			asm volatile ("nop");
- 424:	00 00       	nop
+ 420:	00 00       	nop
 			uart_putc(uart_buf[0]);
- 426:	89 81       	ldd	r24, Y+1	; 0x01
- 428:	a2 de       	rcall	.-700    	; 0x16e <uart_putc>
+ 422:	89 81       	ldd	r24, Y+1	; 0x01
+ 424:	a2 de       	rcall	.-700    	; 0x16a <uart_putc>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
- 42a:	87 ec       	ldi	r24, 0xC7	; 199
- 42c:	90 e0       	ldi	r25, 0x00	; 0
- 42e:	01 97       	sbiw	r24, 0x01	; 1
- 430:	f1 f7       	brne	.-4      	; 0x42e <__LOCK_REGION_LENGTH__+0x2e>
- 432:	00 c0       	rjmp	.+0      	; 0x434 <__LOCK_REGION_LENGTH__+0x34>
- 434:	00 00       	nop
+ 426:	87 ec       	ldi	r24, 0xC7	; 199
+ 428:	90 e0       	ldi	r25, 0x00	; 0
+ 42a:	01 97       	sbiw	r24, 0x01	; 1
+ 42c:	f1 f7       	brne	.-4      	; 0x42a <__LOCK_REGION_LENGTH__+0x2a>
+ 42e:	00 c0       	rjmp	.+0      	; 0x430 <__LOCK_REGION_LENGTH__+0x30>
+ 430:	00 00       	nop
 			_delay_us(100);
 
+			//send the next character
 			uart_putc(uart_buf[1]);
- 436:	8a 81       	ldd	r24, Y+2	; 0x02
- 438:	9a de       	rcall	.-716    	; 0x16e <uart_putc>
- 43a:	87 ec       	ldi	r24, 0xC7	; 199
- 43c:	90 e0       	ldi	r25, 0x00	; 0
- 43e:	01 97       	sbiw	r24, 0x01	; 1
- 440:	f1 f7       	brne	.-4      	; 0x43e <__LOCK_REGION_LENGTH__+0x3e>
- 442:	00 c0       	rjmp	.+0      	; 0x444 <__LOCK_REGION_LENGTH__+0x44>
- 444:	00 00       	nop
+ 432:	8a 81       	ldd	r24, Y+2	; 0x02
+ 434:	9a de       	rcall	.-716    	; 0x16a <uart_putc>
+ 436:	87 ec       	ldi	r24, 0xC7	; 199
+ 438:	90 e0       	ldi	r25, 0x00	; 0
+ 43a:	01 97       	sbiw	r24, 0x01	; 1
+ 43c:	f1 f7       	brne	.-4      	; 0x43a <__LOCK_REGION_LENGTH__+0x3a>
+ 43e:	00 c0       	rjmp	.+0      	; 0x440 <__LOCK_REGION_LENGTH__+0x40>
+ 440:	00 00       	nop
 			_delay_us(100);
 
+			//put read flag to zero to avoid spamming
 			read_temp_flag = 0x00;
- 446:	10 92 03 01 	sts	0x0103, r1	; 0x800103 <read_temp_flag>
- 44a:	cf cf       	rjmp	.-98     	; 0x3ea <main+0x24>
-		lm73_temp_convert(uart_buf, read_lm73_sensor(), f_not_c);
+ 442:	10 92 03 01 	sts	0x0103, r1	; 0x800103 <read_temp_flag>
+ 446:	cf cf       	rjmp	.-98     	; 0x3e6 <main+0x24>
+		//obtain value from 128 indicating if convert to C or F
 		if(temp[0] == 'C'){
 			f_not_c = 0;
 		}
 		else if(temp[0] == 'F'){
 			f_not_c = 0x01;
- 44c:	00 93 00 01 	sts	0x0100, r16	; 0x800100 <__data_start>
- 450:	c8 cf       	rjmp	.-112    	; 0x3e2 <main+0x1c>
+ 448:	00 93 00 01 	sts	0x0100, r16	; 0x800100 <__data_start>
+ 44c:	c8 cf       	rjmp	.-112    	; 0x3de <main+0x1c>
 
-00000452 <__umulhisi3>:
- 452:	a2 9f       	mul	r26, r18
- 454:	b0 01       	movw	r22, r0
- 456:	b3 9f       	mul	r27, r19
- 458:	c0 01       	movw	r24, r0
- 45a:	a3 9f       	mul	r26, r19
- 45c:	01 d0       	rcall	.+2      	; 0x460 <__umulhisi3+0xe>
- 45e:	b2 9f       	mul	r27, r18
- 460:	70 0d       	add	r23, r0
- 462:	81 1d       	adc	r24, r1
- 464:	11 24       	eor	r1, r1
- 466:	91 1d       	adc	r25, r1
- 468:	08 95       	ret
+0000044e <__umulhisi3>:
+ 44e:	a2 9f       	mul	r26, r18
+ 450:	b0 01       	movw	r22, r0
+ 452:	b3 9f       	mul	r27, r19
+ 454:	c0 01       	movw	r24, r0
+ 456:	a3 9f       	mul	r26, r19
+ 458:	01 d0       	rcall	.+2      	; 0x45c <__umulhisi3+0xe>
+ 45a:	b2 9f       	mul	r27, r18
+ 45c:	70 0d       	add	r23, r0
+ 45e:	81 1d       	adc	r24, r1
+ 460:	11 24       	eor	r1, r1
+ 462:	91 1d       	adc	r25, r1
+ 464:	08 95       	ret
 
-0000046a <__itoa_ncheck>:
- 46a:	bb 27       	eor	r27, r27
- 46c:	4a 30       	cpi	r20, 0x0A	; 10
- 46e:	31 f4       	brne	.+12     	; 0x47c <__itoa_ncheck+0x12>
- 470:	99 23       	and	r25, r25
- 472:	22 f4       	brpl	.+8      	; 0x47c <__itoa_ncheck+0x12>
- 474:	bd e2       	ldi	r27, 0x2D	; 45
- 476:	90 95       	com	r25
- 478:	81 95       	neg	r24
- 47a:	9f 4f       	sbci	r25, 0xFF	; 255
- 47c:	01 c0       	rjmp	.+2      	; 0x480 <__utoa_common>
+00000466 <__itoa_ncheck>:
+ 466:	bb 27       	eor	r27, r27
+ 468:	4a 30       	cpi	r20, 0x0A	; 10
+ 46a:	31 f4       	brne	.+12     	; 0x478 <__itoa_ncheck+0x12>
+ 46c:	99 23       	and	r25, r25
+ 46e:	22 f4       	brpl	.+8      	; 0x478 <__itoa_ncheck+0x12>
+ 470:	bd e2       	ldi	r27, 0x2D	; 45
+ 472:	90 95       	com	r25
+ 474:	81 95       	neg	r24
+ 476:	9f 4f       	sbci	r25, 0xFF	; 255
+ 478:	01 c0       	rjmp	.+2      	; 0x47c <__utoa_common>
 
-0000047e <__utoa_ncheck>:
- 47e:	bb 27       	eor	r27, r27
+0000047a <__utoa_ncheck>:
+ 47a:	bb 27       	eor	r27, r27
 
-00000480 <__utoa_common>:
- 480:	fb 01       	movw	r30, r22
- 482:	55 27       	eor	r21, r21
- 484:	aa 27       	eor	r26, r26
- 486:	88 0f       	add	r24, r24
- 488:	99 1f       	adc	r25, r25
- 48a:	aa 1f       	adc	r26, r26
- 48c:	a4 17       	cp	r26, r20
- 48e:	10 f0       	brcs	.+4      	; 0x494 <__utoa_common+0x14>
- 490:	a4 1b       	sub	r26, r20
- 492:	83 95       	inc	r24
- 494:	50 51       	subi	r21, 0x10	; 16
- 496:	b9 f7       	brne	.-18     	; 0x486 <__utoa_common+0x6>
- 498:	a0 5d       	subi	r26, 0xD0	; 208
- 49a:	aa 33       	cpi	r26, 0x3A	; 58
- 49c:	08 f0       	brcs	.+2      	; 0x4a0 <__utoa_common+0x20>
- 49e:	a9 5d       	subi	r26, 0xD9	; 217
- 4a0:	a1 93       	st	Z+, r26
- 4a2:	00 97       	sbiw	r24, 0x00	; 0
- 4a4:	79 f7       	brne	.-34     	; 0x484 <__utoa_common+0x4>
- 4a6:	b1 11       	cpse	r27, r1
- 4a8:	b1 93       	st	Z+, r27
- 4aa:	11 92       	st	Z+, r1
- 4ac:	cb 01       	movw	r24, r22
- 4ae:	00 c0       	rjmp	.+0      	; 0x4b0 <strrev>
+0000047c <__utoa_common>:
+ 47c:	fb 01       	movw	r30, r22
+ 47e:	55 27       	eor	r21, r21
+ 480:	aa 27       	eor	r26, r26
+ 482:	88 0f       	add	r24, r24
+ 484:	99 1f       	adc	r25, r25
+ 486:	aa 1f       	adc	r26, r26
+ 488:	a4 17       	cp	r26, r20
+ 48a:	10 f0       	brcs	.+4      	; 0x490 <__utoa_common+0x14>
+ 48c:	a4 1b       	sub	r26, r20
+ 48e:	83 95       	inc	r24
+ 490:	50 51       	subi	r21, 0x10	; 16
+ 492:	b9 f7       	brne	.-18     	; 0x482 <__utoa_common+0x6>
+ 494:	a0 5d       	subi	r26, 0xD0	; 208
+ 496:	aa 33       	cpi	r26, 0x3A	; 58
+ 498:	08 f0       	brcs	.+2      	; 0x49c <__utoa_common+0x20>
+ 49a:	a9 5d       	subi	r26, 0xD9	; 217
+ 49c:	a1 93       	st	Z+, r26
+ 49e:	00 97       	sbiw	r24, 0x00	; 0
+ 4a0:	79 f7       	brne	.-34     	; 0x480 <__utoa_common+0x4>
+ 4a2:	b1 11       	cpse	r27, r1
+ 4a4:	b1 93       	st	Z+, r27
+ 4a6:	11 92       	st	Z+, r1
+ 4a8:	cb 01       	movw	r24, r22
+ 4aa:	00 c0       	rjmp	.+0      	; 0x4ac <strrev>
 
-000004b0 <strrev>:
- 4b0:	dc 01       	movw	r26, r24
- 4b2:	fc 01       	movw	r30, r24
- 4b4:	67 2f       	mov	r22, r23
- 4b6:	71 91       	ld	r23, Z+
- 4b8:	77 23       	and	r23, r23
- 4ba:	e1 f7       	brne	.-8      	; 0x4b4 <strrev+0x4>
- 4bc:	32 97       	sbiw	r30, 0x02	; 2
- 4be:	04 c0       	rjmp	.+8      	; 0x4c8 <strrev+0x18>
- 4c0:	7c 91       	ld	r23, X
- 4c2:	6d 93       	st	X+, r22
- 4c4:	70 83       	st	Z, r23
- 4c6:	62 91       	ld	r22, -Z
- 4c8:	ae 17       	cp	r26, r30
- 4ca:	bf 07       	cpc	r27, r31
- 4cc:	c8 f3       	brcs	.-14     	; 0x4c0 <strrev+0x10>
- 4ce:	08 95       	ret
+000004ac <strrev>:
+ 4ac:	dc 01       	movw	r26, r24
+ 4ae:	fc 01       	movw	r30, r24
+ 4b0:	67 2f       	mov	r22, r23
+ 4b2:	71 91       	ld	r23, Z+
+ 4b4:	77 23       	and	r23, r23
+ 4b6:	e1 f7       	brne	.-8      	; 0x4b0 <strrev+0x4>
+ 4b8:	32 97       	sbiw	r30, 0x02	; 2
+ 4ba:	04 c0       	rjmp	.+8      	; 0x4c4 <strrev+0x18>
+ 4bc:	7c 91       	ld	r23, X
+ 4be:	6d 93       	st	X+, r22
+ 4c0:	70 83       	st	Z, r23
+ 4c2:	62 91       	ld	r22, -Z
+ 4c4:	ae 17       	cp	r26, r30
+ 4c6:	bf 07       	cpc	r27, r31
+ 4c8:	c8 f3       	brcs	.-14     	; 0x4bc <strrev+0x10>
+ 4ca:	08 95       	ret
 
-000004d0 <_exit>:
- 4d0:	f8 94       	cli
+000004cc <_exit>:
+ 4cc:	f8 94       	cli
 
-000004d2 <__stop_program>:
- 4d2:	ff cf       	rjmp	.-2      	; 0x4d2 <__stop_program>
+000004ce <__stop_program>:
+ 4ce:	ff cf       	rjmp	.-2      	; 0x4ce <__stop_program>
